@@ -8,6 +8,7 @@
 //   data-part="ears"     the hare's ears, they twitch
 //   data-part="raw"      pale dough over the kolobok's crust, fades as he bakes
 
+import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -348,6 +349,11 @@ export const PUPPETS: Record<string, () => string> = {
   rukavychka,
   rvana: rukavychka_rvana,
   khatka: snizhna_khatka,
+  koza,
+  yizhachok,
+  rak,
+  khatynka,
+  kapusta,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -365,7 +371,7 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   did: { mouth: [0, -268], top: -400, hands: [0, -120] },
   baba: { mouth: [0, -262], top: -352, hands: [0, -128] },
   kolobok: { mouth: [6, -36], top: -104 },
-  zayets: { mouth: [-44, -126], top: -280 },
+  zayets: { mouth: [-44, -126], top: -280, hands: [-34, -66] },
   vovk: { mouth: [-60, -236], top: -350 },
   vedmid: { mouth: [-20, -272], top: -390 },
   lysytsia: { mouth: [-70, -180], top: -300 },
@@ -378,4 +384,9 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   rukavychka: { mouth: [-26, -20], top: -300 },
   rvana: { mouth: [0, -20], top: -130 },
   khatka: { mouth: [0, -40], top: -310 },
+  koza: { mouth: [-86, -172], top: -255 },
+  yizhachok: { mouth: [-62, -28], top: -124 },
+  rak: { mouth: [0, -54], top: -200 },
+  khatynka: { mouth: [-30, -20], top: -330 },
+  kapusta: { mouth: [0, -34], top: -70 },
 };

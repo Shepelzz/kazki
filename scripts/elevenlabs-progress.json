@@ -5,9 +5,17 @@
       "voice": "cgSgspJ2msm6clMCkdW9",
       "chars": 4
     },
+    "73105581": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 7
+    },
     "75627943": {
       "voice": "2HWb7sZSrZqPB8HOI0KI",
       "chars": 11
+    },
+    "77927442": {
+      "voice": "iP95p4xoKVk53GoZ742B",
+      "chars": 4
     },
     "85174251": {
       "voice": "2HWb7sZSrZqPB8HOI0KI",
@@ -15,6 +23,10 @@
     },
     "86195553": {
       "voice": "cgSgspJ2msm6clMCkdW9",
+      "chars": 2
+    },
+    "98530276": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
       "chars": 2
     },
     "bb4aa272": {
@@ -780,7 +792,343 @@
     "1b41cce0": {
       "voice": "2HWb7sZSrZqPB8HOI0KI",
       "chars": 19
+    },
+    "6ee3a04e": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 2
+    },
+    "eaabf1ff": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 7
+    },
+    "3e4ed0cb": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "f6c30fa9": {
+      "voice": "XrExE9yKIg1WjnnlVkGX",
+      "chars": 4
+    },
+    "8d039af2": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "68dc6025": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 4
+    },
+    "ab1027e1": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 4
+    },
+    "e560b255": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "4851d163": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 9
+    },
+    "815cdb8d": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 2
+    },
+    "04a3d81f": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 2
+    },
+    "f7c983c6": {
+      "voice": "XrExE9yKIg1WjnnlVkGX",
+      "chars": 8
+    },
+    "f6f4bc3c": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 5
+    },
+    "a62365f9": {
+      "voice": "XrExE9yKIg1WjnnlVkGX",
+      "chars": 4
+    },
+    "607cfa07": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 19
+    },
+    "2e0e29fc": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 12
+    },
+    "6ed02b0f": {
+      "voice": "XrExE9yKIg1WjnnlVkGX",
+      "chars": 4
+    },
+    "2690e3f9": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 10
+    },
+    "9db40d54": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "939f089a": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 6
+    },
+    "f221c0d8": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 6
+    },
+    "1280478b": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 8
+    },
+    "3855925d": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 2
+    },
+    "c18ed991": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 2
+    },
+    "0e260622": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 10
+    },
+    "6c96aa9e": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 8
+    },
+    "1e106f4c": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 2
+    },
+    "a63797f5": {
+      "voice": "XrExE9yKIg1WjnnlVkGX",
+      "chars": 7
+    },
+    "ebbabb93": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 9
+    },
+    "60d0374a": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 12
+    },
+    "de48edb2": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 3
+    },
+    "78caa5f7": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "5932b74b": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 2
+    },
+    "9c943d42": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 9
+    },
+    "d7a16758": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 5
+    },
+    "2e7e9c65": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 10
+    },
+    "90978bc1": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "4d7eb32a": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 3
+    },
+    "ebaef742": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 6
+    },
+    "b80d361b": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 4
+    },
+    "59eb3099": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 7
+    },
+    "5473320f": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 2
+    },
+    "441425d1": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 1
+    },
+    "e3d471f3": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 17
+    },
+    "1076a3fa": {
+      "voice": "N2lVS1w4EtoT3dr4eOWO",
+      "chars": 3
+    },
+    "ef12e7f9": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 3
+    },
+    "cdd61ee2": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 8
+    },
+    "adbb9582": {
+      "voice": "N2lVS1w4EtoT3dr4eOWO",
+      "chars": 3
+    },
+    "3ed38275": {
+      "voice": "N2lVS1w4EtoT3dr4eOWO",
+      "chars": 6
+    },
+    "1f94488f": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 3
+    },
+    "4ffa2b49": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 3
+    },
+    "d40fe4bf": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 8
+    },
+    "2df64f4f": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 4
+    },
+    "551d1a60": {
+      "voice": "TX3LPaxmHKxFdv7VOQHJ",
+      "chars": 3
+    },
+    "ca3ac002": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 7
+    },
+    "ffabc4e8": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 8
+    },
+    "3c67782d": {
+      "voice": "TX3LPaxmHKxFdv7VOQHJ",
+      "chars": 5
+    },
+    "3f548b2f": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 11
+    },
+    "52377d93": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 4
+    },
+    "ef2039f5": {
+      "voice": "TX3LPaxmHKxFdv7VOQHJ",
+      "chars": 8
+    },
+    "a908eb56": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 9
+    },
+    "ec363dd4": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 4
+    },
+    "c34033a1": {
+      "voice": "iP95p4xoKVk53GoZ742B",
+      "chars": 3
+    },
+    "df7ba6e5": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 7
+    },
+    "7c9b073b": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "be4365eb": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 8
+    },
+    "1db2ed9c": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 6
+    },
+    "50cae875": {
+      "voice": "iP95p4xoKVk53GoZ742B",
+      "chars": 5
+    },
+    "df95d713": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 8
+    },
+    "84efbf94": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 5
+    },
+    "21815d0f": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "edd02f79": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 7
+    },
+    "89bb78f1": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 12
+    },
+    "0327925b": {
+      "voice": "IKne3meq5aSn9XLyUdCD",
+      "chars": 4
+    },
+    "5d6a681c": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 13
+    },
+    "eb380a66": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 10
+    },
+    "78380fe6": {
+      "voice": "JBFqnCBsd6RMkjVDRZzb",
+      "chars": 7
+    },
+    "d4a8eb55": {
+      "voice": "pFZP5JQG7iQjIQuC4Bku",
+      "chars": 7
+    },
+    "276a6081": {
+      "voice": "XrExE9yKIg1WjnnlVkGX",
+      "chars": 7
+    },
+    "573d3801": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 3
+    },
+    "ead98c50": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 9
+    },
+    "3931ab69": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 3
+    },
+    "2b96f8d8": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 3
+    },
+    "ed4e3f88": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 3
     }
   },
-  "charsSpent": 1328
+  "charsSpent": 1900
 }

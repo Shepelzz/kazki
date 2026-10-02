@@ -86,6 +86,7 @@ button:focus-visible {
 }
 
 .library-head {
+  flex-shrink: 0;
   text-align: center;
   width: 100%;
   max-width: 900px;
@@ -118,14 +119,36 @@ button:focus-visible {
 }
 
 .shelf {
+  /* one row that scrolls sideways (more tales than fit the screen) */
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 980px;
-  margin: 10px 0 20px;
+  flex-wrap: nowrap;
+  /* edge to edge (out of the shelf screen's side padding) */
+  width: calc(100% + 32px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  /* never squeezed by the screen's height (the cards would be cut): the screen scrolls instead */
+  flex-shrink: 0;
+  margin: 10px -16px 20px;
+  padding: 10px 16px 18px;
+}
+
+/* centred while they fit, scrolling from the first card when they don't */
+.shelf > :first-child {
+  margin-left: auto;
+}
+.shelf > :last-child {
+  margin-right: auto;
+}
+
+.shelf::-webkit-scrollbar {
+  display: none;
 }
 
 .book {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
   width: 210px;
   margin: 12px;
   padding: 14px 14px 16px;
@@ -149,6 +172,10 @@ button.book:active {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.book-art-koza-dereza {
+  background: linear-gradient(#9fd8f7, #e0f4ff 70%, #9ccc65 70%);
 }
 
 .book-art-rukavychka {
@@ -656,6 +683,51 @@ button.book:active {
 /* ---------- low screens (phones on their side) ---------- */
 
 @media (max-height: 520px) {
+  .library > :first-child {
+    padding-top: 10px;
+  }
+  .library-head h1 {
+    font-size: 34px;
+    margin: 10px 0 2px;
+  }
+  .library-head p {
+    font-size: 16px;
+    margin: 0 0 6px;
+  }
+  .library .ornament {
+    height: 12px;
+  }
+  .library > .ornament {
+    margin-top: 4px;
+  }
+  .shelf {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    padding-top: 6px;
+    padding-bottom: 12px;
+  }
+  .book {
+    width: 150px;
+    margin: 0 8px;
+    padding: 10px 10px 12px;
+    border-radius: 20px;
+  }
+  .book-art {
+    height: 100px;
+    border-radius: 14px;
+  }
+  .book-title {
+    font-size: 19px;
+    margin-top: 8px;
+  }
+  .book-endings {
+    font-size: 16px;
+    min-height: 22px;
+    margin-top: 2px;
+  }
+  .soon-icon {
+    font-size: 54px;
+  }
   .round {
     width: 46px;
     height: 46px;
@@ -736,5 +808,12 @@ button.book:active {
   .ending-card {
     -webkit-animation: none;
     animation: none;
+  }
+}
+
+/* the smallest phones on their side: no room for the subtitle */
+@media (max-height: 400px) {
+  .library-head p {
+    display: none;
   }
 }

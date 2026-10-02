@@ -129,7 +129,7 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'rukavychka', 'rvana', 'khatka'];
+const PROPS = ['bush', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta'];
 
 interface Particle {
   el: SVGElement;
@@ -463,6 +463,45 @@ function stitchBand(x: number, y: number, w: number) {
 }
 
 
+// ---------- the goat's tale: a meadow with a little bridge, an autumn forest ----------
+
+function autumnTree(x: number, y: number, s: number, c: [string, string]) {
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <rect x="-12" y="-130" width="24" height="130" rx="6" fill="#6d4426"/>
+    <circle cx="0" cy="-180" r="74" fill="${c[0]}"/><circle cx="-50" cy="-138" r="48" fill="${c[0]}"/><circle cx="52" cy="-140" r="50" fill="${c[1]}"/>
+    <circle cx="-14" cy="-208" r="36" fill="${c[1]}"/></g>`;
+}
+
+function autumnRow(seed: number, n: number, y0: number, s0: number) {
+  const r = rand(seed);
+  const colors: [string, string][] = [['#ef6c00', '#ffa726'], ['#f9a825', '#fdd835'], ['#c62828', '#e53935'], ['#8d6e1f', '#c0a032']];
+  let s = '';
+  for (let i = 0; i < n; i++) s += autumnTree((i + r() * 0.6) * (W / n), y0 - r() * 20, s0 + r() * 0.3, colors[Math.floor(r() * colors.length)]);
+  return s;
+}
+
+/** a maple: the goat "only snatched a maple leaf", she says */
+function maple(x: number) {
+  let leaves = '';
+  const r = rand(97);
+  for (let i = 0; i < 9; i++) {
+    const a = (i / 9) * Math.PI * 2;
+    leaves += `<circle cx="${(Math.cos(a) * 80).toFixed(0)}" cy="${(-300 + Math.sin(a) * 70).toFixed(0)}" r="${60 + r() * 20}" fill="${i % 2 ? '#43a047' : '#66bb6a'}"/>`;
+  }
+  return `<g transform="translate(${x} ${GROUND - 30})"><path d="M-16 0 Q-10 -150 -8 -260 L8 -260 Q12 -150 18 0 Z" fill="#6d4426"/>
+    <path d="M-6 -180 L-60 -240 M6 -200 L60 -250" stroke="#6d4426" stroke-width="12" stroke-linecap="round"/>${leaves}
+    <circle cx="0" cy="-300" r="70" fill="#4caf50"/></g>`;
+}
+
+/** a stream across the meadow with a little wooden bridge */
+function streamAndBridge(x: number) {
+  return `<path d="M${x - 140} ${GROUND - 40} Q${x - 90} ${GROUND + 80} ${x - 120} 2000 L${x + 120} 2000 Q${x + 150} ${GROUND + 80} ${x + 100} ${GROUND - 40} Z" fill="#4aa3df"/>
+    <path d="M${x - 90} ${GROUND + 60} q20 -8 40 0 M${x + 10} ${GROUND + 120} q20 -8 40 0" stroke="#d6f0ff" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M${x - 170} ${GROUND - 4} Q${x} ${GROUND - 60} ${x + 170} ${GROUND - 4}" stroke="#8b5a2b" stroke-width="22" fill="none"/>
+    ${Array.from({ length: 8 }, (_, i) => `<path d="M${x - 150 + i * 43} ${GROUND - 30 - Math.sin((i / 7) * Math.PI) * 30} v-46" stroke="#6d4426" stroke-width="7"/>`).join('')}
+    <path d="M${x - 160} ${GROUND - 60} Q${x} ${GROUND - 116} ${x + 160} ${GROUND - 60}" stroke="#6d4426" stroke-width="8" fill="none"/>`;
+}
+
 // ---------- winter ----------
 
 /** a fir under snow */
@@ -512,9 +551,37 @@ interface Backdrop {
   layers: [string, number][];
   /** snow falls */
   snow?: boolean;
+  /** autumn leaves fall */
+  leaves?: boolean;
 }
 
 const BACKDROPS: Record<string, () => Backdrop> = {
+  luh: () => ({
+    still:
+      sky('#7cc4f2', '#e0f4ff') +
+      sun(1380, 230) +
+      clouds(101) +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#a5d6a7', GROUND - 150, 60, 102)}${treeRow(103, false)}</g>`).join('') +
+      ground('#7cb342', '#7cb342') +
+      streamAndBridge(1360) +
+      maple(260) +
+      `<g>${verge(104, false)}${verge(105, false)}</g>`,
+    layers: [],
+  }),
+  'lis-osin': () => ({
+    still:
+      sky('#f6d7a7', '#fff3e0') +
+      sun(1400, 230, '#ffcc80') +
+      clouds(111).replace(/opacity=".92"/, 'opacity=".75"') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#c8b273', GROUND - 160, 60, 112)}${autumnRow(113, 8, GROUND - 60, 0.6)}</g>`).join('') +
+      autumnTree(120, GROUND - 10, 1.3, ['#ef6c00', '#ffa726']) +
+      autumnTree(1500, GROUND - 10, 1.4, ['#c62828', '#e53935']) +
+      `<rect x="-1600" y="${GROUND - 40}" width="4800" height="6000" fill="#9e9d24"/>` +
+      `<path d="M-1600 ${GROUND - 14} L3200 ${GROUND - 14} L3200 ${GROUND + 26} L-1600 ${GROUND + 26} Z" fill="#b8946a"/>` +
+      `<g>${verge(114, true, 0.3)}${Array.from({ length: 30 }, (_, i) => `<ellipse cx="${(i * 97) % 1700 - 50}" cy="${GROUND + 40 + ((i * 53) % 140)}" rx="12" ry="6" fill="${['#e65100', '#f9a825', '#c62828'][i % 3]}" transform="rotate(${(i * 37) % 180} ${(i * 97) % 1700 - 50} ${GROUND + 40 + ((i * 53) % 140)})"/>`).join('')}</g>`,
+    layers: [],
+    leaves: true,
+  }),
   'winter-forest': () => ({
     still: sky('#a9cbe6', '#eef5fb') + clouds(81).replace(/opacity=".92"/, 'opacity=".7"'),
     layers: [
@@ -838,6 +905,13 @@ export class Stage {
     this.inside = {};
     while (this.snowLayer.firstChild) this.snowLayer.removeChild(this.snowLayer.firstChild);
     this.flakes = [];
+    if (b.leaves)
+      for (let i = 0; i < (LOW_END ? 10 : 26); i++) {
+        const r = 7 + Math.random() * 6;
+        const f = el('ellipse', { rx: r, ry: r * 0.5, fill: ['#e65100', '#f9a825', '#c62828', '#ef6c00'][i % 4], opacity: '0.9' });
+        this.snowLayer.appendChild(f);
+        this.flakes.push({ el: f, x: -400 + Math.random() * 2400, y: -900 + Math.random() * 2400, v: 40 + Math.random() * 40, sway: 40 + Math.random() * 40, ph: Math.random() * 6 });
+      }
     if (b.snow)
       for (let i = 0; i < (LOW_END ? 24 : 70); i++) {
         const r = 3 + Math.random() * 6;
@@ -887,6 +961,7 @@ export class Stage {
         face: part('face'),
         raw: part('raw'),
         tail: part('tail'),
+        head: part('head'),
         peek: part('peek'),
       },
     };
@@ -1080,6 +1155,39 @@ export class Stage {
   fx(name: string, on?: string, at?: Point, who: string[] = []): Promise<void> {
     const a = on ? this.actors.get(on) : undefined;
     switch (name) {
+      case 'munch': {
+        // the goat tips her head down to the grass, three times
+        const h = a && a.parts.head;
+        if (!a || !h) return this.wait(300);
+        const t0 = this.time;
+        const cx = h.getAttribute('data-cx');
+        const cy = h.getAttribute('data-cy');
+        const step = () => {
+          const p = Math.min(1, (this.time - t0) / 2.4);
+          const ang = -Math.abs(Math.sin(p * Math.PI * 3)) * 38;
+          h.setAttribute('transform', p < 1 ? `rotate(${ang.toFixed(1)} ${cx} ${cy})` : '');
+          if (Math.random() < 0.15) this.crumbOf(a.x - 96 * (a.flip ? -1 : 1), a.y - 20, '#7cb342');
+          if (p < 1) this.later(0, step);
+        };
+        step();
+        return this.wait(2400);
+      }
+      case 'tears': {
+        // big blue tears from the eyes
+        if (!a) return this.wait(300);
+        const [x, y] = this.anchor(a, 'mouth');
+        for (let i = 0; i < 8; i++) this.later(i * 0.22, () => this.tear(x + (i % 2 ? 14 : -10), y - 30));
+        return this.wait(1900);
+      }
+      case 'pinch': {
+        // a pinch inside: stars burst from the door, the hut jumps
+        if (!a) return this.wait(300);
+        const [x, y] = this.anchor(a, 'mouth');
+        for (let i = 0; i < 12; i++) this.star(x, y - 40, (i / 12) * Math.PI * 2);
+        a.wobble = 1;
+        a.bounce = 1;
+        return this.wait(800);
+      }
       case 'popout':
         if (a) this.popOut(a, who);
         return this.wait(who.length * 150 + 900);
@@ -1218,6 +1326,25 @@ export class Stage {
     });
   }
 
+  private tear(x: number, y: number) {
+    const d = el('path', { d: 'M0 -10 Q8 2 0 8 Q-8 2 0 -10 Z', fill: '#4fc3f7', stroke: '#0288d1', 'stroke-width': 2 });
+    this.particle(d, 0.9, (p, k) => {
+      d.setAttribute('transform', `translate(${x} ${y + k * 120 + k * k * 60})`);
+      d.setAttribute('opacity', String(1 - k * 0.7));
+    });
+  }
+
+  private crumbOf(x: number, y: number, color: string) {
+    const c = el('rect', { width: 5, height: 14, rx: 2, fill: color });
+    const vx = (Math.random() - 0.5) * 160;
+    const vy = -100 - Math.random() * 120;
+    this.particle(c, 0.8, (p, k) => {
+      c.setAttribute('x', String(x + vx * k));
+      c.setAttribute('y', String(y + vy * k + 300 * k * k));
+      c.setAttribute('opacity', String(1 - k));
+    });
+  }
+
   private puffSnow(x: number, y: number) {
     const c = el('circle', { r: 20, fill: '#ffffff' });
     this.particle(c, 1.2, (p, k) => {
@@ -1328,6 +1455,8 @@ export class Stage {
       if (f.x < -600) f.x += 2600;
       f.el.setAttribute('cx', (f.x + Math.sin(this.time * 1.3 + f.ph) * f.sway).toFixed(0));
       f.el.setAttribute('cy', f.y.toFixed(0));
+      // leaves turn as they fall
+      if (f.el.tagName === 'ellipse') f.el.setAttribute('transform', `rotate(${((this.time * 60 + f.ph * 60) % 360).toFixed(0)} ${f.el.getAttribute('cx')} ${f.el.getAttribute('cy')})`);
     }
 
     // carried puppets last: they follow where their carrier has just moved

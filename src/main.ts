@@ -10,11 +10,13 @@ import { Stage } from './stage';
 import { COMMON, endingPhrase, parseStory, type Story } from './story';
 import kolobokRaw from '../stories/kolobok.yaml';
 import rukavychkaRaw from '../stories/rukavychka.yaml';
+import kozaRaw from '../stories/koza-dereza.yaml';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw)];
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw)];
 /** tales still being written: shown on the shelf as "soon" */
 const SOON = [
-  { title: 'Коза-дереза', icon: '🐐' },
+  { title: 'Пан Коцький', icon: '🐱' },
+  { title: 'Котик і Півник', icon: '🐓' },
   { title: 'Солом’яний бичок', icon: '🐂' },
 ];
 
@@ -47,6 +49,7 @@ function remember(story: Story, ending: string) {
 const COVER_VIEW: Record<string, string> = {
   kolobok: '-90 -130 180 150',
   rukavychka: '-150 -320 300 350',
+  koza: '-130 -270 250 290',
 };
 
 function cover(story: Story) {
