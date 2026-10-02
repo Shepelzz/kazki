@@ -34,19 +34,34 @@ export class Teller {
 
   /** Tell from this scene on; resolves with the ending reached (null if left midway). */
   async tell(from = this.story.start): Promise<string | null> {
-    const run = ++this.run;
+    let run = ++this.run;
+    let scene = from;
+    let skipTo = -1;
     try {
-      let scene = from;
       for (;;) {
-        this.preloadAround(scene);
-        const next = await this.playScene(scene, run);
-        if (next.ending) return next.ending;
-        scene = next.scene!;
+        try {
+          this.preloadAround(scene);
+          const next = await this.playScene(scene, run, skipTo);
+          skipTo = -1;
+          if (next.ending) return next.ending;
+          this.trail.push(scene);
+          scene = next.scene!;
+        } catch (e) {
+          // the debug buttons: start this (or the previous) scene over, quickly up to a line
+          if (e instanceof Cancelled && this.jumpTo) {
+            ({ scene, skipTo } = this.jumpTo);
+            this.jumpTo = null;
+            run = this.run;
+            continue;
+          }
+          throw e;
+        }
       }
     } catch (e) {
       if (e instanceof Cancelled) return null;
       throw e;
     } finally {
+      this.stage.rush = 1;
       if (run === this.run) {
         this.ui.hideCaption();
         this.ui.hideChoices();
@@ -55,7 +70,48 @@ export class Teller {
     }
   }
 
+  // ---------- debug: to the next / previous line ----------
+
+  /** scenes told before the current one */
+  private trail: string[] = [];
+  /** the step being played */
+  private at = { scene: '', step: 0 };
+  private jumpTo: { scene: string; skipTo: number } | null = null;
+
+  /** Skip to the next line: the current one stops, whatever happens before the next runs fast. */
+  forward() {
+    const s = this.story.scenes[this.at.scene]?.[this.at.step];
+    if (!s || s.kind === 'choice') return;
+    this.stage.rush = 25;
+    stopSpeech();
+  }
+
+  /** Back to the previous line: the scene starts over and runs quickly up to it. */
+  back() {
+    const steps = this.story.scenes[this.at.scene];
+    if (!steps) return;
+    const lines = (n: string) => this.story.scenes[n].map((s, i) => (s.kind === 'say' ? i : -1)).filter((i) => i >= 0);
+    const before = lines(this.at.scene).filter((i) => i < this.at.step);
+    if (before.length) return this.jump(this.at.scene, before[before.length - 1]);
+    const prev = this.trail.pop();
+    if (prev) {
+      const l = lines(prev);
+      return this.jump(prev, l.length ? l[l.length - 1] : 0);
+    }
+    this.jump(this.at.scene, -1);
+  }
+
+  private jump(scene: string, skipTo: number) {
+    this.jumpTo = { scene, skipTo };
+    this.run++;
+    this.stage.rush = 40;
+    stopSpeech();
+    this.abortChoice?.();
+    this.ui.hideChoices();
+  }
+
   stop() {
+    this.jumpTo = null;
     this.run++;
     stopSpeech();
     this.abortChoice?.();
@@ -68,9 +124,17 @@ export class Teller {
     if (run !== this.run) throw new Cancelled();
   }
 
-  private async playScene(name: string, run: number): Promise<{ scene?: string; ending?: string }> {
-    for (const s of this.story.scenes[name]) {
+  private async playScene(name: string, run: number, skipTo = -1): Promise<{ scene?: string; ending?: string }> {
+    const steps = this.story.scenes[name];
+    for (let i = 0; i < steps.length; i++) {
+      const s = steps[i];
       this.check(run);
+      this.at = { scene: name, step: i };
+      // jumping back: the lines before the target are skipped, the rest runs fast
+      if (i < skipTo) {
+        this.stage.rush = 40;
+        if (s.kind === 'say') continue;
+      } else if (i === skipTo) this.stage.rush = 1;
       const out = await this.step(s, run);
       this.check(run);
       if (out) return out;
@@ -91,7 +155,12 @@ export class Teller {
         void this.ui.curtain(false);
         return;
       case 'show':
-        stage.show(s.actor, s.at, !!s.flip, s.eyes !== 'closed', !!s.raw);
+        stage.show(s.actor, s.at, !!s.flip, s.eyes !== 'closed', !!s.raw, s.look, s.size);
+        return;
+      case 'resize':
+        return stage.resize(s.actor, s.to, s.ms);
+      case 'enter':
+        await stage.enter(s.actor, s.into);
         return;
       case 'hide':
         stage.hide(s.actor);
@@ -113,7 +182,7 @@ export class Teller {
         stage.setEyes(s.actor, s.open);
         return;
       case 'fx':
-        return stage.fx(s.fx, s.on, s.at);
+        return stage.fx(s.fx, s.on, s.at, s.who);
       case 'pause':
         return stage.wait(s.ms);
       case 'choice':
@@ -126,6 +195,8 @@ export class Teller {
   }
 
   private async speak(who: string, text: string, sing = false) {
+    // a skip forward ends here, at the next line
+    this.stage.rush = 1;
     const voice = this.story.voices[who];
     this.ui.caption(who, voice.name, text);
     this.stage.setTalking(who === 'narrator' ? null : who, sing);

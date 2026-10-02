@@ -8,8 +8,10 @@
 //   data-part="ears"     the hare's ears, they twitch
 //   data-part="raw"      pale dough over the kolobok's crust, fades as he bakes
 
+import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
+
 const NS = 'http://www.w3.org/2000/svg';
-const INK = '#5a3a22';
+export const INK = '#5a3a22';
 
 export function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number> = {}, children: (SVGElement | string)[] = []): SVGElementTagNameMap[K] {
   const e = document.createElementNS(NS, tag);
@@ -31,11 +33,11 @@ export function svg(markup: string): SVGGElement {
 }
 
 /** the ink outline; width given separately when it differs (XML allows an attribute only once) */
-const st = (w = 5) => `stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
-const stroke = st();
+export const st = (w = 5) => `stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+export const stroke = st();
 
 /** two eyes with highlights; cx is the gap's middle */
-function eyes(cx: number, cy: number, gap: number, r = 8, white = false) {
+export function eyes(cx: number, cy: number, gap: number, r = 8, white = false) {
   const one = (x: number) =>
     (white ? `<ellipse cx="${x}" cy="${cy}" rx="${r * 1.5}" ry="${r * 1.7}" fill="#fff" ${st(3)}/>` : '') +
     `<circle cx="${x}" cy="${cy}" r="${r}" fill="#2b1a10"/><circle cx="${x + r * 0.35}" cy="${cy - r * 0.4}" r="${r * 0.35}" fill="#fff"/>`;
@@ -43,17 +45,17 @@ function eyes(cx: number, cy: number, gap: number, r = 8, white = false) {
 }
 
 /** closed eyes (sleeping, or playing a stone): two happy arcs */
-function closedEyes(cx: number, cy: number, gap: number, r = 8) {
+export function closedEyes(cx: number, cy: number, gap: number, r = 8) {
   const arc = (x: number) => `<path d="M${x - r * 1.2} ${cy} q${r * 1.2} ${r * 1.1} ${r * 2.4} 0" fill="none" ${st(4)}/>`;
   return `<g data-part="eyes-closed" style="display:none">${arc(cx - gap / 2)}${arc(cx + gap / 2)}</g>`;
 }
 
-function mouth(closed: string, open: string) {
+export function mouth(closed: string, open: string) {
   return `<g data-part="mouth-closed">${closed}</g><g data-part="mouth-open" style="display:none">${open}</g>`;
 }
 
 /** a red-and-black cross-stitch band, as on a vyshyvanka */
-function stitch(x: number, y: number, w: number, h = 14, vertical = false) {
+export function stitch(x: number, y: number, w: number, h = 14, vertical = false) {
   let s = '';
   const step = 14;
   const n = Math.floor((vertical ? h : w) / step);
@@ -329,14 +331,31 @@ const bush = () => `
   <circle cx="-30" cy="-110" r="7" fill="#e53935"/><circle cx="22" cy="-70" r="7" fill="#e53935"/><circle cx="66" cy="-80" r="7" fill="#e53935"/><circle cx="-70" cy="-60" r="7" fill="#e53935"/>
 </g>`;
 
-export const PUPPETS: Record<string, () => string> = { did, baba, kolobok, zayets, vovk, vedmid, lysytsia, bush };
+export const PUPPETS: Record<string, () => string> = {
+  did,
+  baba,
+  kolobok,
+  zayets,
+  vovk,
+  vedmid,
+  lysytsia,
+  bush,
+  did_winter,
+  sobaka,
+  myshka,
+  zhabka,
+  kaban,
+  rukavychka,
+  rvana: rukavychka_rvana,
+  khatka: snizhna_khatka,
+};
 
-/** a fresh puppet; the stage keeps its live parts */
-export function makePuppet(id: string): SVGGElement {
+/** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
+export function makePuppet(id: string, actor = id): SVGGElement {
   const draw = PUPPETS[id];
   if (!draw) throw new Error(`no puppet "${id}"`);
   const g = svg(draw());
-  g.setAttribute('data-actor', id);
+  g.setAttribute('data-actor', actor);
   return g;
 }
 
@@ -351,4 +370,12 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   vedmid: { mouth: [-20, -272], top: -390 },
   lysytsia: { mouth: [-70, -180], top: -300 },
   bush: { mouth: [0, -80], top: -156 },
+  sobaka: { mouth: [-80, -90], top: -150 },
+  myshka: { mouth: [-40, -74], top: -136, hands: [0, -126] },
+  zhabka: { mouth: [0, -50], top: -90 },
+  kaban: { mouth: [-46, -192], top: -300 },
+  // mouth = the door, where animals go in and come out
+  rukavychka: { mouth: [-26, -20], top: -300 },
+  rvana: { mouth: [0, -20], top: -130 },
+  khatka: { mouth: [0, -40], top: -310 },
 };

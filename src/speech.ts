@@ -51,28 +51,47 @@ if (synth) {
 }
 
 // ---------- recordings kept in memory ----------
+//
+// Old iPads start an <audio> element late every time its source changes (a good part of a second),
+// which left long gaps between the lines. So recordings are fetched ahead as bytes, decoded into
+// Web Audio buffers and played from those: the next line starts at once, and the silence at the
+// ends of a recording is cut off. The <audio> element is only the fallback (no Web Audio, or a
+// recording not fetched yet).
+
 const fileUrl = (key: string) => `${import.meta.env.BASE_URL}voice/${key}.m4a?v=${recorded.get(key)}`;
-const ready = new Map<string, string>();
+/** key → the recording's bytes, oldest first */
+const bytes = new Map<string, ArrayBuffer>();
+/** key → decoded and trimmed, oldest first (big: kept few) */
+const decoded = new Map<string, { buf: AudioBuffer; from: number; to: number }>();
+const decoding = new Map<string, Promise<boolean>>();
 const queue: string[] = [];
 let fetching = 0;
-const KEEP = 80;
+const KEEP_BYTES = 120;
+const KEEP_DECODED = 18;
+
+function touch<V>(m: Map<string, V>, k: string, v: V, keep: number) {
+  m.delete(k);
+  m.set(k, v);
+  for (const old of m.keys()) {
+    if (m.size <= keep) break;
+    m.delete(old);
+  }
+}
 
 function pump() {
   while (fetching < 2 && queue.length) {
     const key = queue.shift()!;
-    if (ready.has(key)) continue;
+    if (bytes.has(key)) {
+      void decode(key);
+      continue;
+    }
     fetching++;
     fetch(fileUrl(key))
-      .then((r) => (r.ok ? r.blob() : null))
-      .then((blob) => {
-        if (!blob || ready.has(key)) return;
-        ready.set(key, URL.createObjectURL(blob));
-        for (const [k, url] of ready) {
-          if (ready.size <= KEEP) break;
-          if (audio && audio.src === url) continue;
-          URL.revokeObjectURL(url);
-          ready.delete(k);
-        }
+      .then((r) => (r.ok ? r.arrayBuffer() : null))
+      .then((b) => {
+        if (!b) return;
+        touch(bytes, key, b, KEEP_BYTES);
+        return decode(key);
       })
       .catch(() => {})
       .then(() => {
@@ -82,9 +101,49 @@ function pump() {
   }
 }
 
+/** Decode a fetched recording (needs the audio context: after the first tap). */
+function decode(key: string): Promise<boolean> {
+  if (decoded.has(key)) return Promise.resolve(true);
+  const b = bytes.get(key);
+  if (!ctx || !b) return Promise.resolve(false);
+  const going = decoding.get(key);
+  if (going) return going;
+  const c = ctx;
+  const p = new Promise<boolean>((resolve) => {
+    const ok = (buf: AudioBuffer) => {
+      touch(decoded, key, { buf, ...trim(buf) }, KEEP_DECODED);
+      resolve(true);
+    };
+    try {
+      // Safari 12 has only the callback form; newer browsers also return a promise
+      const r = c.decodeAudioData(b.slice(0), ok, () => resolve(false)) as unknown as Promise<AudioBuffer> | undefined;
+      if (r && r.catch) r.catch(() => resolve(false));
+    } catch {
+      resolve(false);
+    }
+  }).then((v) => {
+    decoding.delete(key);
+    return v;
+  });
+  decoding.set(key, p);
+  return p;
+}
+
+/** where the voice starts and ends in the recording (the silence around it is skipped) */
+function trim(buf: AudioBuffer) {
+  const d = buf.getChannelData(0);
+  const LOUD = 0.01;
+  let a = 0;
+  while (a < d.length && Math.abs(d[a]) < LOUD) a++;
+  let z = d.length - 1;
+  while (z > a && Math.abs(d[z]) < LOUD) z--;
+  const sr = buf.sampleRate;
+  return { from: Math.max(0, a / sr - 0.03), to: Math.min(buf.duration, z / sr + 0.12) };
+}
+
 /** Fetch these phrases ahead, in this order (first = needed soonest). */
 export function preload(phrases: { voice: Voice; text: string }[]) {
-  const keys = phrases.map((p) => voiceKey(p.voice, p.text)).filter((k) => recorded.has(k) && !ready.has(k));
+  const keys = phrases.map((p) => voiceKey(p.voice, p.text)).filter((k) => recorded.has(k) && !decoded.has(k));
   for (const k of keys.reverse()) {
     const i = queue.indexOf(k);
     if (i >= 0) queue.splice(i, 1);
@@ -93,8 +152,9 @@ export function preload(phrases: { voice: Voice; text: string }[]) {
   pump();
 }
 
-// ---------- keeping the audio output awake ----------
+// ---------- the audio context (also keeps the output awake) ----------
 let ctx: AudioContext | null = null;
+let source: AudioBufferSourceNode | null = null;
 
 /** Call from a tap (browsers start audio only on a user gesture). */
 export function unlockAudio() {
@@ -108,10 +168,12 @@ export function unlockAudio() {
       silence.loop = true;
       silence.connect(ctx.destination);
       silence.start(0);
+      // what was fetched before the first tap can be decoded now
+      for (const k of bytes.keys()) void decode(k);
     }
-    if (ctx.state === 'suspended') void ctx.resume();
+    if (ctx.state === 'suspended' && !paused) void ctx.resume();
   } catch {
-    // no Web Audio: phrases just start a little later
+    // no Web Audio: the <audio> element plays the phrases
   }
   // iOS lets an element play later only if it was started inside a tap once
   if (!audio) {
@@ -124,8 +186,9 @@ export function unlockAudio() {
 
 document.addEventListener('visibilitychange', () => {
   if (!ctx) return;
-  if (document.visibilityState === 'visible') void ctx.resume();
-  else void ctx.suspend();
+  if (document.visibilityState === 'visible') {
+    if (!paused) void ctx.resume();
+  } else void ctx.suspend();
 });
 
 export function pauseSpeech() {
@@ -133,12 +196,14 @@ export function pauseSpeech() {
   paused = true;
   resumeAudio = !!audio && !audio.paused;
   if (resumeAudio) audio!.pause();
+  if (ctx) void ctx.suspend();
   synth?.pause();
 }
 
 export function resumeSpeech() {
   if (!paused) return;
   paused = false;
+  if (ctx) void ctx.resume();
   if (startOnResume) {
     const f = startOnResume;
     startOnResume = null;
@@ -151,9 +216,21 @@ export function resumeSpeech() {
   synth?.resume();
 }
 
+function stopSource() {
+  if (!source) return;
+  source.onended = null;
+  try {
+    source.stop();
+  } catch {
+    // already stopped
+  }
+  source = null;
+}
+
 export function stopSpeech() {
   startOnResume = null;
   resumeAudio = false;
+  stopSource();
   if (audio) audio.pause();
   synth?.cancel();
   const f = finishCurrent;
@@ -195,27 +272,52 @@ export function say(voice: Voice, text: string): Promise<void> {
 function start(voice: Voice, text: string, finish: () => void, isDone: () => boolean) {
   if (isDone()) return;
   const key = voiceKey(voice, text);
-  if (recorded.has(key)) {
-    if (!audio) audio = new Audio();
-    const a = audio;
-    a.onended = finish;
-    a.onerror = () => {
-      if (!isDone() && finishCurrent === finish) speakWithSynth(voice, text, finish);
-    };
-    const url = ready.get(key);
-    if (url) {
-      ready.delete(key);
-      ready.set(key, url);
-    }
-    a.src = url || fileUrl(key);
-    const p = a.play();
-    if (p)
-      p.catch((err: DOMException) => {
-        if (err && err.name !== 'AbortError') finish();
-      });
+  if (!recorded.has(key)) return speakWithSynth(voice, text, finish);
+  const d = decoded.get(key);
+  if (d && ctx) return playBuffer(key, d, finish);
+  if (ctx && bytes.has(key)) {
+    // fetched but not decoded yet: decoding takes a moment, still quicker than <audio>
+    void decode(key).then((ok) => {
+      if (isDone() || finishCurrent !== finish) return;
+      const dd = decoded.get(key);
+      if (ok && dd) playBuffer(key, dd, finish);
+      else playElement(key, voice, text, finish, isDone);
+    });
     return;
   }
-  speakWithSynth(voice, text, finish);
+  playElement(key, voice, text, finish, isDone);
+  // and have it at hand next time
+  preload([{ voice, text }]);
+}
+
+function playBuffer(key: string, d: { buf: AudioBuffer; from: number; to: number }, finish: () => void) {
+  const c = ctx!;
+  touch(decoded, key, d, KEEP_DECODED);
+  stopSource();
+  const s = c.createBufferSource();
+  s.buffer = d.buf;
+  s.connect(c.destination);
+  s.onended = () => {
+    if (source === s) source = null;
+    finish();
+  };
+  source = s;
+  s.start(0, d.from, d.to - d.from);
+}
+
+function playElement(key: string, voice: Voice, text: string, finish: () => void, isDone: () => boolean) {
+  if (!audio) audio = new Audio();
+  const a = audio;
+  a.onended = finish;
+  a.onerror = () => {
+    if (!isDone() && finishCurrent === finish) speakWithSynth(voice, text, finish);
+  };
+  a.src = fileUrl(key);
+  const p = a.play();
+  if (p)
+    p.catch((err: DOMException) => {
+      if (err && err.name !== 'AbortError') finish();
+    });
 }
 
 function speakWithSynth(voice: Voice, text: string, finish: () => void) {

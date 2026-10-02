@@ -151,6 +151,10 @@ button.book:active {
   overflow: hidden;
 }
 
+.book-art-rukavychka {
+  background: linear-gradient(#b5d4ec, #eef5fb 70%, #f7fbff 70%);
+}
+
 .cover-art {
   width: 100%;
   height: 100%;
@@ -234,8 +238,23 @@ button.book:active {
   display: flex;
 }
 
+/* home, and under it (debug builds) the skip buttons: a column on the left, clear of the subtitles */
+.topbar-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar-left .round + .round {
+  margin-top: 12px;
+}
+
 .topbar-right .round + .round {
   margin-left: 12px;
+}
+
+.round.debug {
+  background: rgba(255, 236, 179, 0.95);
+  font-size: 24px;
 }
 
 .round:active {

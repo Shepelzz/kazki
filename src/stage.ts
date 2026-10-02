@@ -13,6 +13,50 @@ import { ANCHORS, el, makePuppet, svg } from './characters';
 import type { Point } from './story';
 
 export const GROUND = 770;
+
+/**
+ * Old iPads (iOS 12 and older, or two cores): lighter animation — 30 frames a second, fewer
+ * snowflakes, no see-through sunbeams, and the characters stand still unless they are doing
+ * something. Repainting a big SVG every frame is what makes them stutter. ?lowend forces it (testing).
+ */
+const LOW_END = (() => {
+  const m = navigator.userAgent.match(/(?:iPad|iPhone|iPod).*? OS (\d+)_/);
+  return (!!m && Number(m[1]) < 13) || (navigator.hardwareConcurrency || 4) <= 2 || /[?&]lowend/.test(location.search);
+})();
+
+/**
+ * Old iPads: a sliding layer of the backdrop (hundreds of trees, grass, flowers) is turned into one
+ * picture — an SVG image the browser paints once and then only moves, instead of repainting every
+ * tree on every frame. The tile is drawn with its neighbours on both sides so that trees crossing
+ * the tile's edge aren't cut. The endless ground under the front layer is cut short in the picture
+ * and drawn as a plain still rectangle below it.
+ */
+const LAYER_TOP = -300;
+const LAYER_H = GROUND + 400 - LAYER_TOP;
+const flatCache = new Map<string, { url: string; below: string }>();
+function flattenLayer(markup: string) {
+  const hit = flatCache.get(markup);
+  if (hit) return hit;
+  let below = '';
+  const m = markup.replace(/<rect x="-1600" y="([\d.-]+)" width="4800" height="6000" fill="([^"]+)"\/>/, (_all, y: string, fill: string) => {
+    below = `<rect x="-1600" y="${GROUND + 380}" width="4800" height="6000" fill="${fill}"/>`;
+    return `<rect x="-1600" y="${y}" width="4800" height="${GROUND + 420 - Number(y)}" fill="${fill}"/>`;
+  });
+  const body = [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${m}</g>`).join('');
+  const doc = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${LAYER_H}" viewBox="0 ${LAYER_TOP} ${W} ${LAYER_H}">${body}</svg>`;
+  const v = { url: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(doc), below };
+  flatCache.set(markup, v);
+  return v;
+}
+
+/** set an attribute only when it changes (Safari repaints on every write, even of the same value) */
+function setAttr(e: Element, name: string, value: string) {
+  const cache = e as unknown as Record<string, string>;
+  const k = '__' + name;
+  if (cache[k] === value) return;
+  cache[k] = value;
+  e.setAttribute(name, value);
+}
 /**
  * The part of the scene that is framed: less sky than the 0…900 the scenes are laid out in, more
  * meadow under the road — the subtitles go up into the sky, the choice buttons down onto the
@@ -73,7 +117,19 @@ interface Actor {
   scale: number;
   /** held in someone's hands: follows them until put down (any move puts it down) */
   carriedBy: Actor | null;
+  /** grows with the animals inside (the mitten), or from nothing (the snow house being built) */
+  size: number;
+  /** a squash-and-stretch wobble, 1 → 0 (the mitten when someone moves in) */
+  wobble: number;
+  /** a thing, not a creature: doesn't walk or blink */
+  prop: boolean;
+  /** tumbling head over heels: degrees still to turn, and how fast */
+  spin: number;
+  spinSpeed: number;
 }
+
+/** things on stage rather than characters */
+const PROPS = ['bush', 'rukavychka', 'rvana', 'khatka'];
 
 interface Particle {
   el: SVGElement;
@@ -207,7 +263,7 @@ function thatch() {
   return s;
 }
 
-function hata(evening = false) {
+function hata(evening = false, winter = false) {
   return `
   <!-- whitewashed house under a thatched roof -->
   <g>
@@ -220,6 +276,7 @@ function hata(evening = false) {
     <path d="M130 420 L510 160 L890 420 Z" fill="#e2b45a" stroke="#b78630" stroke-width="6" stroke-linejoin="round"/>
     ${thatch()}
     <path d="M118 420 Q510 446 902 420 L894 436 Q510 462 126 436 Z" fill="#cf9d45"/>
+    ${winter ? `<path d="M120 424 L510 156 L900 424 Q860 404 820 420 Q770 392 720 414 Q660 386 600 410 Q540 384 480 410 Q420 386 360 412 Q300 388 240 414 Q180 396 120 424 Z" fill="#f7fbff" stroke="#c9dcee" stroke-width="5" stroke-linejoin="round"/><path d="M670 192 h76 v-10 q-38 -18 -76 0 z" fill="#f7fbff"/>` : ''}
     <!-- door -->
     <rect x="260" y="560" width="120" height="${GROUND - 564}" rx="10" fill="#8b5a2b" stroke="#5a3a22" stroke-width="5"/>
     <path d="M320 566 v${GROUND - 574}" stroke="#5a3a22" stroke-width="4"/>
@@ -231,6 +288,7 @@ function hata(evening = false) {
     <rect x="714" y="456" width="44" height="142" rx="4" fill="#3b6aa0"/>
     <path d="M494 486 l20 20 l-20 20 M494 538 l20 20 l-20 20 M746 486 l-20 20 l20 20 M746 538 l-20 20 l20 20" stroke="#f5c542" stroke-width="5" fill="none"/>
     <rect x="506" y="596" width="228" height="18" rx="5" fill="#a0703c" stroke="#5a3a22" stroke-width="4"/>
+    ${winter ? '<path d="M502 596 q30 -16 60 -4 q40 -14 80 0 q50 -12 96 4 z" fill="#f7fbff"/>' : ''}
     <!-- painted flowers on the wall -->
     ${flower(240, 520, '#d32f2f')}${flower(800, 520, '#d32f2f')}${flower(450, 700, '#1e88e5')}${flower(780, 700, '#d32f2f')}
   </g>`;
@@ -404,14 +462,108 @@ function stitchBand(x: number, y: number, w: number) {
   return s;
 }
 
+
+// ---------- winter ----------
+
+/** a fir under snow */
+function snowFir(x: number, y: number, s: number) {
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <rect x="-10" y="-50" width="20" height="50" fill="#5d3b22"/>
+    <path d="M0 -330 L70 -200 L36 -200 L96 -100 L56 -100 L116 -40 L-116 -40 L-56 -100 L-96 -100 L-36 -200 L-70 -200 Z" fill="#2c6143"/>
+    <path d="M0 -330 L34 -268 Q16 -276 0 -262 Q-16 -276 -34 -268 Z M-70 -200 L-36 -200 L-28 -214 Q-50 -206 -60 -216 Z M70 -200 L36 -200 L28 -214 Q50 -206 60 -216 Z M-96 -100 L-56 -100 L-46 -116 Q-74 -104 -84 -114 Z M96 -100 L56 -100 L46 -116 Q74 -104 84 -114 Z M-116 -40 L116 -40 L104 -54 Q60 -44 0 -52 Q-60 -44 -104 -54 Z" fill="#f7fbff"/></g>`;
+}
+
+function snowFirRow(seed: number, n: number, y0: number, s0: number) {
+  const r = rand(seed);
+  let s = '';
+  for (let i = 0; i < n; i++) s += snowFir((i + r() * 0.6) * (W / n), y0 - r() * 20, s0 + r() * 0.35);
+  return s;
+}
+
+function snowHills(color: string, y: number, amp: number, seed: number) {
+  return hills(color, y, amp, seed);
+}
+
+/** snow on the ground: drifts, a trodden path, footprints, a few sticks and red berries */
+function snowGround(seed: number, path = true) {
+  const r = rand(seed);
+  let s = `<rect x="-1600" y="${GROUND - 40}" width="4800" height="6000" fill="#f3f8fd"/>`;
+  if (path) s += `<path d="M-1600 ${GROUND - 12} L3200 ${GROUND - 12} L3200 ${GROUND + 24} L-1600 ${GROUND + 24} Z" fill="#dde8f3"/>`;
+  for (let i = 0; i < 14; i++) {
+    const x = r() * W;
+    const y = GROUND + 40 + r() * 120;
+    const k = r();
+    if (k < 0.55) s += `<ellipse cx="${x}" cy="${y}" rx="${40 + r() * 60}" ry="${10 + r() * 8}" fill="#e3edf7"/>`;
+    else if (k < 0.8) s += `<path d="M${x} ${y} l-10 -30 M${x} ${y} l12 -26" stroke="#6d4c33" stroke-width="4"/><circle cx="${x - 10}" cy="${y - 32}" r="5" fill="#d32f2f"/><circle cx="${x - 4}" cy="${y - 36}" r="5" fill="#d32f2f"/><circle cx="${x + 12}" cy="${y - 28}" r="5" fill="#d32f2f"/>`;
+    else s += `<ellipse cx="${x}" cy="${y}" rx="7" ry="4" fill="#cddbea"/><ellipse cx="${x + 26}" cy="${y + 6}" rx="7" ry="4" fill="#cddbea"/>`;
+  }
+  return s;
+}
+
+function stump(x: number) {
+  return `<g transform="translate(${x} ${GROUND - 10})"><path d="M-46 0 L-40 -70 L40 -70 L46 0 Z" fill="#7a5232" stroke="#5a3a22" stroke-width="5"/>
+    <ellipse cx="0" cy="-74" rx="48" ry="16" fill="#f7fbff" stroke="#c9dcee" stroke-width="4"/></g>`;
+}
+
 interface Backdrop {
   /** drawn once, does not slide */
   still: string;
   /** sliding layers, back to front: [markup of one 1600 tile, speed] */
   layers: [string, number][];
+  /** snow falls */
+  snow?: boolean;
 }
 
 const BACKDROPS: Record<string, () => Backdrop> = {
+  'winter-forest': () => ({
+    still: sky('#a9cbe6', '#eef5fb') + clouds(81).replace(/opacity=".92"/, 'opacity=".7"'),
+    layers: [
+      [snowHills('#e6eff8', GROUND - 170, 70, 82), 0.1],
+      [snowFirRow(83, 9, GROUND - 60, 0.55), 0.3],
+      [snowFirRow(84, 6, GROUND - 30, 0.85), 0.6],
+      [snowGround(85), 1],
+    ],
+    snow: true,
+  }),
+  'winter-glade': () => ({
+    still:
+      sky('#b5d4ec', '#f1f7fc') +
+      clouds(86).replace(/opacity=".92"/, 'opacity=".7"') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${snowHills('#e9f1f9', GROUND - 150, 60, 87)}${snowFirRow(88, 8, GROUND - 60, 0.6)}</g>`).join('') +
+      snowFir(80, GROUND - 10, 1.25) +
+      snowFir(1530, GROUND - 10, 1.35) +
+      snowFir(-120, GROUND, 1.5) +
+      snowFir(1720, GROUND, 1.4) +
+      snowGround(89, false) +
+      stump(1330),
+    layers: [],
+    snow: true,
+  }),
+  'winter-dusk': () => ({
+    still:
+      sky('#8f8fc9', '#f7c9b7') +
+      sun(1250, 620, '#ffcf7a') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${snowHills('#e4e0f2', GROUND - 150, 60, 87)}${snowFirRow(88, 8, GROUND - 60, 0.6)}</g>`).join('') +
+      snowFir(80, GROUND - 10, 1.25) +
+      snowFir(1530, GROUND - 10, 1.35) +
+      snowGround(89, false).replace(/#f3f8fd/, '#f1eef8') +
+      `<rect x="-1600" y="-1200" width="4800" height="8000" fill="#3a2a6a" opacity=".08"/>`,
+    layers: [],
+    snow: true,
+  }),
+  'hata-winter': () => ({
+    still:
+      sky('#a9cbe6', '#eef5fb') +
+      clouds(91).replace(/opacity=".92"/, 'opacity=".7"') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${snowHills('#e6eff8', GROUND - 120, 60, 7)}</g>`).join('') +
+      snowGround(92) +
+      wattleFence(920, 1580).replace(/#a87444/g, '#9c6c45') +
+      `<path d="M910 ${GROUND - 160} H1590" stroke="#f7fbff" stroke-width="14" stroke-linecap="round"/>` +
+      snowFir(1700, GROUND, 1.3) +
+      hata(false, true),
+    layers: [],
+    snow: true,
+  }),
   hata: () => ({
     still:
       sky('#7cc4f2', '#d6f0ff') +
@@ -476,7 +628,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
     still: sky('#4f7d6a', '#a9cbb0') + clouds(12).replace('opacity=".92"', 'opacity=".35"'),
     layers: [
       [treeRow(51, true), 0.15],
-      [rays(), 0.2],
+      [LOW_END ? '' : rays(), 0.2],
       [treeRow(52, true), 0.35],
       [treeRow(53, true), 0.6],
       [ground('#3f7a32', '#9c7a55') + verge(54, true, 0.3), 1],
@@ -524,6 +676,9 @@ export class Stage {
   private last = 0;
   private sceneName = '';
   private singing: Actor | null = null;
+  /** falling snow (winter scenes): flakes drift down in front of everything */
+  private flakes: { el: SVGElement; x: number; y: number; v: number; sway: number; ph: number }[] = [];
+  private snowLayer: SVGGElement;
   /** the stove's fire in the hata: flames flicker, `fire` > 1 while it roars (baking) */
   private flames: SVGElement[] = [];
   private glow: SVGElement | null = null;
@@ -533,6 +688,8 @@ export class Stage {
   speed = 1;
   /** the pause button: stage time stands still — puppets, effects and waits all freeze */
   paused = false;
+  /** debug skipping: everything runs this many times faster until the next line */
+  rush = 1;
 
   constructor(host: HTMLElement) {
     this.svg = el('svg', { viewBox: `0 ${VIEW_TOP} ${W} ${VIEW_H}`, preserveAspectRatio: 'xMidYMin meet', class: 'stage' });
@@ -540,7 +697,8 @@ export class Stage {
     this.actorsLayer = el('g');
     this.frontLayer = el('g');
     this.fxLayer = el('g', { 'pointer-events': 'none' });
-    this.svg.append(this.backdrop, this.actorsLayer, this.frontLayer, this.fxLayer);
+    this.snowLayer = el('g', { 'pointer-events': 'none' });
+    this.svg.append(this.backdrop, this.actorsLayer, this.frontLayer, this.fxLayer, this.snowLayer);
     host.appendChild(this.svg);
     this.frame();
     window.addEventListener('resize', () => this.frame());
@@ -551,10 +709,12 @@ export class Stage {
       if (a && !a.move && a.bounce <= 0) a.bounce = 1;
     });
     const frame = (now: number) => {
+      requestAnimationFrame(frame);
+      // old iPads: every other frame (30 a second) — smooth enough, half the repainting
+      if (LOW_END && this.last && now - this.last < 30) return;
       const dt = this.last ? Math.min(0.05, (now - this.last) / 1000) : 0;
       this.last = now;
-      this.tick(this.paused ? 0 : dt * this.speed);
-      requestAnimationFrame(frame);
+      this.tick(this.paused ? 0 : dt * this.speed * this.rush);
     };
     requestAnimationFrame(frame);
   }
@@ -623,7 +783,8 @@ export class Stage {
     const vh = this.camW * (sceneH / w);
     const vy = GROUND - vh * groundAt;
     // the rest of the screen below the scene shows more meadow (the backdrop goes far down)
-    this.svg.setAttribute('viewBox', `${(this.camX - this.camW / 2).toFixed(1)} ${vy.toFixed(1)} ${this.camW.toFixed(1)} ${vh.toFixed(1)}`);
+    // whole units: a camera that has settled doesn't touch the viewBox (that repaints everything)
+    setAttr(this.svg, 'viewBox', `${Math.round(this.camX - this.camW / 2)} ${Math.round(vy)} ${Math.round(this.camW)} ${Math.round(vh)}`);
   }
 
   get scene() {
@@ -642,12 +803,28 @@ export class Stage {
     this.snapCam = true;
     while (this.backdrop.firstChild) this.backdrop.removeChild(this.backdrop.firstChild);
     this.backdrop.appendChild(svg(b.still));
+    let below = '';
     this.layerEls = b.layers.map(([markup, speed]) => {
+      if (LOW_END && markup) {
+        const flat = flattenLayer(markup);
+        if (flat.below) below = flat.below;
+        const g = el('g');
+        for (const i of [-1, 0, 1, 2]) {
+          const img = el('image', { x: i * W, y: LAYER_TOP, width: W, height: LAYER_H, preserveAspectRatio: 'none' });
+          // Safari 12 knows only the old xlink:href
+          img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', flat.url);
+          g.appendChild(img);
+        }
+        this.backdrop.appendChild(g);
+        return { el: g, speed };
+      }
       // the tile four times: -1600…4800, enough for any screen shape while sliding
       const g = svg([-1, 0, 1, 2].map((i) => `<g transform="translate(${i * W} 0)">${markup}</g>`).join(''));
       this.backdrop.appendChild(g);
       return { el: g, speed };
     });
+    // the meadow further down than the flattened front layer reaches (portrait screens)
+    if (below) this.backdrop.appendChild(svg(below));
     this.flames = Array.prototype.slice.call(this.backdrop.querySelectorAll('[data-flame]'));
     this.glow = this.backdrop.querySelector('[data-glow]');
     this.fire = 1;
@@ -658,11 +835,23 @@ export class Stage {
     this.rollAmount = 0;
     this.scroll = 0;
     this.singing = null;
+    this.inside = {};
+    while (this.snowLayer.firstChild) this.snowLayer.removeChild(this.snowLayer.firstChild);
+    this.flakes = [];
+    if (b.snow)
+      for (let i = 0; i < (LOW_END ? 24 : 70); i++) {
+        const r = 3 + Math.random() * 6;
+        const f = el('circle', { r, fill: '#fff', opacity: (0.6 + Math.random() * 0.4).toFixed(2) });
+        this.snowLayer.appendChild(f);
+        this.flakes.push({ el: f, x: -400 + Math.random() * 2400, y: -900 + Math.random() * 2400, v: 30 + r * 12, sway: 10 + Math.random() * 30, ph: Math.random() * 6 });
+      }
   }
 
-  show(id: string, at: Point, flip = false, eyesOpen = true, raw = false) {
+  /** `look`: another drawing of the same character (did + winter = the grandfather in his coat) */
+  show(id: string, at: Point, flip = false, eyesOpen = true, raw = false, look?: string, size = 1) {
     this.hide(id);
-    const g = makePuppet(id);
+    delete this.inside[id];
+    const g = makePuppet(look ? `${id}_${look}` : id, id);
     const body = g.querySelector('[data-part="body"]') as SVGGElement;
     const part = (name: string) => g.querySelector(`[data-part="${name}"]`) as SVGGElement | null;
     const a: Actor = {
@@ -683,6 +872,11 @@ export class Stage {
       phase: Math.random() * 10,
       scale: 1,
       carriedBy: null,
+      size,
+      wobble: 0,
+      prop: PROPS.indexOf(id) >= 0,
+      spin: 0,
+      spinSpeed: 0,
       parts: {
         eyes: part('eyes'),
         eyesClosed: part('eyes-closed'),
@@ -692,9 +886,13 @@ export class Stage {
         ears: part('ears'),
         face: part('face'),
         raw: part('raw'),
+        tail: part('tail'),
+        peek: part('peek'),
       },
     };
     (id === 'bush' ? this.frontLayer : this.actorsLayer).appendChild(g);
+    // the snow house goes behind everyone (they walk in front of it, then in)
+    if (id === 'khatka') this.actorsLayer.insertBefore(g, this.actorsLayer.firstChild);
     this.actors.set(id, a);
     this.setEyes(id, eyesOpen);
     if (raw && a.parts.raw) a.parts.raw.setAttribute('opacity', '1');
@@ -748,6 +946,102 @@ export class Stage {
     a.g.parentNode!.appendChild(a.g);
   }
 
+  /** who is inside what: animal → the mitten / snow house */
+  private inside: Record<string, string> = {};
+
+  /**
+   * The puppet goes into the mitten (or the snow house): hops to its door, shrinks into it and is
+   * gone; the mitten swells a little and wobbles. Resolves when it is inside.
+   */
+  enter(id: string, into: string): Promise<void> {
+    const a = this.actors.get(id);
+    const c = this.actors.get(into);
+    if (!a || !c) return Promise.resolve();
+    const door = ANCHORS[into].mouth;
+    const dx = c.x + door[0] * c.size;
+    const dy = c.y;
+    // in the snow: a hop (frog, hare), the others walk
+    return this.moveTo(id, [dx + (a.x > dx ? 40 : -40), dy], Math.max(500, Math.abs(a.x - dx) * 1.4), { hop: id === 'zhabka' || id === 'zayets' || id === 'myshka' })
+      .then(
+        () =>
+          new Promise<void>((resolve) => {
+            const t0 = this.time;
+            const fromX = a.x;
+            const step = () => {
+              if (!this.actors.has(id)) return resolve();
+              const p = Math.min(1, (this.time - t0) / 0.35);
+              a.x = fromX + (dx - fromX) * p;
+              a.y = dy + door[1] * c.size * p * 0.6;
+              a.scale = 1 - p;
+              if (p < 1) this.later(0, step);
+              else {
+                this.hide(id);
+                this.inside[id] = into;
+                if (into === 'rukavychka') c.size += 0.075;
+                c.wobble = 1;
+                if (c.parts.peek) c.parts.peek.style.display = '';
+                resolve();
+              }
+            };
+            step();
+          }),
+      );
+  }
+
+  /** the puppet comes back out (popout / scatter) */
+  private comeOut(id: string): Actor | null {
+    const from = this.inside[id];
+    const c = from ? this.actors.get(from) : undefined;
+    if (!c) return null;
+    delete this.inside[id];
+    const door = ANCHORS[c.id].mouth;
+    const x = c.x + door[0] * c.size;
+    // the mitten goes back down as they leave; nobody left: no eyes in the door
+    if (c.id === 'rukavychka') c.size = Math.max(1, c.size - 0.075);
+    if (c.parts.peek && !Object.keys(this.inside).some((k) => this.inside[k] === c.id)) c.parts.peek.style.display = 'none';
+    this.show(id, [x, c.y]);
+    const a = this.actors.get(id)!;
+    a.scale = 0.3;
+    return a;
+  }
+
+  /**
+   * Out of the container in all directions, landing in a row around it, facing it — clear of
+   * whoever already stands there. `tumble`: head over heels (the mitten burst).
+   */
+  private popOut(c: Actor, who: string[], tumble = false) {
+    const cx = c.x;
+    const taken = [...this.actors.values()].filter((a) => !a.prop && a !== c).map((a) => a.x);
+    const spots: number[] = [];
+    for (const d of [300, -300, 470, -470, 640, -640, 810, -810, 980, -980]) {
+      const x = cx + d;
+      if (taken.every((t) => Math.abs(t - x) > 150)) spots.push(x);
+    }
+    if (!spots.length) spots.push(cx + 300, cx - 300);
+    who.forEach((id, i) =>
+      this.later(i * 0.15, () => {
+        const p = this.comeOut(id);
+        if (!p) return;
+        const x = spots[i % spots.length];
+        p.flip = x < cx;
+        this.grow(p, 1, 0.3);
+        if (tumble) {
+          p.spin = 360;
+          p.spinSpeed = 450;
+        }
+        void this.moveTo(id, [x, GROUND], 800, { hop: true, flip: x < cx });
+      }),
+    );
+  }
+
+  /** ease a puppet to `size` (the mitten shrinking back to a mitten in the grandfather's hand) */
+  resize(id: string, size: number, ms: number): Promise<void> {
+    const a = this.actors.get(id);
+    if (!a) return Promise.resolve();
+    this.grow(a, size, ms / 1000);
+    return this.wait(ms);
+  }
+
   setRolling(on: boolean) {
     this.rolling = on;
   }
@@ -763,6 +1057,8 @@ export class Stage {
   }
 
   setTalking(id: string | null, sing = false) {
+    // someone speaking from inside the mitten: the mitten itself "talks" (wobbles)
+    if (id && !this.actors.has(id) && this.inside[id]) id = this.inside[id];
     for (const a of this.actors.values()) {
       const on = a.id === id;
       a.talking = on;
@@ -781,9 +1077,48 @@ export class Stage {
 
   // ---------- effects ----------
 
-  fx(name: string, on?: string, at?: Point): Promise<void> {
+  fx(name: string, on?: string, at?: Point, who: string[] = []): Promise<void> {
     const a = on ? this.actors.get(on) : undefined;
     switch (name) {
+      case 'popout':
+        if (a) this.popOut(a, who);
+        return this.wait(who.length * 150 + 900);
+      case 'scatter': {
+        // out of the mitten and away into the forest, as fast as they can
+        const cx = a ? a.x : 800;
+        who.forEach((id, i) =>
+          this.later(i * 0.12, () => {
+            const p = this.comeOut(id);
+            if (!p) return;
+            const right = i % 2 === 1;
+            this.grow(p, 1, 0.25);
+            void this.moveTo(id, [right ? cx + 1500 : cx - 1500, GROUND], 1300 + Math.random() * 500, { hop: true, flip: right });
+          }),
+        );
+        return this.wait(who.length * 120 + 1600);
+      }
+      case 'burst': {
+        // the mitten bursts at the seams: wool flies, it lies torn on the snow
+        // and everyone inside tumbles out into the snow
+        if (!a) return this.wait(300);
+        const [x, y] = [a.x, a.y - 150 * a.size];
+        for (let i = 0; i < 18; i++) this.wool(x, y, i % 3 ? '#c62828' : '#fbf7ee');
+        for (let i = 0; i < 10; i++) this.star(x, y, (i / 10) * Math.PI * 2);
+        a.g.style.display = 'none';
+        this.show('rvana', [a.x, GROUND]);
+        this.actorsLayer.insertBefore(this.actors.get('rvana')!.g, this.actorsLayer.firstChild);
+        this.popOut(a, who, true);
+        this.later(who.length * 0.15 + 0.2, () => this.hide(a.id));
+        return this.wait(who.length * 150 + 900);
+      }
+      case 'build': {
+        // the snow house rises from a pile of snow
+        if (!a) return this.wait(300);
+        a.size = 0.05;
+        this.grow(a, 1, 3);
+        for (let i = 0; i < 16; i++) this.later(i * 0.18, () => this.puffSnow(a.x + (Math.random() - 0.5) * 560, GROUND - Math.random() * 80));
+        return this.wait(3200);
+      }
       case 'flour': {
         const [x, y] = at || (a ? this.anchor(a, 'mouth') : [900, 600]);
         for (let i = 0; i < 14; i++) this.later(i * 0.12, () => this.dust(x + (Math.random() - 0.5) * 120, y));
@@ -854,6 +1189,42 @@ export class Stage {
       const r = 30 + k * 110;
       s.setAttribute('transform', `translate(${x + Math.cos(angle) * r} ${y + Math.sin(angle) * r}) rotate(${k * 180}) scale(${1.2 - k})`);
       s.setAttribute('opacity', String(1 - k * k));
+    });
+  }
+
+  /** ease a puppet's size to `to` over `sec` */
+  private grow(a: Actor, to: number, sec: number) {
+    const from = a.size * a.scale;
+    a.scale = 1;
+    a.size = from;
+    const t0 = this.time;
+    const step = () => {
+      const p = Math.min(1, (this.time - t0) / sec);
+      const e = 1 - Math.pow(1 - p, 3);
+      a.size = from + (to - from) * e;
+      if (p < 1) this.later(0, step);
+    };
+    step();
+  }
+
+  private wool(x: number, y: number, color: string) {
+    const c = el('circle', { r: 8 + Math.random() * 10, fill: color, stroke: '#5a3a22', 'stroke-width': 2 });
+    const vx = (Math.random() - 0.5) * 700;
+    const vy = -300 - Math.random() * 400;
+    this.particle(c, 1.6, (p, k) => {
+      c.setAttribute('cx', String(x + vx * k));
+      c.setAttribute('cy', String(y + vy * k + 700 * k * k));
+      c.setAttribute('opacity', String(1 - k * k));
+    });
+  }
+
+  private puffSnow(x: number, y: number) {
+    const c = el('circle', { r: 20, fill: '#ffffff' });
+    this.particle(c, 1.2, (p, k) => {
+      c.setAttribute('cx', String(x));
+      c.setAttribute('cy', String(y - k * 120));
+      c.setAttribute('r', String(16 + k * 44));
+      c.setAttribute('opacity', String(0.9 * (1 - k)));
     });
   }
 
@@ -932,7 +1303,8 @@ export class Stage {
   }
 
   private place(a: Actor) {
-    a.g.setAttribute('transform', `translate(${a.x.toFixed(1)} ${a.y.toFixed(1)}) scale(${(a.flip ? -a.scale : a.scale).toFixed(3)} ${a.scale.toFixed(3)})`);
+    const k = a.scale * a.size;
+    setAttr(a.g, 'transform', `translate(${a.x.toFixed(1)} ${a.y.toFixed(1)}) scale(${(a.flip ? -k : k).toFixed(3)} ${k.toFixed(3)})`);
   }
 
   private tick(dt: number) {
@@ -947,7 +1319,16 @@ export class Stage {
     this.rollAmount += ((this.rolling ? 1 : 0) - this.rollAmount) * Math.min(1, dt * 3);
     const slide = ROLL_SPEED * this.rollAmount * dt;
     this.scroll += slide;
-    for (const l of this.layerEls) l.el.setAttribute('transform', `translate(${(-(this.scroll * l.speed) % W).toFixed(1)} 0)`);
+    for (const l of this.layerEls) setAttr(l.el, 'transform', `translate(${(-(this.scroll * l.speed) % W).toFixed(LOW_END ? 0 : 1)} 0)`);
+
+    for (const f of this.flakes) {
+      f.y += f.v * dt;
+      f.x -= slide * 0.8;
+      if (f.y > 1600) f.y -= 2500;
+      if (f.x < -600) f.x += 2600;
+      f.el.setAttribute('cx', (f.x + Math.sin(this.time * 1.3 + f.ph) * f.sway).toFixed(0));
+      f.el.setAttribute('cy', f.y.toFixed(0));
+    }
 
     // carried puppets last: they follow where their carrier has just moved
     for (const a of this.actors.values()) if (!a.carriedBy) this.tickActor(a, dt, slide);
@@ -1019,6 +1400,11 @@ export class Stage {
       }
       if (k >= 1) m.done();
     }
+    // the road rolls under someone standing on it: they walk along (the grandfather and his dog)
+    else if (slide > 0.3 && !a.prop && a.id !== 'kolobok' && !a.carriedBy) {
+      lift = Math.abs(Math.sin(a.phase * 9)) * 9;
+      lean = Math.sin(a.phase * 9) * 2;
+    }
     if (a.bounce > 0) {
       a.bounce = Math.max(0, a.bounce - dt * 2.2);
       lift += Math.sin((1 - a.bounce) * Math.PI) * 50;
@@ -1034,8 +1420,27 @@ export class Stage {
       if (a.parts.face) a.parts.face.setAttribute('transform', `translate(0 ${(Math.abs(rolled) > 0.5 ? Math.sin(a.phase * 20) * 2 : 0).toFixed(1)})`);
     }
 
-    const breathe = 1 + Math.sin(a.phase * 2.2) * 0.012;
-    a.body.setAttribute('transform', `translate(0 ${(-lift).toFixed(1)}) rotate(${lean.toFixed(2)}) scale(${(2 - breathe).toFixed(4)} ${breathe.toFixed(4)})`);
+    if (a.spin > 0) {
+      const d = Math.min(a.spin, a.spinSpeed * dt);
+      a.spin -= d;
+    }
+    // turning about the middle of the body
+    const spinAt = a.spin > 0 ? 360 - a.spin : 0;
+    const pivot = (ANCHORS[a.id] ? ANCHORS[a.id].top : -100) / 2;
+    let breathe = a.id === 'khatka' || a.id === 'rvana' ? 1 : 1 + Math.sin(a.phase * 2.2) * 0.012;
+    // a thing talking (the mitten, for those inside) or just moved into: squash and stretch
+    if (a.prop && a.talking) breathe += Math.sin(a.phase * 14) * 0.025;
+    if (a.wobble > 0) {
+      a.wobble = Math.max(0, a.wobble - dt * 1.8);
+      breathe += Math.sin((1 - a.wobble) * Math.PI * 4) * 0.08 * a.wobble;
+    }
+    // old iPads: standing still means still (no breathing) — fewer repaints
+    if (LOW_END && !a.talking && !a.wobble) breathe = 1;
+    setAttr(
+      a.body,
+      'transform',
+      `translate(0 ${(-lift).toFixed(1)}) rotate(${(lean + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${(2 - breathe).toFixed(4)} ${breathe.toFixed(4)})`,
+    );
 
     // blink
     const eyes = a.parts.eyes;
@@ -1060,6 +1465,12 @@ export class Stage {
         this.mouth(a, open);
         a.mouthT = open ? 0.09 + Math.random() * 0.1 : 0.06 + Math.random() * 0.08;
       }
+    }
+
+    // the dog wags its tail
+    if (a.parts.tail) {
+      const t = a.parts.tail;
+      t.setAttribute('transform', `rotate(${(Math.sin(a.phase * (a.talking ? 18 : 8)) * 14).toFixed(1)} ${t.getAttribute('data-cx')} ${t.getAttribute('data-cy')})`);
     }
 
     // the hare's ears twitch now and then

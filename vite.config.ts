@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import YAML from 'yaml';
 
 // stories/*.yaml are imported as their data
@@ -12,9 +12,14 @@ function yaml(): Plugin {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: '/',
   plugins: [yaml()],
+  // DEBUG=TRUE (in .env.local, or the host's environment, e.g. on Render) shows the buttons that
+  // skip to the next / previous line
+  define: {
+    __DEBUG__: JSON.stringify(String(process.env.DEBUG || loadEnv(mode, process.cwd(), '').DEBUG || '').toLowerCase() === 'true'),
+  },
   // host: open it from the iPad over Wi-Fi
   server: { port: 5220, strictPort: true, host: true },
   build: {
@@ -22,4 +27,4 @@ export default defineConfig({
     target: ['es2017', 'safari12'],
     cssTarget: ['safari12'],
   },
-});
+}));

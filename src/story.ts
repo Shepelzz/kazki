@@ -9,14 +9,16 @@ export type Point = [number, number];
 export type Step =
   | { kind: 'say'; who: string; text: string; sing?: boolean }
   | { kind: 'scene'; scene: string }
-  | { kind: 'show'; actor: string; at: Point; flip?: boolean; eyes?: 'open' | 'closed'; raw?: boolean }
+  | { kind: 'show'; actor: string; at: Point; flip?: boolean; eyes?: 'open' | 'closed'; raw?: boolean; look?: string; size?: number }
+  | { kind: 'resize'; actor: string; to: number; ms: number }
+  | { kind: 'enter'; actor: string; into: string }
   | { kind: 'hide'; actor: string }
   | { kind: 'move'; actor: string; to: Point; ms: number; hop?: boolean; roll?: boolean; flip?: boolean; wait?: boolean }
   | { kind: 'carry'; actor: string; by: string }
   | { kind: 'put'; actor: string; to: Point; ms: number }
   | { kind: 'roll'; on: boolean }
   | { kind: 'eyes'; actor: string; open: boolean }
-  | { kind: 'fx'; fx: string; on?: string; at?: Point }
+  | { kind: 'fx'; fx: string; on?: string; at?: Point; who?: string[] }
   | { kind: 'pause'; ms: number }
   | { kind: 'choice'; question: string; options: ChoiceOption[] }
   | { kind: 'next'; scene: string }
@@ -57,7 +59,9 @@ export function parseStory(id: string, raw: Raw): Story {
       const who = Object.keys(s).find((k) => k in voices);
       if (who) return { kind: 'say', who, text: String(s[who]), sing: !!s.sing };
       if ('scene' in s) return { kind: 'scene', scene: s.scene };
-      if ('show' in s) return { kind: 'show', actor: s.show, at: s.at ?? fail(name, i, 'show needs at'), flip: s.flip, eyes: s.eyes, raw: s.raw };
+      if ('show' in s) return { kind: 'show', actor: s.show, at: s.at ?? fail(name, i, 'show needs at'), flip: s.flip, eyes: s.eyes, raw: s.raw, look: s.look, size: s.size };
+      if ('resize' in s) return { kind: 'resize', actor: s.resize, to: s.to ?? fail(name, i, 'resize needs to'), ms: s.ms ?? 800 };
+      if ('enter' in s) return { kind: 'enter', actor: s.enter, into: s.into ?? fail(name, i, 'enter needs into') };
       if ('hide' in s) return { kind: 'hide', actor: s.hide };
       if ('move' in s)
         return { kind: 'move', actor: s.move, to: s.to ?? fail(name, i, 'move needs to'), ms: s.ms ?? 1500, hop: s.hop, roll: s.roll, flip: s.flip, wait: s.wait };
@@ -65,7 +69,7 @@ export function parseStory(id: string, raw: Raw): Story {
       if ('put' in s) return { kind: 'put', actor: s.put, to: s.to ?? fail(name, i, 'put needs to'), ms: s.ms ?? 700 };
       if ('roll' in s) return { kind: 'roll', on: !!s.roll };
       if ('eyes' in s) return { kind: 'eyes', actor: s.eyes, open: s.state !== 'closed' };
-      if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at };
+      if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at, who: s.who };
       if ('pause' in s) return { kind: 'pause', ms: s.pause };
       if ('choice' in s) return { kind: 'choice', question: s.choice, options: s.options };
       if ('next' in s) return { kind: 'next', scene: s.next };

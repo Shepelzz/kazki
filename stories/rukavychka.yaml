@@ -1,0 +1,374 @@
+# Рукавичка — зимова казка з вибором.
+# Кроки ті самі, що в kolobok.yaml (див. його шапку), плюс:
+#   - show: did                 look: winter — дід у кожусі й шапці; size: 0.3 — менший за звичайний
+#     look: winter
+#   - enter: myshka             залазить у рукавичку (into: rukavychka) або в снігову хатку (into: khatka);
+#     into: rukavychka          рукавичка від кожного мешканця трохи надувається
+#   - resize: rukavychka        плавно змінює розмір (to: 0.3, ms: 800)
+#   - fx: popout                ті, хто всередині (who: [...]), вистрибують і стають довкола
+#   - fx: scatter               …вистрибують і тікають у ліс
+#   - fx: burst                 рукавичка тріскає, і всі (who) висипаються в сніг
+#   - fx: build                 снігова хатка виростає з кучугури (on: khatka)
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Рукавичка
+cover: rukavychka
+
+voices:
+  narrator: { name: "", pitch: 1.1, rate: 1 }
+  did:      { name: "Дід", pitch: 0.72, rate: 0.9 }
+  sobaka:   { name: "Собачка", pitch: 1.2, rate: 1.1 }
+  myshka:   { name: "Мишка", pitch: 1.75, rate: 1.1 }
+  zhabka:   { name: "Жабка", pitch: 1.25, rate: 1 }
+  zayets:   { name: "Зайчик", pitch: 1.4, rate: 1.15 }
+  lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
+  vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95 }
+  kaban:    { name: "Кабан", pitch: 0.7, rate: 0.95 }
+  vedmid:   { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
+
+endings:
+  honest:    { title: "Чесна мишка", icon: "🐭" }
+  dog:       { title: "Гав-гав-гав!", icon: "🐕" }
+  torn:      { title: "Тріснула рукавичка", icon: "💥" }
+  snowhouse: { title: "Снігова хатка", icon: "⛄" }
+
+start: start
+
+scenes:
+  start:
+    - scene: winter-forest
+    - show: did
+      look: winter
+      at: [760, 770]
+    - show: sobaka
+      at: [1060, 770]
+      flip: true
+    - roll: true
+    - narrator: "Привіт! Сьогодні я розповім тобі зимову казку. А ти допомагатимеш звірятам вибирати, що робити."
+    - narrator: "Ішов дід зимовим лісом, а попереду бігла його собачка. Сніг рипить, мороз за носа щипає..."
+    - did: "Ох і холодно ж сьогодні! Добре, що баба теплі рукавички зв'язала."
+    - sobaka: "Гав-гав!"
+    - narrator: "Аж тут рукавичка — шусть! — та й випала дідові з кишені. А дід і не помітив."
+    - show: rukavychka
+      at: [700, 650]
+      size: 0.3
+    - move: rukavychka
+      to: [650, 770]
+      ms: 500
+      wait: true
+    - move: rukavychka
+      to: [-400, 770]
+      ms: 3500
+    - narrator: "Пішов дід далі, а рукавичка так і лишилася лежати на снігу."
+    - next: glade
+
+  glade:
+    - scene: winter-glade
+    - show: rukavychka
+      at: [760, 770]
+    - narrator: "Лежить рукавичка на галявині. Аж тут біжить мишка-шкряботушка — змерзла, бідна, аж хвостик тремтить."
+    - show: myshka
+      at: [1800, 770]
+    - move: myshka
+      to: [1080, 770]
+      ms: 1800
+      wait: true
+    - myshka: "Ой, яка рукавичка! Тепла, пухнаста, ще й пиріжками пахне..."
+    - choice: "Що зробить мишка?"
+      options:
+        - label: "Оселитися в рукавичці"
+          icon: "🏠"
+          next: settle
+        - label: "Віднести рукавичку дідові"
+          icon: "🧤"
+          next: honest
+
+  honest:
+    - myshka: "Ні, чуже брати не можна. Дід, мабуть, шукає свою рукавичку. Віднесу йому!"
+    - move: myshka
+      to: [860, 770]
+      ms: 900
+      wait: true
+    - carry: rukavychka
+      by: myshka
+    - narrator: "Підняла мишка рукавичку — ох, важка! — та й понесла стежкою за дідом."
+    - move: myshka
+      to: [-500, 770]
+      ms: 4200
+      wait: true
+    - scene: hata-winter
+    - show: did
+      look: winter
+      at: [1100, 770]
+    - show: sobaka
+      at: [1320, 770]
+    - fx: smoke
+    - narrator: "А дід тим часом уже дійшов додому. Сунув руку в кишеню — а рукавички нема!"
+    - did: "Ой лишенько! Де ж це я рукавичку загубив?"
+    - show: myshka
+      at: [-200, 770]
+      flip: true
+    - show: rukavychka
+      at: [-200, 644]
+      size: 0.45
+    - carry: rukavychka
+      by: myshka
+    - move: myshka
+      to: [880, 770]
+      flip: true
+      ms: 3200
+      wait: true
+    - put: rukavychka
+      to: [960, 770]
+      ms: 500
+    - myshka: "Дідусю! Ось ваша рукавичка. Ви її в лісі загубили!"
+    - sobaka: "Гав!"
+    - did: "Ох ти ж моя розумничко! Спасибі тобі, мишко. Ходи до хати — погрієшся біля печі, ще й сиру тобі дам."
+    - fx: hearts
+      on: myshka
+    - narrator: "І пішла мишка до діда в гості. Пили вони чай з калачами, а мишка знайшла собі тепленьку нірку під самою піччю. Бо добрі справи завжди повертаються добром!"
+    - ending: honest
+
+  settle:
+    - myshka: "Тут я й житиму!"
+    - enter: myshka
+      into: rukavychka
+    - narrator: "Залізла мишка в рукавичку та й живе собі. Аж тут — плиг-плиг! — скаче жабка-скрекотушка."
+    - show: zhabka
+      at: [1800, 770]
+    - move: zhabka
+      to: [1080, 770]
+      hop: true
+      ms: 2000
+      wait: true
+    - zhabka: "Хто-хто в рукавичці живе?"
+    - myshka: "Я, мишка-шкряботушка. А ти хто?"
+    - zhabka: "А я жабка-скрекотушка. Пусти й мене, бо лапки змерзли!"
+    - myshka: "Іди!"
+    - enter: zhabka
+      into: rukavychka
+    - narrator: "Уже їх двоє. Аж біжить зайчик-побігайчик."
+    - show: zayets
+      at: [1800, 770]
+    - move: zayets
+      to: [1100, 770]
+      hop: true
+      ms: 1800
+      wait: true
+    - zayets: "Хто-хто в рукавичці живе?"
+    - myshka: "Мишка-шкряботушка, жабка-скрекотушка. А ти хто?"
+    - zayets: "А я зайчик-побігайчик. Пустіть і мене, бо я весь у снігу!"
+    - zhabka: "Іди, тільки вушка підбери!"
+    - enter: zayets
+      into: rukavychka
+    - narrator: "Уже їх троє. Аж тут біжить лисичка-сестричка — хвостом сніг замітає."
+    - show: lysytsia
+      at: [1800, 770]
+    - move: lysytsia
+      to: [1120, 770]
+      ms: 2200
+      wait: true
+    - lysytsia: "Хто-хто в рукавичці живе?"
+    - myshka: "Мишка-шкряботушка, жабка-скрекотушка, зайчик-побігайчик. А ти хто?"
+    - lysytsia: "А я лисичка-сестричка. Пустіть і мене, я тиха й чемна!"
+    - zayets: "Ой, а лисиця ж хитра! Ще з'їсть нас..."
+    - choice: "Пустити лисичку?"
+      options:
+        - label: "Пустити — їй же холодно"
+          icon: "🤗"
+          next: fox_in
+        - label: "Хай спершу загадку відгадає"
+          icon: "❓"
+          next: fox_riddle
+
+  fox_riddle:
+    - myshka: "Добре, лисичко. Але спершу відгадай загадку: біле, пухнасте, з неба падає, а в лапках тане. Що це?"
+    - lysytsia: "Гм... Хмаринка? Ні... Борода Діда Мороза?"
+    - narrator: "Думала-думала лисичка, аж хвостом закрутила. А ти як думаєш, що це?"
+    - pause: 2500
+    - lysytsia: "Знаю! Це сніжинка!"
+    - myshka: "Правильно! Заходь, лисичко. Тільки чур — нікого не кривдити!"
+    - lysytsia: "Чесне лисяче!"
+    - enter: lysytsia
+      into: rukavychka
+    - next: wolf
+
+  fox_in:
+    - myshka: "Іди вже, грійся. Тільки чур — нікого не кривдити!"
+    - lysytsia: "Чесне лисяче!"
+    - enter: lysytsia
+      into: rukavychka
+    - next: wolf
+
+  wolf:
+    - narrator: "Уже їх четверо. Рукавичка аж надулася. Аж біжить вовчик-братик."
+    - show: vovk
+      at: [1800, 770]
+    - move: vovk
+      to: [1140, 770]
+      ms: 2200
+      wait: true
+    - vovk: "Хто-хто в рукавичці живе?"
+    - myshka: "Мишка-шкряботушка, жабка-скрекотушка, зайчик-побігайчик, лисичка-сестричка. А ти хто?"
+    - vovk: "А я вовчик-братик. Пустіть і мене!"
+    - lysytsia: "Та де ж тебе пустимо, коли й так тісно?"
+    - vovk: "Та я якось у куточку, тихесенько."
+    - myshka: "Ну, лізь уже!"
+    - enter: vovk
+      into: rukavychka
+    - next: boar
+
+  boar:
+    - narrator: "Уже їх п'ятеро. Рукавичка потріскує по швах. Аж тут — хрю-хрю! — біжить кабан-іклан, носом сніг розриває."
+    - show: kaban
+      at: [1800, 770]
+    - move: kaban
+      to: [1160, 770]
+      ms: 2200
+      wait: true
+    - kaban: "Хрю! Хто-хто в рукавичці живе?"
+    - myshka: "Мишка-шкряботушка, жабка-скрекотушка, зайчик-побігайчик, лисичка-сестричка, вовчик-братик. А ти хто?"
+    - kaban: "А я кабан-іклан. Пустіть і мене!"
+    - zhabka: "Ой, кабанчику, тут уже повнісінько! Ніде й лапку поставити."
+    - choice: "Що скажуть звірята кабанові?"
+      options:
+        - label: "Потіснимося — заходь!"
+          icon: "🐗"
+          next: boar_in
+        - label: "Ні, місця вже нема"
+          icon: "✋"
+          next: boar_out
+
+  boar_out:
+    - kaban: "Ах так? Ну то я хоч рильце погрію!"
+    - move: kaban
+      to: [860, 770]
+      ms: 900
+      wait: true
+    - fx: sparkle
+      on: rukavychka
+    - narrator: "Тицьнув кабан рило в рукавичку, а звірята як запищать, як зарепетують! Аж раптом..."
+    - sobaka: "Гав-гав-гав!"
+    - narrator: "То дід помітив, що рукавички нема, і повернувся шукати. А собачка — попереду!"
+    - show: sobaka
+      at: [-250, 770]
+      flip: true
+    - move: sobaka
+      to: [380, 770]
+      flip: true
+      ms: 1400
+      wait: true
+    - sobaka: "Гав-гав-гав! Гав-гав!"
+    - fx: scatter
+      on: rukavychka
+      who: [myshka, zhabka, zayets, lysytsia, vovk]
+    - move: kaban
+      to: [2000, 770]
+      flip: true
+      ms: 1500
+    - narrator: "Як злякаються звірі, як вискочать із рукавички — та врозтіч по лісу! Тільки п'ятки замигтіли."
+    - show: did
+      look: winter
+      at: [-250, 770]
+    - move: did
+      to: [520, 770]
+      ms: 2400
+      wait: true
+    - did: "Ось де моя рукавичка! А чого це вона така розтягнута?"
+    - resize: rukavychka
+      to: 0.3
+      ms: 900
+    - move: did
+      to: [700, 770]
+      ms: 700
+      wait: true
+    - carry: rukavychka
+      by: did
+    - narrator: "Обтрусив дід рукавичку від снігу, надів — та й пішов собі додому. А звірята ще довго гомоніли по всьому лісу, що то за собачка така страшна!"
+    - move: did
+      to: [-300, 770]
+      ms: 3200
+    - move: sobaka
+      to: [-200, 770]
+      ms: 2800
+      wait: true
+    - ending: dog
+
+  boar_in:
+    - kaban: "Дякую! Я обережненько, з краєчку!"
+    - enter: kaban
+      into: rukavychka
+    - narrator: "Уже їх шестеро! Рукавичка така тісна, що аж рипить. Аж тут іде ведмідь-набрід, гілля ламає."
+    - show: vedmid
+      at: [1850, 770]
+    - move: vedmid
+      to: [1180, 770]
+      ms: 2600
+      wait: true
+    - vedmid: "Хто-хто в рукавичці живе?"
+    - myshka: "Мишка-шкряботушка, жабка-скрекотушка, зайчик-побігайчик, лисичка-сестричка, вовчик-братик, кабан-іклан. А ти хто?"
+    - vedmid: "А я ведмідь-набрід. Пустіть і мене!"
+    - myshka: "Ой, ведмедику, ти ж такий великий! Куди ж ми тебе пустимо?"
+    - choice: "Що робити з ведмедем?"
+      options:
+        - label: "Пустити — якось уліземо!"
+          icon: "🧤"
+          next: torn
+        - label: "Збудувати всім велику хатку"
+          icon: "⛄"
+          next: snowhouse
+
+  torn:
+    - vedmid: "Та я ж тихенько, з краєчку..."
+    - enter: vedmid
+      into: rukavychka
+    - narrator: "Поліз ведмідь у рукавичку. Пихтів-пихтів, крутився-вертівся... аж раптом —"
+    - fx: burst
+      on: rukavychka
+      who: [myshka, zhabka, zayets, lysytsia, vovk, kaban, vedmid]
+    - narrator: "Тріснула рукавичка! І посипалися звірята в сніг — хто догори лапками, хто носом у замет."
+    - zayets: "Ха-ха-ха! Оце так хатка!"
+    - vedmid: "Ой... Я ж казав, що тихенько..."
+    - narrator: "Подивилися звірята одне на одного — та й як засміються! А потім цілий день гралися в сніжки. Бо найтепліше взимку не в рукавичці, а з друзями!"
+    - fx: hearts
+      on: vedmid
+    - ending: torn
+
+  snowhouse:
+    - myshka: "Ведмедику, у рукавичку ти не вмістишся. А давайте всі разом збудуємо велику снігову хатку!"
+    - vedmid: "О, оце діло! Я дужий — я сніг носитиму!"
+    - fx: popout
+      on: rukavychka
+      who: [myshka, zhabka, zayets, lysytsia, vovk, kaban]
+    - narrator: "Повилазили звірята з рукавички, і закипіла робота!"
+    - hide: rukavychka
+    - show: khatka
+      at: [790, 770]
+    - fx: build
+      on: khatka
+    - narrator: "Ведмідь котив великі снігові кулі, кабан розгрібав замети, вовк і лисичка ліпили стіни, зайчик утоптував стежку, а жабка з мишкою прикрашали віконце бурульками."
+    - fx: sparkle
+      on: khatka
+    - vedmid: "Ось тепер усім місця вистачить!"
+    - enter: myshka
+      into: khatka
+    - enter: zhabka
+      into: khatka
+    - enter: zayets
+      into: khatka
+    - enter: lysytsia
+      into: khatka
+    - enter: vovk
+      into: khatka
+    - enter: kaban
+      into: khatka
+    - enter: vedmid
+      into: khatka
+    - scene: winter-dusk
+    - show: khatka
+      at: [790, 770]
+    - fx: hearts
+      on: khatka
+    - narrator: "І зажили звірята в сніговій хатці — тепло, весело, і місця всім вистачає. А рукавичку віднесли дідові, бо чуже треба повертати!"
+    - ending: snowhouse

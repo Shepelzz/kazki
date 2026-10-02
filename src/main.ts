@@ -9,17 +9,17 @@ import { pauseSpeech, resumeSpeech, say, setSpeechEnabled, speechEnabled, stopSp
 import { Stage } from './stage';
 import { COMMON, endingPhrase, parseStory, type Story } from './story';
 import kolobokRaw from '../stories/kolobok.yaml';
+import rukavychkaRaw from '../stories/rukavychka.yaml';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw)];
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw)];
 /** tales still being written: shown on the shelf as "soon" */
 const SOON = [
-  { title: 'Рукавичка', icon: '🧤' },
   { title: 'Коза-дереза', icon: '🐐' },
   { title: 'Солом’яний бичок', icon: '🐂' },
 ];
 
 /** backdrops with no road: subtitles at the bottom there */
-const HOME_SCENES = ['hata', 'hata-evening', 'pich', 'pich-evening'];
+const HOME_SCENES = ['hata', 'hata-evening', 'hata-winter', 'pich', 'pich-evening'];
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -43,8 +43,14 @@ function remember(story: Story, ending: string) {
 }
 
 // ---------- the shelf ----------
+/** the part of each cover puppet to show on its card */
+const COVER_VIEW: Record<string, string> = {
+  kolobok: '-90 -130 180 150',
+  rukavychka: '-150 -320 300 350',
+};
+
 function cover(story: Story) {
-  const svgEl = el('svg', { viewBox: '-90 -130 180 150', class: 'cover-art' });
+  const svgEl = el('svg', { viewBox: COVER_VIEW[story.cover] || '-200 -400 400 420', class: 'cover-art' });
   svgEl.appendChild(makePuppet(story.cover));
   return svgEl;
 }
@@ -56,7 +62,7 @@ function renderShelf() {
     const card = document.createElement('button');
     card.className = 'book';
     const art = document.createElement('div');
-    art.className = 'book-art';
+    art.className = 'book-art book-art-' + story.id;
     art.appendChild(cover(story));
     const title = document.createElement('div');
     title.className = 'book-title';
@@ -147,6 +153,20 @@ function setPaused(on: boolean) {
 }
 
 $('btn-pause').addEventListener('click', () => setPaused(!stage.paused));
+
+// DEBUG=TRUE builds: to the previous / next line
+if (__DEBUG__) {
+  $('btn-back').hidden = false;
+  $('btn-next').hidden = false;
+  $('btn-back').addEventListener('click', () => {
+    setPaused(false);
+    teller?.back();
+  });
+  $('btn-next').addEventListener('click', () => {
+    setPaused(false);
+    teller?.forward();
+  });
+}
 $('paused').addEventListener('click', () => {
   unlockAudio();
   setPaused(false);

@@ -27,7 +27,12 @@
     <section id="play" class="screen play" hidden>
       <div id="stage-host" class="stage-host"></div>
       <div class="topbar">
-        <button id="btn-home" class="round" aria-label="До казок">🏠</button>
+        <div class="topbar-left">
+          <button id="btn-home" class="round" aria-label="До казок">🏠</button>
+          <!-- DEBUG=TRUE builds only -->
+          <button id="btn-back" class="round debug" aria-label="Попередня репліка" hidden>⏮</button>
+          <button id="btn-next" class="round debug" aria-label="Наступна репліка" hidden>⏭</button>
+        </div>
         <div class="topbar-right">
           <button id="btn-pause" class="round" aria-label="Пауза">⏸</button>
           <button id="btn-sound" class="round" aria-label="Звук">🔊</button>
