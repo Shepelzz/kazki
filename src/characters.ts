@@ -264,37 +264,60 @@ const vedmid = () => `
 </g>`;
 
 const lysytsia = () => `
+<defs>
+  <linearGradient id="fox-fur" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f58a3a"/><stop offset="1" stop-color="#e2661f"/>
+  </linearGradient>
+</defs>
 <g data-part="body">
-  <!-- big tail curling up behind -->
-  <path d="M30 -70 Q140 -60 150 -170 Q156 -230 110 -250 Q150 -170 92 -130 Q60 -110 30 -110 Z" fill="#e8742a" ${stroke}/>
-  <path d="M110 -250 Q156 -230 150 -170 Q130 -200 122 -232 Z" fill="#fff" ${st(4)}/>
-  <path d="M-24 -80 L-30 -10 L-4 -10 L-2 -80 Z" fill="#3a2a22" ${stroke}/>
-  <path d="M8 -80 L10 -10 L36 -10 L32 -80 Z" fill="#3a2a22" ${stroke}/>
-  <ellipse cx="-20" cy="-8" rx="18" ry="9" fill="#3a2a22" ${st(4)}/>
-  <ellipse cx="24" cy="-8" rx="18" ry="9" fill="#3a2a22" ${st(4)}/>
-  <ellipse cx="4" cy="-120" rx="44" ry="62" fill="#e8742a" ${stroke}/>
-  <path d="M-24 -170 Q-30 -110 -2 -76 Q22 -110 12 -170 Z" fill="#fff6ea"/>
-  <path d="M-34 -150 Q-60 -120 -40 -96" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
-  <path d="M-34 -150 Q-60 -120 -40 -96" fill="none" stroke="#e8742a" stroke-width="13" stroke-linecap="round"/>
-  <!-- head: pointed ears, long snout to the left -->
-  <path d="M-8 -210 L-4 -262 L22 -222 Z" fill="#e8742a" ${stroke}/>
-  <path d="M-4 -226 L-2 -248 L12 -228 Z" fill="#3a2a22"/>
-  <path d="M26 -212 L46 -256 L50 -206 Z" fill="#e8742a" ${stroke}/>
-  <ellipse cx="14" cy="-190" rx="38" ry="34" fill="#e8742a" ${stroke}/>
-  <path d="M-12 -196 Q-70 -178 -86 -160 Q-74 -146 -40 -150 Q-6 -154 8 -168 Z" fill="#e8742a" ${stroke}/>
-  <path d="M-80 -158 Q-40 -150 -6 -164 Q10 -150 30 -160 Q20 -138 -10 -140 Q-50 -138 -80 -158 Z" fill="#fff6ea"/>
-  <ellipse cx="-88" cy="-162" rx="8" ry="7" fill="#2b1a10"/>
+  <!-- a big fluffy tail, curled up behind her -->
+  <path d="M26 -48 C96 -40 150 -84 146 -160 C143 -212 106 -238 82 -226 C116 -196 112 -132 70 -108 C50 -96 34 -92 20 -96 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M82 -226 C106 -238 143 -212 146 -160 C128 -170 104 -196 82 -226 Z" fill="#fffaf2" ${st(4)}/>
+  <!-- legs in dark "socks" -->
+  <path d="M-30 -64 L-32 -12 L-6 -12 L-6 -64 Z" fill="#4a2a1c" ${st(4)}/>
+  <path d="M8 -64 L8 -12 L34 -12 L32 -64 Z" fill="#4a2a1c" ${st(4)}/>
+  <ellipse cx="-22" cy="-9" rx="19" ry="10" fill="#4a2a1c" ${st(4)}/>
+  <ellipse cx="22" cy="-9" rx="19" ry="10" fill="#4a2a1c" ${st(4)}/>
+  <!-- pear-shaped body with a white chest -->
+  <path d="M-46 -60 C-56 -110 -40 -160 0 -166 C40 -160 56 -110 46 -60 C30 -42 -30 -42 -46 -60 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M-26 -150 C-34 -110 -26 -70 0 -58 C26 -70 34 -110 26 -150 C14 -140 -14 -140 -26 -150 Z" fill="#fffaf2"/>
+  <!-- paws folded politely in front -->
+  <path d="M-34 -132 C-50 -112 -40 -94 -18 -96" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
+  <path d="M-34 -132 C-50 -112 -40 -94 -18 -96" fill="none" stroke="#ef7d2f" stroke-width="13" stroke-linecap="round"/>
+  <path d="M34 -132 C50 -112 40 -94 18 -96" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
+  <path d="M34 -132 C50 -112 40 -94 18 -96" fill="none" stroke="#ef7d2f" stroke-width="13" stroke-linecap="round"/>
+  <ellipse cx="-12" cy="-96" rx="12" ry="9" fill="#4a2a1c" ${st(3)}/>
+  <ellipse cx="12" cy="-96" rx="12" ry="9" fill="#4a2a1c" ${st(3)}/>
+  <!-- ears: dark tips, pink inside -->
+  <path d="M-46 -232 L-40 -298 L-6 -250 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M-40 -244 L-37 -278 L-18 -252 Z" fill="#f6b3a6"/>
+  <path d="M-42 -284 L-40 -298 L-30 -284 Z" fill="#3a2418"/>
+  <path d="M10 -250 L42 -296 L46 -230 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M18 -250 L38 -280 L40 -244 Z" fill="#f6b3a6"/>
+  <path d="M34 -284 L42 -296 L43 -282 Z" fill="#3a2418"/>
+  <!-- head: round, with white cheek fluff and a short snout to the left -->
+  <ellipse cx="-4" cy="-212" rx="54" ry="48" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M-58 -206 C-54 -176 -36 -164 -14 -166 L-4 -176 L6 -164 C26 -164 44 -176 50 -200 C34 -186 14 -182 -4 -188 C-24 -184 -44 -190 -58 -206 Z" fill="#fffaf2" ${st(4)}/>
+  <path d="M-40 -212 C-62 -210 -84 -200 -92 -192 C-86 -180 -62 -176 -40 -182 Z" fill="#fffaf2" ${st(4)}/>
+  <ellipse cx="-92" cy="-193" rx="9" ry="7" fill="#2b1a10"/>
+  <circle cx="-94" cy="-196" r="2.4" fill="#fff"/>
   ${mouth(
-    `<path d="M-80 -152 Q-50 -146 -24 -152" fill="none" ${st(3)}/>`,
-    `<path d="M-82 -154 Q-50 -128 -22 -152 Q-50 -146 -82 -154 Z" fill="#8a2a1a" ${st(3)}/>`,
+    `<path d="M-84 -184 C-74 -178 -62 -178 -54 -184" fill="none" ${st(3)}/>`,
+    `<path d="M-86 -186 C-76 -164 -56 -166 -50 -186 C-62 -182 -76 -182 -86 -186 Z" fill="#8a2a1a" ${st(3)}/>`,
   )}
-  <g data-part="eyes" data-cx="8" data-cy="-200">
-    <path d="M-14 -200 q8 -7 16 0 q-8 4 -16 0 z" fill="#2b1a10"/>
-    <path d="M14 -202 q8 -7 16 0 q-8 4 -16 0 z" fill="#2b1a10"/>
-    <path d="M-16 -206 q9 -6 20 -2 M12 -208 q9 -6 20 -2" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
+  <!-- sly half-closed eyes with lashes -->
+  <g data-part="eyes" data-cx="-14" data-cy="-220">
+    <ellipse cx="-34" cy="-220" rx="10" ry="8" fill="#fff" ${st(3)}/>
+    <circle cx="-37" cy="-219" r="5.5" fill="#2b1a10"/><circle cx="-35" cy="-221" r="1.8" fill="#fff"/>
+    <path d="M-45 -222 Q-34 -232 -23 -222 Z" fill="#ef7d2f" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <ellipse cx="2" cy="-222" rx="10" ry="8" fill="#fff" ${st(3)}/>
+    <circle cx="-1" cy="-221" r="5.5" fill="#2b1a10"/><circle cx="1" cy="-223" r="1.8" fill="#fff"/>
+    <path d="M-9 -224 Q2 -234 13 -224 Z" fill="#ef7d2f" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M-46 -224 l-6 -4 M13 -226 l6 -4" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
   </g>
-  ${closedEyes(8, -202, 28, 6)}
-  <ellipse cx="0" cy="-180" rx="7" ry="4" fill="#f0786a" opacity=".5"/>
+  ${closedEyes(-16, -220, 36, 7)}
+  <ellipse cx="-50" cy="-200" rx="9" ry="5" fill="#f0786a" opacity=".45"/>
+  <ellipse cx="22" cy="-202" rx="9" ry="5" fill="#f0786a" opacity=".45"/>
 </g>`;
 
 const bush = () => `
@@ -317,14 +340,15 @@ export function makePuppet(id: string): SVGGElement {
   return g;
 }
 
-/** Where on a puppet things come from: the mouth (notes, chomp) and the top (sparkles). */
-export const ANCHORS: Record<string, { mouth: [number, number]; top: number }> = {
-  did: { mouth: [0, -268], top: -400 },
-  baba: { mouth: [0, -262], top: -352 },
+/** Where on a puppet things come from: the mouth (notes, chomp), the top (sparkles), the hands (carrying). */
+export const ANCHORS: Record<string, { mouth: [number, number]; top: number; hands?: [number, number] }> = {
+  // hands: where a carried kolobok's bottom is, held in front of the chest
+  did: { mouth: [0, -268], top: -400, hands: [0, -120] },
+  baba: { mouth: [0, -262], top: -352, hands: [0, -128] },
   kolobok: { mouth: [6, -36], top: -104 },
   zayets: { mouth: [-44, -126], top: -280 },
   vovk: { mouth: [-60, -236], top: -350 },
   vedmid: { mouth: [-20, -272], top: -390 },
-  lysytsia: { mouth: [-56, -150], top: -262 },
+  lysytsia: { mouth: [-70, -180], top: -300 },
   bush: { mouth: [0, -80], top: -156 },
 };

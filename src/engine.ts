@@ -98,6 +98,11 @@ export class Teller {
         if (s.wait) await p;
         return;
       }
+      case 'carry':
+        stage.carry(s.actor, s.by);
+        return;
+      case 'put':
+        return stage.moveTo(s.actor, s.to, s.ms, { hop: true });
       case 'roll':
         stage.setRolling(s.on);
         return;

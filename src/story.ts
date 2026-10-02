@@ -12,6 +12,8 @@ export type Step =
   | { kind: 'show'; actor: string; at: Point; flip?: boolean; eyes?: 'open' | 'closed'; raw?: boolean }
   | { kind: 'hide'; actor: string }
   | { kind: 'move'; actor: string; to: Point; ms: number; hop?: boolean; roll?: boolean; flip?: boolean; wait?: boolean }
+  | { kind: 'carry'; actor: string; by: string }
+  | { kind: 'put'; actor: string; to: Point; ms: number }
   | { kind: 'roll'; on: boolean }
   | { kind: 'eyes'; actor: string; open: boolean }
   | { kind: 'fx'; fx: string; on?: string; at?: Point }
@@ -59,6 +61,8 @@ export function parseStory(id: string, raw: Raw): Story {
       if ('hide' in s) return { kind: 'hide', actor: s.hide };
       if ('move' in s)
         return { kind: 'move', actor: s.move, to: s.to ?? fail(name, i, 'move needs to'), ms: s.ms ?? 1500, hop: s.hop, roll: s.roll, flip: s.flip, wait: s.wait };
+      if ('carry' in s) return { kind: 'carry', actor: s.carry, by: s.by ?? fail(name, i, 'carry needs by') };
+      if ('put' in s) return { kind: 'put', actor: s.put, to: s.to ?? fail(name, i, 'put needs to'), ms: s.ms ?? 700 };
       if ('roll' in s) return { kind: 'roll', on: !!s.roll };
       if ('eyes' in s) return { kind: 'eyes', actor: s.eyes, open: s.state !== 'closed' };
       if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at };

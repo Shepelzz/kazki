@@ -13,6 +13,13 @@ import { ANCHORS, el, makePuppet, svg } from './characters';
 import type { Point } from './story';
 
 export const GROUND = 770;
+/**
+ * The part of the scene that is framed: less sky than the 0…900 the scenes are laid out in, more
+ * meadow under the road — the subtitles go up into the sky, the choice buttons down onto the
+ * meadow, and neither covers the characters.
+ */
+const VIEW_TOP = 80;
+const VIEW_H = 1020;
 const W = 1600;
 /** px per second the front of the road slides by while rolling */
 const ROLL_SPEED = 300;
@@ -47,6 +54,8 @@ interface Actor {
   parts: Record<string, SVGGElement | null>;
   /** shrinking into the fox's mouth: 1 → 0 */
   scale: number;
+  /** held in someone's hands: follows them until put down (any move puts it down) */
+  carriedBy: Actor | null;
 }
 
 interface Particle {
@@ -386,7 +395,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
   hata: () => ({
     still:
       sky('#7cc4f2', '#d6f0ff') +
-      sun(1380, 140) +
+      sun(1380, 230) +
       clouds(3) +
       [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#9ccc65', GROUND - 120, 60, 7)}</g>`).join('') +
       ground('#7cb342', '#c9a77a') +
@@ -399,7 +408,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
     layers: [],
   }),
   road: () => ({
-    still: sky('#7cc4f2', '#d6f0ff') + sun(1380, 140) + clouds(5),
+    still: sky('#7cc4f2', '#d6f0ff') + sun(1380, 230) + clouds(5),
     layers: [
       [hills('#a5d6a7', GROUND - 150, 70, 2), 0.12],
       [hills('#81c784', GROUND - 90, 50, 4), 0.25],
@@ -408,7 +417,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
     ],
   }),
   forest: () => ({
-    still: sky('#8fc8e8', '#e3f4e8') + sun(1400, 120) + clouds(6),
+    still: sky('#8fc8e8', '#e3f4e8') + sun(1400, 225) + clouds(6),
     layers: [
       [hills('#6fa77a', GROUND - 160, 80, 12), 0.12],
       [treeRow(21, true), 0.3],
@@ -435,7 +444,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
     layers: [],
   }),
   river: () => ({
-    still: sky('#7cc4f2', '#e0f4ff') + sun(1380, 140) + clouds(9),
+    still: sky('#7cc4f2', '#e0f4ff') + sun(1380, 230) + clouds(9),
     layers: [
       [hills('#a5d6a7', GROUND - 170, 70, 41), 0.1],
       [treeRow(42, false), 0.3],
@@ -454,7 +463,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
     ],
   }),
   glade: () => ({
-    still: sky('#86cdf5', '#eaf8ff') + sun(1400, 130) + clouds(14),
+    still: sky('#86cdf5', '#eaf8ff') + sun(1400, 230) + clouds(14),
     layers: [
       [hills('#9ccc65', GROUND - 140, 50, 61), 0.12],
       [birchRow(62), 0.4],
@@ -462,7 +471,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
     ],
   }),
   mountains: () => ({
-    still: sky('#8ecdf2', '#e8f6ff') + sun(1380, 140) + clouds(15),
+    still: sky('#8ecdf2', '#e8f6ff') + sun(1380, 230) + clouds(15),
     layers: [
       [mountains(71, '#8aa7c7', GROUND - 120, 420, true), 0.05],
       [mountains(72, '#6f9a7c', GROUND - 80, 260, false), 0.15],
@@ -504,7 +513,7 @@ export class Stage {
   speed = 1;
 
   constructor(host: HTMLElement) {
-    this.svg = el('svg', { viewBox: `0 0 ${W} 900`, preserveAspectRatio: 'xMidYMin meet', class: 'stage' });
+    this.svg = el('svg', { viewBox: `0 ${VIEW_TOP} ${W} ${VIEW_H}`, preserveAspectRatio: 'xMidYMin meet', class: 'stage' });
     this.backdrop = el('g');
     this.actorsLayer = el('g');
     this.frontLayer = el('g');
@@ -578,6 +587,7 @@ export class Stage {
       bounce: 0,
       phase: Math.random() * 10,
       scale: 1,
+      carriedBy: null,
       parts: {
         eyes: part('eyes'),
         eyesClosed: part('eyes-closed'),
@@ -614,6 +624,7 @@ export class Stage {
     const a = this.actors.get(id);
     if (!a) return Promise.resolve();
     a.move?.done();
+    a.carriedBy = null;
     if (opts.flip !== undefined) a.flip = opts.flip;
     return new Promise((resolve) => {
       const m: Move = {
@@ -630,6 +641,16 @@ export class Stage {
       };
       a.move = m;
     });
+  }
+
+  /** `by` picks the puppet up: it rides in their hands, in front of them */
+  carry(id: string, by: string) {
+    const a = this.actors.get(id);
+    const c = this.actors.get(by);
+    if (!a || !c || !ANCHORS[by].hands) return;
+    a.move?.done();
+    a.carriedBy = c;
+    a.g.parentNode!.appendChild(a.g);
   }
 
   setRolling(on: boolean) {
@@ -833,7 +854,9 @@ export class Stage {
     this.scroll += slide;
     for (const l of this.layerEls) l.el.setAttribute('transform', `translate(${(-(this.scroll * l.speed) % W).toFixed(1)} 0)`);
 
-    for (const a of this.actors.values()) this.tickActor(a, dt, slide);
+    // carried puppets last: they follow where their carrier has just moved
+    for (const a of this.actors.values()) if (!a.carriedBy) this.tickActor(a, dt, slide);
+    for (const a of this.actors.values()) if (a.carriedBy) this.tickActor(a, dt, slide);
 
     this.flames.forEach((f, i) => {
       const t = this.time * (7 + i * 3);
@@ -865,6 +888,17 @@ export class Stage {
 
   private tickActor(a: Actor, dt: number, slide: number) {
     a.phase += dt;
+    if (a.carriedBy) {
+      const c = a.carriedBy;
+      if (!this.actors.has(c.id)) a.carriedBy = null;
+      else {
+        const h = ANCHORS[c.id].hands!;
+        // bobbing along with the carrier's steps
+        const step = c.move && !c.move.hop ? Math.abs(Math.sin(c.phase * 9)) * 9 : 0;
+        a.x = c.x + h[0];
+        a.y = c.y + h[1] - step;
+      }
+    }
     let lift = 0;
     let lean = 0;
     let dx = 0;

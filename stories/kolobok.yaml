@@ -11,6 +11,10 @@
 #   - move: zayets             іде / котиться / стрибає (hop: true) до to: [x, y] за ms мілісекунд;
 #     to: [1120, 770]          wait: true — дочекатися, поки дійде
 #   - hide: kolobok
+#   - carry: kolobok           бере на руки (by: baba) — несе, куди йде той, хто взяв;
+#     by: baba
+#   - put: kolobok             кладе / ставить у to: [x, y] (ms — скільки триває)
+#     to: [300, 690]
 #   - roll: true               стежка біжить (колобок котиться на місці); roll: false — стоп
 #   - eyes: kolobok            open / closed
 #     state: open
@@ -78,21 +82,44 @@ scenes:
       raw: true
     - narrator: "Замісила баба тісто на сметані, скачала круглого колобка..."
     - baba: "А тепер — у піч!"
-    - move: kolobok
-      to: [300, 690]
-      hop: true
+    - move: baba
+      to: [910, 770]
       ms: 1300
       wait: true
+    - carry: kolobok
+      by: baba
+    - move: baba
+      to: [470, 770]
+      ms: 1900
+      wait: true
+    - put: kolobok
+      to: [300, 690]
+      ms: 700
+    - move: baba
+      to: [640, 770]
+      ms: 1000
     - narrator: "Гріється колобок у печі, рум'яніє, підрум'янюється..."
     - fx: bake
       on: kolobok
     - fx: sparkle
       on: kolobok
+    - move: baba
+      to: [470, 770]
+      ms: 1000
+      wait: true
+    - carry: kolobok
+      by: baba
     - narrator: "Спекла баба рум'яного колобка й поклала на віконце, щоб простигав."
-    - move: kolobok
+    - move: baba
+      to: [1200, 770]
+      ms: 2600
+      wait: true
+    - put: kolobok
       to: [1315, 522]
-      hop: true
-      ms: 1700
+      ms: 700
+    - move: baba
+      to: [980, 770]
+      ms: 1200
       wait: true
     - pause: 600
     - next: window
@@ -383,19 +410,31 @@ scenes:
     - eyes: kolobok
       state: closed
     - move: vedmid
-      to: [700, 770]
+      to: [720, 770]
       ms: 1800
       wait: true
-    - vedmid: "Гм... Де ж той колобок? Тут тільки камінь лежить. А каміння я не їм — об нього зуби зламаєш."
-    - move: vedmid
-      to: [1900, 770]
-      flip: true
-      ms: 2600
-      wait: true
+    - vedmid: "Гм... Камінь якийсь лежить. Та чогось він пахне... свіжим пиріжком!"
+    - pause: 500
+    - vedmid: "Ха! Камінці пиріжками не пахнуть! Я тебе бачу, колобку!"
     - eyes: kolobok
       state: open
-    - kolobok: "Хі-хі! Перехитрив ведмедя!"
+    - kolobok: "Ой-ой! Ведмедя не обдуриш — у нього ніс, як у собаки!"
+    - choice: "Що тепер робити колобкові?"
+      options:
+        - label: "Заспівати пісеньку"
+          icon: "🎶"
+          next: bear_song
+        - label: "Покотитися з горбочка"
+          icon: "⛰️"
+          next: bear_hill
+
+  bear_hill:
+    - kolobok: "Коть-коть — з горбочка вниз!"
     - roll: true
+    - move: vedmid
+      to: [-400, 770]
+      ms: 3000
+    - narrator: "Покотився колобок з горбочка — швидко-швидко! А ведмідь важкий, неповороткий: поки розвернувся, колобка вже й слід прохолов."
     - next: fox
 
   fox:
@@ -426,7 +465,7 @@ scenes:
 
   fox_eat:
     - move: kolobok
-      to: [985, 618]
+      to: [988, 576]
       hop: true
       ms: 900
       wait: true

@@ -232,9 +232,10 @@ button.book:active {
 .caption {
   position: absolute;
   left: 50%;
-  bottom: calc(env(safe-area-inset-bottom) + 18px);
+  /* up in the sky: the bottom of the screen is the characters' and the buttons' */
+  top: calc(env(safe-area-inset-top) + 14px);
   width: 900px;
-  max-width: calc(100% - 32px);
+  max-width: calc(100% - 180px);
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   background: rgba(251, 243, 224, 0.95);
@@ -289,11 +290,8 @@ button.book:active {
   color: #c4561a;
 }
 
-/* while choosing, the question goes up top and the meadow is left to the buttons */
+/* while choosing, the question stands out a bit */
 .play.choosing .caption {
-  top: calc(env(safe-area-inset-top) + 14px);
-  bottom: auto;
-  max-width: calc(100% - 180px);
   text-align: center;
 }
 
