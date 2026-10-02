@@ -1,0 +1,499 @@
+# Колобок — казка з вибором.
+#
+# Сцена — це список кроків, вони йдуть по черзі:
+#   - narrator: "текст"        хтось говорить (narrator, did, baba, kolobok, zayets, vovk, vedmid, lysytsia);
+#     sing: true               …співає (летять нотки)
+#   - scene: hata              фон: hata, hata-evening (хата ввечері), pich (у хаті біля печі), pich-evening,
+#                              road (поле), river, forest, deep (темний ліс), glade (березова галявина),
+#                              mountains (Карпати), sea
+#   - show: did                з'являється персонаж або річ; at: [x, y] — де стоїть (низ, середина),
+#     at: [1050, 770]          сцена 1600×900, земля на y = 770; flip: true — дивиться в інший бік
+#   - move: zayets             іде / котиться / стрибає (hop: true) до to: [x, y] за ms мілісекунд;
+#     to: [1120, 770]          wait: true — дочекатися, поки дійде
+#   - hide: kolobok
+#   - roll: true               стежка біжить (колобок котиться на місці); roll: false — стоп
+#   - eyes: kolobok            open / closed
+#     state: open
+#   - fx: smoke                smoke (дим із комина), sparkle, hearts, chomp, flour (борошно; at: [x, y]),
+#                              bake (вогонь у печі розгоряється, колобок рум'яніє); on: хто
+#   - show: kolobok …  raw: true   колобок ще сире тісто (до bake)
+#   - pause: 800
+#   - choice: "питання"        вибір; кожен варіант: label, icon, next (куди далі)
+#   - next: road               перейти до іншої сцени
+#   - ending: home             кінцівка (див. endings)
+#
+# Після зміни текстів: npm run voice (перезапише озвучку Лесею).
+
+title: Колобок
+cover: kolobok
+
+voices:
+  # pitch — висота голосу (1 = звичайна), rate — швидкість
+  narrator: { name: "", pitch: 1.1, rate: 1 }
+  did:      { name: "Дід", pitch: 0.72, rate: 0.9 }
+  baba:     { name: "Баба", pitch: 1.0, rate: 0.95 }
+  kolobok:  { name: "Колобок", pitch: 1.55, rate: 1.05 }
+  zayets:   { name: "Зайчик", pitch: 1.4, rate: 1.15 }
+  vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95 }
+  vedmid:   { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
+  lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
+
+endings:
+  singer:   { title: "Колобок-співак", icon: "🎶" }
+  fox:      { title: "Хитра лисичка", icon: "🦊" }
+  home:     { title: "Колобок удома", icon: "🏠" }
+  traveler: { title: "Колобок-мандрівник", icon: "🌍" }
+
+start: start
+
+scenes:
+  start:
+    - scene: hata
+    - show: did
+      at: [1060, 770]
+    - show: baba
+      at: [1270, 770]
+    - narrator: "Привіт! Зараз я розповім тобі казку. А ти допомагатимеш колобкові вибирати, що робити далі."
+    - narrator: "Жили собі дід та баба. Жили дружно та весело, у білій хатинці під солом'яною стріхою."
+    - did: "Бабо, а спечи-но мені колобка!"
+    - baba: "Та з чого ж я спечу, діду? Борошна ж нема."
+    - did: "А ти по коробу помети, по засіку пошкреби — от і набереш."
+    - move: baba
+      to: [330, 770]
+      ms: 2600
+      wait: true
+    - hide: baba
+    - next: baking
+
+  baking:
+    - scene: pich
+    - show: baba
+      at: [620, 770]
+    - narrator: "Пішла баба до хати. Помела по коробу, пошкребла по засіку — та й набрала борошна дві жмені."
+    - fx: flour
+      at: [910, 590]
+    - show: kolobok
+      at: [910, 600]
+      eyes: closed
+      raw: true
+    - narrator: "Замісила баба тісто на сметані, скачала круглого колобка..."
+    - baba: "А тепер — у піч!"
+    - move: kolobok
+      to: [300, 690]
+      hop: true
+      ms: 1300
+      wait: true
+    - narrator: "Гріється колобок у печі, рум'яніє, підрум'янюється..."
+    - fx: bake
+      on: kolobok
+    - fx: sparkle
+      on: kolobok
+    - narrator: "Спекла баба рум'яного колобка й поклала на віконце, щоб простигав."
+    - move: kolobok
+      to: [1315, 522]
+      hop: true
+      ms: 1700
+      wait: true
+    - pause: 600
+    - next: window
+
+  window:
+    - scene: hata
+    - show: did
+      at: [1060, 770]
+    - show: baba
+      at: [1270, 770]
+    - show: kolobok
+      at: [620, 598]
+      eyes: closed
+    - fx: smoke
+    - narrator: "Лежить колобок на віконці, простигає. Аж раптом — розплющив оченята!"
+    - eyes: kolobok
+      state: open
+    - fx: sparkle
+      on: kolobok
+    - kolobok: "Ой! Я живий! А що там, за віконцем? Пташки співають, сонечко світить, а стежечка біжить кудись далеко-далеко..."
+    - choice: "Як ти думаєш, що робити колобкові?"
+      options:
+        - label: "Покотитися у світ"
+          icon: "🌄"
+          next: leave
+        - label: "Лишитися вдома"
+          icon: "🏠"
+          next: stay
+
+  leave:
+    - kolobok: "Покочуся я, подивлюся на світ!"
+    - move: kolobok
+      to: [780, 770]
+      hop: true
+      ms: 700
+      wait: true
+    - narrator: "Та й покотився колобок: з віконця на призьбу, з призьби на травичку, з травички на стежечку..."
+    - move: kolobok
+      to: [1800, 770]
+      roll: true
+      ms: 2400
+    - did: "Куди ж ти, колобку?"
+    - next: road
+
+  stay:
+    - scene: pich
+    - show: kolobok
+      at: [910, 600]
+    - show: baba
+      at: [600, 770]
+    - show: did
+      at: [1300, 770]
+    - narrator: "Лишився колобок удома. Переклала його баба з віконця на стіл, а дід і баба сіли вечеряти та й кажуть:"
+    - did: "Ох і гарний колобок! Рум'яний, пухкенький. Зараз ми його з чаєм і з'їмо!"
+    - move: did
+      to: [1110, 770]
+      ms: 1600
+      wait: true
+    - kolobok: "Ой-ой-ой! Не їжте мене, дідусю! Я ж живий!"
+    - baba: "Ти ба — колобок розмовляє!"
+    - choice: "Що ж робити колобкові?"
+      options:
+        - label: "Тікати!"
+          icon: "🏃"
+          next: escape
+        - label: "Заспівати пісеньку"
+          icon: "🎶"
+          next: home_song
+
+  home_song:
+    - kolobok: "Я колобок, колобок! По коробу метений, по засіку скребений, на сметані мішений, у печі печений, на віконці стужений. Я не простий колобок — я веселий колобок!"
+      sing: true
+    - baba: "Ой, як гарно співає! Діду, та хіба ж такого з'їси?"
+    - did: "Не з'їмо, не з'їмо! Нехай живе з нами, буде нам за онучка."
+    - scene: pich-evening
+    - show: baba
+      at: [600, 770]
+    - show: did
+      at: [1110, 770]
+    - show: kolobok
+      at: [910, 600]
+    - fx: hearts
+      on: kolobok
+    - narrator: "І став колобок жити з дідом і бабою. Щовечора співав їм пісеньок, а баба на вечерю пекла пиріжки з вишнями. А колобка ніхто й не думав їсти!"
+    - ending: singer
+
+  escape:
+    - kolobok: "Ой, тікаю!"
+    - move: kolobok
+      to: [1260, 680]
+      hop: true
+      ms: 800
+      wait: true
+    - move: kolobok
+      to: [1315, 522]
+      hop: true
+      ms: 600
+      wait: true
+    - did: "Стій, колобку! Куди ти?"
+    - move: kolobok
+      to: [1750, 380]
+      hop: true
+      ms: 700
+      wait: true
+    - scene: hata
+    - show: kolobok
+      at: [620, 598]
+    - move: kolobok
+      to: [800, 770]
+      hop: true
+      ms: 700
+      wait: true
+    - move: kolobok
+      to: [1800, 770]
+      roll: true
+      ms: 2200
+    - show: baba
+      at: [320, 770]
+    - baba: "Тримай його, діду!"
+    - narrator: "Та де там! Колобка вже й слід прохолов."
+    - next: road
+
+  road:
+    - scene: road
+    - show: kolobok
+      at: [560, 770]
+    - roll: true
+    - narrator: "Котиться колобок стежкою, а назустріч йому — зайчик-побігайчик."
+    - show: zayets
+      at: [1800, 770]
+    - move: zayets
+      to: [1130, 770]
+      hop: true
+      ms: 2000
+      wait: true
+    - roll: false
+    - zayets: "Колобок, колобок, я тебе з'їм!"
+    - kolobok: "Не їж мене, зайчику!"
+    - choice: "Що зробить колобок?"
+      options:
+        - label: "Заспівати пісеньку"
+          icon: "🎶"
+          next: hare_song
+        - label: "Позмагатися, хто швидший"
+          icon: "🏁"
+          next: hare_race
+
+  hare_song:
+    - kolobok: "Я колобок, колобок! По коробу метений, по засіку скребений, на сметані мішений, у печі печений, на віконці стужений. Я від діда втік, я від баби втік, і від тебе, зайцю, втечу!"
+      sing: true
+    - roll: true
+    - move: zayets
+      to: [-300, 770]
+      ms: 2600
+    - narrator: "Заслухався зайчик, а колобок — коть-коть — і покотився далі. Тільки зайчик його й бачив!"
+    - next: river
+
+  hare_race:
+    - kolobok: "А давай, зайчику, наввипередки! Як переженеш мене — тоді й з'їси."
+    - zayets: "Ха! Та я ж найшвидший у лісі! Раз, два, три!"
+    - roll: true
+    - move: zayets
+      to: [760, 770]
+      hop: true
+      ms: 1400
+      wait: true
+    - narrator: "Побіг зайчик через кущі та пеньки, а колобок — з горбочка вниз: коть-коть-коть! Котився, котився — та й перегнав зайчика!"
+    - move: zayets
+      to: [-300, 770]
+      hop: true
+      ms: 3200
+    - zayets: "Ох, і швидкий же ти, колобку! Котися вже, не буду тебе їсти."
+    - next: river
+
+  river:
+    - scene: river
+    - show: kolobok
+      at: [560, 770]
+    - roll: true
+    - narrator: "Котиться колобок понад річкою. Рибки хлюпочуть, жабки кумкають, а він — коть-коть — усе далі й далі, аж до самого лісу."
+    - pause: 1200
+    - next: wolf
+
+  wolf:
+    - scene: forest
+    - show: kolobok
+      at: [560, 770]
+    - roll: true
+    - narrator: "Котиться колобок далі, у ліс. А назустріч йому — вовчик-братик."
+    - show: vovk
+      at: [1800, 770]
+    - move: vovk
+      to: [1130, 770]
+      ms: 2200
+      wait: true
+    - roll: false
+    - vovk: "Колобок, колобок, я тебе з'їм!"
+    - choice: "Як колобкові врятуватися від вовка?"
+      options:
+        - label: "Заспівати пісеньку"
+          icon: "🎶"
+          next: wolf_song
+        - label: "Сховатися в кущах"
+          icon: "🌳"
+          next: wolf_hide
+
+  wolf_song:
+    - kolobok: "Я колобок, колобок! По коробу метений, по засіку скребений, на сметані мішений, у печі печений, на віконці стужений. Я від діда втік, я від баби втік, я від зайця втік, і від тебе, вовче, втечу!"
+      sing: true
+    - roll: true
+    - move: vovk
+      to: [-300, 770]
+      ms: 2600
+    - narrator: "Не встиг вовк і зубами клацнути, а колобок уже покотився далі."
+    - next: bear
+
+  wolf_hide:
+    - show: bush
+      at: [380, 790]
+    - kolobok: "Шусть — і в кущі!"
+    - move: kolobok
+      to: [380, 770]
+      roll: true
+      ms: 900
+      wait: true
+    - move: vovk
+      to: [640, 770]
+      ms: 1600
+      wait: true
+    - vovk: "Гей! А де ж це колобок подівся? Тільки-но тут був..."
+    - move: vovk
+      to: [1100, 770]
+      ms: 900
+      flip: true
+      wait: true
+    - narrator: "Понюхав вовк повітря, почухав за вухом та й побіг собі далі."
+    - move: vovk
+      to: [1900, 770]
+      ms: 1800
+      wait: true
+    - move: kolobok
+      to: [560, 770]
+      roll: true
+      ms: 900
+      wait: true
+    - kolobok: "Хі-хі! Не знайшов!"
+    - roll: true
+    - move: bush
+      to: [-300, 790]
+      ms: 1800
+    - next: bear
+
+  bear:
+    - scene: deep
+    - show: kolobok
+      at: [560, 770]
+    - roll: true
+    - narrator: "Закотився колобок у темний-темний ліс. Аж тут іде ведмідь-набрід — гілля ламає, кущі до землі гне."
+    - show: vedmid
+      at: [1850, 770]
+    - move: vedmid
+      to: [1150, 770]
+      ms: 2600
+      wait: true
+    - roll: false
+    - vedmid: "Колобок, колобок, я тебе з'їм!"
+    - choice: "Що зробить колобок?"
+      options:
+        - label: "Заспівати пісеньку"
+          icon: "🎶"
+          next: bear_song
+        - label: "Прикинутися камінцем"
+          icon: "🤫"
+          next: bear_stone
+
+  bear_song:
+    - kolobok: "Я колобок, колобок! По коробу метений, по засіку скребений, на сметані мішений, у печі печений, на віконці стужений. Я від діда втік, я від баби втік, я від зайця втік, я від вовка втік, і від тебе, ведмедю, втечу!"
+      sing: true
+    - roll: true
+    - move: vedmid
+      to: [-350, 770]
+      ms: 2800
+    - narrator: "Поки ведмідь чухав потилицю, колобок покотився далі."
+    - next: fox
+
+  bear_stone:
+    - narrator: "Колобок заплющив оченята, затамував подих і завмер — ніби він не колобок, а круглий камінчик."
+    - eyes: kolobok
+      state: closed
+    - move: vedmid
+      to: [700, 770]
+      ms: 1800
+      wait: true
+    - vedmid: "Гм... Де ж той колобок? Тут тільки камінь лежить. А каміння я не їм — об нього зуби зламаєш."
+    - move: vedmid
+      to: [1900, 770]
+      flip: true
+      ms: 2600
+      wait: true
+    - eyes: kolobok
+      state: open
+    - kolobok: "Хі-хі! Перехитрив ведмедя!"
+    - roll: true
+    - next: fox
+
+  fox:
+    - scene: glade
+    - show: kolobok
+      at: [560, 770]
+    - roll: true
+    - narrator: "Викотився колобок на сонячну березову галявину. А назустріч йому — лисичка-сестричка. Хвіст пухнастий, оченята хитрі."
+    - show: lysytsia
+      at: [1800, 770]
+    - move: lysytsia
+      to: [1080, 770]
+      ms: 2200
+      wait: true
+    - roll: false
+    - lysytsia: "Колобок, колобок, який же ти гарний! Який рум'яненький! Кажуть, ти дуже гарно співаєш. Заспівай і мені!"
+    - kolobok: "Я колобок, колобок! По коробу метений, по засіку скребений, на сметані мішений, у печі печений, на віконці стужений. Я від діда втік, я від баби втік, я від зайця втік, я від вовка втік, від ведмедя втік, і від тебе, лисичко, втечу!"
+      sing: true
+    - lysytsia: "Ой, як гарно! Та тільки я, колобочку, стара стала, недочуваю. Сядь-но мені на носик та заспівай ще разочок, голосніше."
+    - choice: "Сісти колобкові лисичці на носик?"
+      options:
+        - label: "Сісти на носик"
+          icon: "👃"
+          next: fox_eat
+        - label: "Ні, не сідати!"
+          icon: "✋"
+          next: fox_clever
+
+  fox_eat:
+    - move: kolobok
+      to: [985, 618]
+      hop: true
+      ms: 900
+      wait: true
+    - narrator: "Скочив колобок лисичці на носик, а лисичка — гам!"
+    - fx: chomp
+      on: lysytsia
+    - pause: 900
+    - narrator: "І з'їла колобка. Ось яка хитра лисичка! А як можна було її перехитрити? Спробуй ще раз — і вибери по-іншому!"
+    - ending: fox
+
+  fox_clever:
+    - kolobok: "Ні, лисичко-сестричко! Я знаю, що ти хитра. Хочеш мене з'їсти!"
+    - lysytsia: "Ой, та що ти, колобочку... Я ж тільки послухати..."
+    - narrator: "Але колобок лисичку не послухав. Розвернувся — і покотився геть!"
+    - move: kolobok
+      to: [-200, 770]
+      roll: true
+      ms: 2200
+      wait: true
+    - lysytsia: "Ех! Перехитрив мене колобок!"
+    - choice: "Куди тепер покотиться колобок?"
+      options:
+        - label: "Додому, до діда й баби"
+          icon: "🏠"
+          next: home
+        - label: "Далі, у великий світ"
+          icon: "🌍"
+          next: world
+
+  home:
+    - scene: hata-evening
+    - show: did
+      at: [1060, 770]
+    - show: baba
+      at: [1270, 770]
+    - narrator: "А дід і баба тим часом сиділи біля хати та сумували."
+    - baba: "Де ж наш колобок? Чи все з ним гаразд?"
+    - show: kolobok
+      at: [-150, 770]
+    - move: kolobok
+      to: [820, 770]
+      roll: true
+      ms: 2400
+      wait: true
+    - kolobok: "Дідусю! Бабусю! Я повернувся!"
+    - did: "Колобок! Живий-здоровий!"
+    - baba: "А ми вже так за тобою скучили!"
+    - fx: hearts
+      on: kolobok
+    - narrator: "І розповів колобок, як від зайця втік, від вовка втік, від ведмедя втік, і навіть хитру лисичку перехитрив. Відтоді жили вони втрьох весело та дружно."
+    - ending: home
+
+  world:
+    - scene: mountains
+    - show: kolobok
+      at: [560, 770]
+    - roll: true
+    - narrator: "І покотився колобок далеко-далеко: через поле й річку, через гори-Карпати, через долини й ліси..."
+    - pause: 1500
+    - scene: sea
+    - show: kolobok
+      at: [560, 770]
+    - roll: true
+    - narrator: "...аж до самого синього моря!"
+    - roll: false
+    - kolobok: "Ох, який же світ великий! Скільки ще в ньому пригод!"
+    - fx: sparkle
+      on: kolobok
+    - narrator: "Кажуть, він і досі котиться світом. Може, колись і до тебе в гості прикотиться!"
+    - ending: traveler

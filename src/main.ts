@@ -1,0 +1,215 @@
+// The app: a shelf of tales, and the tale itself (stage, subtitles, choices, the ending card).
+// Debug: window.tale — tale.go('fox') starts from a scene, tale.fast(4) plays 4× quicker without
+// the voice, tale.stage / tale.teller for poking around.
+
+import './style.css';
+import { makePuppet, el } from './characters';
+import { Teller, type TellerUi } from './engine';
+import { say, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
+import { Stage } from './stage';
+import { COMMON, endingPhrase, parseStory, type Story } from './story';
+import kolobokRaw from '../stories/kolobok.yaml';
+
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw)];
+/** tales still being written: shown on the shelf as "soon" */
+const SOON = [
+  { title: 'Рукавичка', icon: '🧤' },
+  { title: 'Коза-дереза', icon: '🐐' },
+  { title: 'Солом’яний бичок', icon: '🐂' },
+];
+
+const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+// ---------- endings found, per tale (only this browser remembers them) ----------
+function found(story: Story): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(`kazky:endings:${story.id}`) || '[]');
+    return Array.isArray(v) ? v.filter((e) => e in story.endings) : [];
+  } catch {
+    return [];
+  }
+}
+function remember(story: Story, ending: string) {
+  const all = found(story);
+  if (all.indexOf(ending) < 0) all.push(ending);
+  try {
+    localStorage.setItem(`kazky:endings:${story.id}`, JSON.stringify(all));
+  } catch {
+    // private mode: forgotten next time, that's all
+  }
+}
+
+// ---------- the shelf ----------
+function cover(story: Story) {
+  const svgEl = el('svg', { viewBox: '-90 -130 180 150', class: 'cover-art' });
+  svgEl.appendChild(makePuppet(story.cover));
+  return svgEl;
+}
+
+function renderShelf() {
+  const shelf = $('shelf');
+  shelf.innerHTML = '';
+  for (const story of STORIES) {
+    const card = document.createElement('button');
+    card.className = 'book';
+    const art = document.createElement('div');
+    art.className = 'book-art';
+    art.appendChild(cover(story));
+    const title = document.createElement('div');
+    title.className = 'book-title';
+    title.textContent = story.title;
+    const got = found(story);
+    const stars = document.createElement('div');
+    stars.className = 'book-endings';
+    stars.textContent = Object.keys(story.endings)
+      .map((k) => (got.indexOf(k) >= 0 ? story.endings[k].icon : '•'))
+      .join(' ');
+    card.append(art, title, stars);
+    card.addEventListener('click', () => openTale(story));
+    shelf.appendChild(card);
+  }
+  for (const s of SOON) {
+    const card = document.createElement('div');
+    card.className = 'book soon';
+    card.innerHTML = `<div class="book-art"><span class="soon-icon">${s.icon}</span></div><div class="book-title">${s.title}</div><div class="book-endings">скоро</div>`;
+    shelf.appendChild(card);
+  }
+}
+
+// ---------- the tale ----------
+const stage = new Stage($('stage-host'));
+let teller: Teller | null = null;
+let current: Story | null = null;
+let fastSpeed = 0;
+
+const ui: TellerUi = {
+  caption(who, name, text) {
+    const c = $('caption');
+    c.hidden = false;
+    c.setAttribute('data-who', who);
+    $('caption-who').textContent = name;
+    $('caption-who').hidden = !name;
+    $('caption-text').textContent = text;
+  },
+  hideCaption() {
+    $('caption').hidden = true;
+  },
+  showChoices(_question, options, pick) {
+    const box = $('choices');
+    box.innerHTML = '';
+    options.forEach((o, i) => {
+      const b = document.createElement('button');
+      b.className = 'choice';
+      b.innerHTML = `<span class="choice-icon"></span><span class="choice-label"></span>`;
+      (b.firstChild as HTMLElement).textContent = o.icon;
+      (b.lastChild as HTMLElement).textContent = o.label;
+      b.addEventListener('click', () => pick(i));
+      box.appendChild(b);
+    });
+    box.hidden = false;
+    $('play').classList.add('choosing');
+  },
+  highlightChoice(i) {
+    const buttons = $('choices').children;
+    for (let k = 0; k < buttons.length; k++) buttons[k].classList.toggle('reading', k === i);
+  },
+  hideChoices() {
+    $('choices').hidden = true;
+    $('play').classList.remove('choosing');
+  },
+  curtain(closed) {
+    const c = $('curtain');
+    c.classList.toggle('closed', closed);
+    return stage.wait(450);
+  },
+};
+
+function show(screen: 'library' | 'play') {
+  $('library').hidden = screen !== 'library';
+  $('play').hidden = screen !== 'play';
+}
+
+async function openTale(story: Story, from?: string) {
+  unlockAudio();
+  teller?.stop();
+  current = story;
+  $('ending').hidden = true;
+  show('play');
+  const t = new Teller(story, stage, ui);
+  t.fast = fastSpeed > 0;
+  teller = t;
+  const ending = await t.tell(from);
+  if (ending && teller === t) await showEnding(story, ending);
+}
+
+async function showEnding(story: Story, ending: string) {
+  const before = found(story);
+  remember(story, ending);
+  const got = found(story);
+  const e = story.endings[ending];
+  $('ending-icon').textContent = e.icon;
+  $('ending-title').textContent = e.title;
+  const keys = Object.keys(story.endings);
+  $('ending-found').innerHTML = '';
+  for (const k of keys) {
+    const slot = document.createElement('span');
+    slot.className = 'slot' + (got.indexOf(k) >= 0 ? ' got' : '') + (k === ending ? ' now' : '');
+    slot.textContent = got.indexOf(k) >= 0 ? story.endings[k].icon : '?';
+    $('ending-found').appendChild(slot);
+  }
+  $('ending-note').textContent = `Знайдено ${got.length} з ${keys.length}`;
+  $('ending').hidden = false;
+  if (fastSpeed) return;
+  const narrator = story.voices.narrator;
+  await say(narrator, endingPhrase(e));
+  if (!$('ending').hidden)
+    await say(narrator, got.length === keys.length && before.length < keys.length ? COMMON.allFound : COMMON.outro);
+}
+
+function toLibrary() {
+  teller?.stop();
+  teller = null;
+  stopSpeech();
+  $('ending').hidden = true;
+  renderShelf();
+  show('library');
+}
+
+$('btn-home').addEventListener('click', toLibrary);
+$('btn-library').addEventListener('click', toLibrary);
+$('btn-again').addEventListener('click', () => current && openTale(current));
+$('btn-sound').addEventListener('click', () => {
+  setSpeechEnabled(!speechEnabled());
+  $('btn-sound').textContent = speechEnabled() ? '🔊' : '🔇';
+});
+
+renderShelf();
+show('library');
+
+// ---------- debugging ----------
+(window as unknown as { tale: unknown }).tale = {
+  stage,
+  get teller() {
+    return teller;
+  },
+  stories: STORIES,
+  /** start a tale (default: the first) from a scene; for a scene that doesn't set its backdrop, give one (the kolobok waits there) */
+  go(scene?: string, backdrop?: string, id = STORIES[0].id) {
+    const s = STORIES.find((x) => x.id === id)!;
+    if (backdrop) {
+      stage.setScene(backdrop);
+      stage.show('kolobok', [560, 770]);
+    }
+    return openTale(s, scene);
+  },
+  /** n× faster, no voice (0: back to normal) */
+  fast(n = 4) {
+    fastSpeed = n;
+    stage.speed = n || 1;
+    if (teller) teller.fast = n > 0;
+  },
+  forget() {
+    for (const s of STORIES) localStorage.removeItem(`kazky:endings:${s.id}`);
+    renderShelf();
+  },
+};

@@ -1,0 +1,113 @@
+// A tale is a graph of scenes (stories/<tale>.yaml): each scene is a list of steps played one after
+// another — someone speaks, an actor moves, the background changes — and ends with a choice, a jump
+// to another scene, or an ending. The comment at the top of kolobok.yaml describes every step.
+
+import type { Voice } from './voiceKey';
+
+export type Point = [number, number];
+
+export type Step =
+  | { kind: 'say'; who: string; text: string; sing?: boolean }
+  | { kind: 'scene'; scene: string }
+  | { kind: 'show'; actor: string; at: Point; flip?: boolean; eyes?: 'open' | 'closed'; raw?: boolean }
+  | { kind: 'hide'; actor: string }
+  | { kind: 'move'; actor: string; to: Point; ms: number; hop?: boolean; roll?: boolean; flip?: boolean; wait?: boolean }
+  | { kind: 'roll'; on: boolean }
+  | { kind: 'eyes'; actor: string; open: boolean }
+  | { kind: 'fx'; fx: string; on?: string; at?: Point }
+  | { kind: 'pause'; ms: number }
+  | { kind: 'choice'; question: string; options: ChoiceOption[] }
+  | { kind: 'next'; scene: string }
+  | { kind: 'ending'; ending: string };
+
+export interface ChoiceOption {
+  label: string;
+  icon: string;
+  next: string;
+}
+
+export interface Ending {
+  title: string;
+  icon: string;
+}
+
+export interface Story {
+  id: string;
+  title: string;
+  cover: string;
+  voices: Record<string, Voice>;
+  endings: Record<string, Ending>;
+  start: string;
+  scenes: Record<string, Step[]>;
+}
+
+type Raw = Record<string, any>;
+
+/** Turns the YAML form (`- kolobok: "…"`, `- move: zayets`) into typed steps, checking links. */
+export function parseStory(id: string, raw: Raw): Story {
+  const voices = raw.voices as Record<string, Voice>;
+  const scenes: Record<string, Step[]> = {};
+  const fail = (scene: string, i: number, msg: string): never => {
+    throw new Error(`${id}.yaml, scene "${scene}", step ${i + 1}: ${msg}`);
+  };
+  for (const [name, steps] of Object.entries(raw.scenes as Record<string, Raw[]>)) {
+    scenes[name] = steps.map((s, i): Step => {
+      const who = Object.keys(s).find((k) => k in voices);
+      if (who) return { kind: 'say', who, text: String(s[who]), sing: !!s.sing };
+      if ('scene' in s) return { kind: 'scene', scene: s.scene };
+      if ('show' in s) return { kind: 'show', actor: s.show, at: s.at ?? fail(name, i, 'show needs at'), flip: s.flip, eyes: s.eyes, raw: s.raw };
+      if ('hide' in s) return { kind: 'hide', actor: s.hide };
+      if ('move' in s)
+        return { kind: 'move', actor: s.move, to: s.to ?? fail(name, i, 'move needs to'), ms: s.ms ?? 1500, hop: s.hop, roll: s.roll, flip: s.flip, wait: s.wait };
+      if ('roll' in s) return { kind: 'roll', on: !!s.roll };
+      if ('eyes' in s) return { kind: 'eyes', actor: s.eyes, open: s.state !== 'closed' };
+      if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at };
+      if ('pause' in s) return { kind: 'pause', ms: s.pause };
+      if ('choice' in s) return { kind: 'choice', question: s.choice, options: s.options };
+      if ('next' in s) return { kind: 'next', scene: s.next };
+      if ('ending' in s) return { kind: 'ending', ending: s.ending };
+      return fail(name, i, `unknown step ${JSON.stringify(s)}`);
+    });
+  }
+  const story: Story = { id, title: raw.title, cover: raw.cover, voices, endings: raw.endings, start: raw.start, scenes };
+  // every link must lead somewhere: a typo would strand the child mid-tale
+  for (const [name, steps] of Object.entries(scenes))
+    steps.forEach((s, i) => {
+      const targets = s.kind === 'next' ? [s.scene] : s.kind === 'choice' ? s.options.map((o) => o.next) : [];
+      for (const t of targets) if (!scenes[t]) fail(name, i, `no scene "${t}"`);
+      if (s.kind === 'ending' && !story.endings[s.ending]) fail(name, i, `no ending "${s.ending}"`);
+    });
+  if (!scenes[story.start]) throw new Error(`${id}.yaml: no start scene "${story.start}"`);
+  return story;
+}
+
+/** A phrase the app says aloud: who says it and what. */
+export interface Phrase {
+  who: string;
+  text: string;
+}
+
+/** Words said between scenes, the same for every tale. */
+export const COMMON = {
+  outro: 'Ось і казочці кінець! Хочеш послухати ще раз і вибрати по-іншому?',
+  allFound: 'Ого! Ти знайшла всі кінцівки цієї казки! Молодчинка!',
+};
+
+/** Everything a tale says aloud: lines, choice questions and options (read for a child who can't read yet). */
+export function spokenPhrases(story: Story): Phrase[] {
+  const out: Phrase[] = [];
+  for (const steps of Object.values(story.scenes))
+    for (const s of steps) {
+      if (s.kind === 'say') out.push({ who: s.who, text: s.text });
+      if (s.kind === 'choice') {
+        out.push({ who: 'narrator', text: s.question });
+        for (const o of s.options) out.push({ who: 'narrator', text: optionPhrase(o) });
+      }
+    }
+  for (const e of Object.values(story.endings)) out.push({ who: 'narrator', text: endingPhrase(e) });
+  for (const t of Object.values(COMMON)) out.push({ who: 'narrator', text: t });
+  return out;
+}
+
+export const optionPhrase = (o: ChoiceOption) => `${o.label.replace(/[!.]+$/, '')}?`;
+export const endingPhrase = (e: Ending) => `Кінцівка «${e.title}».`;
