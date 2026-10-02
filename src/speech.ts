@@ -155,6 +155,19 @@ export function preload(phrases: { voice: Voice; text: string }[]) {
 // ---------- the audio context (also keeps the output awake) ----------
 let ctx: AudioContext | null = null;
 let source: AudioBufferSourceNode | null = null;
+/** the recording playing from a buffer: when it started (audio-context time) and how long it is */
+let playing: { at: number; dur: number } | null = null;
+
+/**
+ * How far into the phrase being said the voice is, 0…1 — or null when that isn't known (muted,
+ * the speech synthesis). The subtitles of a long line turn their pages by it. The audio context's
+ * clock stands still while paused, so the pages wait too.
+ */
+export function speechProgress(): number | null {
+  if (playing && ctx) return Math.min(1, Math.max(0, (ctx.currentTime - playing.at) / playing.dur));
+  if (audio && finishCurrent && !audio.paused && audio.duration > 0) return Math.min(1, audio.currentTime / audio.duration);
+  return null;
+}
 
 /** Call from a tap (browsers start audio only on a user gesture). */
 export function unlockAudio() {
@@ -217,6 +230,7 @@ export function resumeSpeech() {
 }
 
 function stopSource() {
+  playing = null;
   if (!source) return;
   source.onended = null;
   try {
@@ -298,10 +312,14 @@ function playBuffer(key: string, d: { buf: AudioBuffer; from: number; to: number
   s.buffer = d.buf;
   s.connect(c.destination);
   s.onended = () => {
-    if (source === s) source = null;
+    if (source === s) {
+      source = null;
+      playing = null;
+    }
     finish();
   };
   source = s;
+  playing = { at: c.currentTime, dur: Math.max(0.1, d.to - d.from) };
   s.start(0, d.from, d.to - d.from);
 }
 

@@ -5,19 +5,25 @@
 import './style.css';
 import { makePuppet, el } from './characters';
 import { Teller, type TellerUi } from './engine';
-import { pauseSpeech, resumeSpeech, say, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
+import { pauseSpeech, resumeSpeech, say, speechProgress, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
 import { Stage } from './stage';
 import { COMMON, endingPhrase, parseStory, type Story } from './story';
 import kolobokRaw from '../stories/kolobok.yaml';
 import rukavychkaRaw from '../stories/rukavychka.yaml';
 import kozaRaw from '../stories/koza-dereza.yaml';
+import kotskyiRaw from '../stories/pan-kotskyi.yaml';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw)];
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw)];
 /** tales still being written: shown on the shelf as "soon" */
 const SOON = [
-  { title: 'Пан Коцький', icon: '🐱' },
   { title: 'Котик і Півник', icon: '🐓' },
   { title: 'Солом’яний бичок', icon: '🐂' },
+  { title: 'Лисичка і Журавель', icon: '🐦' },
+  { title: 'Котигорошко', icon: '💪' },
+  { title: 'Івасик-Телесик', icon: '🛶' },
+  { title: 'Сірко', icon: '🐕' },
+  { title: 'Кирило Кожум’яка', icon: '🐉' },
+  { title: 'Лисичка-сестричка і вовк-панібрат', icon: '🐺' },
 ];
 
 /** backdrops with no road: subtitles at the bottom there */
@@ -50,6 +56,7 @@ const COVER_VIEW: Record<string, string> = {
   kolobok: '-90 -130 180 150',
   rukavychka: '-150 -320 300 350',
   koza: '-130 -270 250 290',
+  kit: '-110 -250 230 270',
 };
 
 function cover(story: Story) {
@@ -88,6 +95,85 @@ function renderShelf() {
   }
 }
 
+// ---------- subtitles of long lines: in pages, turned as the voice goes on ----------
+
+/** the most lines a subtitle shows at once; a longer line is shown in parts, one after another */
+const MAX_LINES = 3;
+let pages: string[] = [];
+let pageAt: number[] = [];
+let page = -1;
+let pageTimer: ReturnType<typeof setInterval> | undefined;
+/** for a line with no known progress (muted, fast tests): time it has been shown, pauses excluded */
+let shownFor = 0;
+
+/** how many lines this text takes in the subtitle box (measured in a hidden copy of it) */
+function linesOf(text: string): number {
+  const el = $('caption-text');
+  const probe = el.cloneNode(false) as HTMLElement;
+  probe.style.cssText = `position:absolute;visibility:hidden;left:-9999px;top:0;width:${el.clientWidth}px`;
+  probe.textContent = text;
+  el.parentElement!.appendChild(probe);
+  const lh = parseFloat(getComputedStyle(probe).lineHeight) || 30;
+  // a line and a bit is two lines
+  const n = Math.ceil(probe.offsetHeight / lh - 0.15);
+  probe.remove();
+  return n;
+}
+
+/** Split a long line into pages of at most MAX_LINES: by sentences, a too long one at a comma or dash. */
+function paginate(text: string): string[] {
+  if (linesOf(text) <= MAX_LINES) return [text];
+  const pieces: string[] = [];
+  for (const sentence of text.match(/[^.!?…]+[.!?…]+[»”"]?\s*|[^.!?…]+$/g) || [text]) {
+    if (linesOf(sentence) <= MAX_LINES) pieces.push(sentence);
+    else pieces.push(...(sentence.match(/[^,—:;]+[,—:;]\s*|[^,—:;]+$/g) || [sentence]));
+  }
+  const out: string[] = [];
+  for (const p of pieces) {
+    const last = out[out.length - 1];
+    if (last !== undefined && linesOf(last + p) <= MAX_LINES) out[out.length - 1] = last + p;
+    else out.push(p);
+  }
+  return out.map((p) => p.trim());
+}
+
+function showPages(text: string) {
+  clearInterval(pageTimer);
+  pages = paginate(text);
+  // each page starts when the voice has read the text before it (by the share of characters)
+  pageAt = [];
+  let sum = 0;
+  for (const p of pages) {
+    pageAt.push(sum / text.length);
+    sum += p.length + 1;
+  }
+  page = -1;
+  shownFor = 0;
+  turnPage(0);
+  if (pages.length < 2) return;
+  const estimate = 1200 + text.length * 45;
+  pageTimer = setInterval(() => {
+    if (!stage.paused) shownFor += 100 * (fastSpeed || 1);
+    const progress = speechProgress();
+    const k = progress !== null ? progress : Math.min(1, shownFor / estimate);
+    let i = 0;
+    while (i + 1 < pages.length && pageAt[i + 1] <= k + 0.02) i++;
+    turnPage(i);
+    if (i === pages.length - 1) clearInterval(pageTimer);
+  }, 100);
+}
+
+function turnPage(i: number) {
+  if (i === page) return;
+  page = i;
+  const el = $('caption-text');
+  el.textContent = pages[i];
+  el.classList.remove('turn');
+  // restart the fade-in
+  void el.offsetWidth;
+  if (i > 0) el.classList.add('turn');
+}
+
 // ---------- the tale ----------
 const stage = new Stage($('stage-host'));
 let teller: Teller | null = null;
@@ -101,9 +187,10 @@ const ui: TellerUi = {
     c.setAttribute('data-who', who);
     $('caption-who').textContent = name;
     $('caption-who').hidden = !name;
-    $('caption-text').textContent = text;
+    showPages(text);
   },
   hideCaption() {
+    clearInterval(pageTimer);
     $('caption').hidden = true;
   },
   showChoices(_question, options, pick) {
@@ -263,6 +350,8 @@ show('library');
     stage.speed = n || 1;
     if (teller) teller.fast = n > 0;
   },
+  /** how a line would be split into subtitle pages */
+  pages: (text: string) => paginate(text),
   forget() {
     for (const s of STORIES) localStorage.removeItem(`kazky:endings:${s.id}`);
     renderShelf();

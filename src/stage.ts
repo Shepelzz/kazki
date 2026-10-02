@@ -123,13 +123,18 @@ interface Actor {
   wobble: number;
   /** a thing, not a creature: doesn't walk or blink */
   prop: boolean;
+  /** lying down: 'lie' — flat (the wolf behind the log), 'roll' — rolling side to side (the cat, full of presents) */
+  pose: '' | 'lie' | 'roll';
   /** tumbling head over heels: degrees still to turn, and how fast */
   spin: number;
   spinSpeed: number;
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk'];
+/** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
+const FRONT = ['bush', 'bush2', 'koloda'];
+const BACK = ['khatka', 'dub', 'skatertyna'];
 
 interface Particle {
   el: SVGElement;
@@ -568,6 +573,16 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       `<g>${verge(104, false)}${verge(105, false)}</g>`,
     layers: [],
   }),
+  polyana: () => ({
+    still:
+      sky('#7cc4f2', '#e0f4ff') +
+      sun(1380, 230) +
+      clouds(121) +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#a5d6a7', GROUND - 150, 60, 122)}${treeRow(123, false)}</g>`).join('') +
+      ground('#7cb342', '#7cb342') +
+      `<g>${verge(124, false)}${verge(125, false)}</g>`,
+    layers: [],
+  }),
   'lis-osin': () => ({
     still:
       sky('#f6d7a7', '#fff3e0') +
@@ -814,11 +829,14 @@ export class Stage {
   private camera(dt: number, snap = false) {
     let lo = Infinity;
     let hi = -Infinity;
+    // how high above the road the heads go (a bear up a tree is higher)
+    let headroom = HEADROOM;
     for (const a of this.actors.values()) {
       // ones walking off far away don't drag the camera along
       if (a.x < -60 || a.x > W + 60) continue;
       lo = Math.min(lo, a.x);
       hi = Math.max(hi, a.x);
+      if (!a.prop && ANCHORS[a.id]) headroom = Math.max(headroom, GROUND - (a.y + ANCHORS[a.id].top * a.size) + 30);
     }
     const [w, h] = this.screen;
     const p = this.portrait;
@@ -827,7 +845,7 @@ export class Stage {
     const groundAt = p ? PORTRAIT_GROUND : h < 520 ? LOW_GROUND : LANDSCAPE_GROUND;
     // wide enough for the heads to fit between the road and the subtitles / round buttons up top
     const topUi = p ? 76 : h < 520 ? 66 : 100;
-    const tallEnough = (HEADROOM * w) / Math.max(1, sceneH * groundAt - topUi);
+    const tallEnough = (headroom * w) / Math.max(1, sceneH * groundAt - topUi);
     const minW = Math.max(p ? CAM_MIN_W : CAM_MIN_W_LANDSCAPE, w / (p ? CAM_MAX_SCALE : CAM_MAX_SCALE_LANDSCAPE), tallEnough);
     let tx = W / 2;
     let tw = Math.max(minW, p ? 1100 : W);
@@ -949,6 +967,7 @@ export class Stage {
       size,
       wobble: 0,
       prop: PROPS.indexOf(id) >= 0,
+      pose: '',
       spin: 0,
       spinSpeed: 0,
       parts: {
@@ -965,9 +984,9 @@ export class Stage {
         peek: part('peek'),
       },
     };
-    (id === 'bush' ? this.frontLayer : this.actorsLayer).appendChild(g);
-    // the snow house goes behind everyone (they walk in front of it, then in)
-    if (id === 'khatka') this.actorsLayer.insertBefore(g, this.actorsLayer.firstChild);
+    (FRONT.indexOf(id) >= 0 ? this.frontLayer : this.actorsLayer).appendChild(g);
+    // the snow house, the oak, the tablecloth: behind everyone
+    if (BACK.indexOf(id) >= 0) this.actorsLayer.insertBefore(g, this.actorsLayer.firstChild);
     this.actors.set(id, a);
     this.setEyes(id, eyesOpen);
     if (raw && a.parts.raw) a.parts.raw.setAttribute('opacity', '1');
@@ -993,6 +1012,7 @@ export class Stage {
     if (!a) return Promise.resolve();
     a.move?.done();
     a.carriedBy = null;
+    a.pose = '';
     if (opts.flip !== undefined) a.flip = opts.flip;
     return new Promise((resolve) => {
       const m: Move = {
@@ -1178,6 +1198,29 @@ export class Stage {
         const [x, y] = this.anchor(a, 'mouth');
         for (let i = 0; i < 8; i++) this.later(i * 0.22, () => this.tear(x + (i % 2 ? 14 : -10), y - 30));
         return this.wait(1900);
+      }
+      case 'belly':
+        // lies down and rolls from side to side (gets up as soon as it moves)
+        if (a) a.pose = 'roll';
+        return this.wait(1600);
+      case 'lie':
+        // lies flat on the ground (behind the log: only the ears show)
+        if (a) a.pose = 'lie';
+        return this.wait(300);
+      case 'squash': {
+        // someone landed on it: squashed flat for a moment, stars
+        if (!a) return this.wait(300);
+        a.wobble = 1;
+        const [x, y] = this.anchor(a, 'top');
+        for (let i = 0; i < 10; i++) this.star(x, y + 60, (i / 10) * Math.PI * 2);
+        return this.wait(900);
+      }
+      case 'rustle': {
+        // something stirs in the bush: it shakes, leaves fly
+        if (!a) return this.wait(300);
+        a.wobble = 1;
+        for (let i = 0; i < 8; i++) this.later(i * 0.08, () => this.crumbOf(a.x + (Math.random() - 0.3) * 160 * a.size, a.y - 120 * a.size, '#4f9446'));
+        return this.wait(900);
       }
       case 'pinch': {
         // a pinch inside: stars burst from the door, the hut jumps
@@ -1553,9 +1596,15 @@ export class Stage {
       const d = Math.min(a.spin, a.spinSpeed * dt);
       a.spin -= d;
     }
-    // turning about the middle of the body
-    const spinAt = a.spin > 0 ? 360 - a.spin : 0;
-    const pivot = (ANCHORS[a.id] ? ANCHORS[a.id].top : -100) / 2;
+    // turning about the middle of the body (tumbling, or lying on its back)
+    let spinAt = a.spin > 0 ? 360 - a.spin : 0;
+    let pivotY = 0;
+    if (a.pose) {
+      // on its side, head towards where it faces, turning about a point near the feet
+      spinAt = a.pose === 'roll' ? -90 + Math.sin(a.phase * 4) * 22 : -88;
+      pivotY = -40;
+    }
+    const pivot = a.pose ? pivotY : (ANCHORS[a.id] ? ANCHORS[a.id].top : -100) / 2;
     let breathe = a.id === 'khatka' || a.id === 'rvana' ? 1 : 1 + Math.sin(a.phase * 2.2) * 0.012;
     // a thing talking (the mitten, for those inside) or just moved into: squash and stretch
     if (a.prop && a.talking) breathe += Math.sin(a.phase * 14) * 0.025;

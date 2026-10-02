@@ -8,6 +8,7 @@
 //   data-part="ears"     the hare's ears, they twitch
 //   data-part="raw"      pale dough over the kolobok's crust, fades as he bakes
 
+import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
 
@@ -354,6 +355,15 @@ export const PUPPETS: Record<string, () => string> = {
   rak,
   khatynka,
   kapusta,
+  kit,
+  dub,
+  koloda,
+  skatertyna,
+  ryba,
+  med,
+  malyna,
+  koshyk,
+  bush2: bush,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -389,4 +399,13 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   rak: { mouth: [0, -54], top: -200 },
   khatynka: { mouth: [-30, -20], top: -330 },
   kapusta: { mouth: [0, -34], top: -70 },
+  kit: { mouth: [0, -142], top: -232 },
+  dub: { mouth: [0, -300], top: -700 },
+  koloda: { mouth: [0, -60], top: -112 },
+  bush2: { mouth: [0, -80], top: -156 },
+  skatertyna: { mouth: [0, -20], top: -40 },
+  ryba: { mouth: [0, -24], top: -50 },
+  med: { mouth: [0, -40], top: -90 },
+  malyna: { mouth: [0, -40], top: -90 },
+  koshyk: { mouth: [0, -40], top: -80 },
 };

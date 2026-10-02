@@ -1,0 +1,458 @@
+# Пан Коцький — казка з вибором. Головна лінія — як у народній казці; відгалуження — на виборах.
+# Кроки ті самі, що в інших казках (див. шапки kolobok.yaml і rukavychka.yaml), плюс ефекти:
+#   - fx: rustle     у кущі щось ворушиться (on: bush)
+#   - fx: belly      котик лягає й качається з боку на бік (on: kit; встане, щойно рушить з місця)
+#   - fx: lie        лягає пластом (on: vovk — за колодою видно тільки вуха)
+#   - fx: squash     когось придавило: зірочки (on: vovk)
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Пан Коцький
+cover: kit
+
+voices:
+  narrator: { name: "", pitch: 1.1, rate: 1 }
+  kit:      { name: "Котик", pitch: 1.15, rate: 1 }
+  lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
+  vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95 }
+  vedmid:   { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
+  kaban:    { name: "Кабан", pitch: 0.7, rate: 0.95 }
+  zayets:   { name: "Зайчик", pitch: 1.4, rate: 1.15 }
+
+endings:
+  murchyk: { title: "Просто Мурчик", icon: "🐱" }
+  feast:   { title: "Котячий бенкет", icon: "🐟" }
+  scary:   { title: "Страшний пан Коцький", icon: "😼" }
+  laugh:   { title: "Хто кого злякався?", icon: "😂" }
+
+start: start
+
+scenes:
+  start:
+    - scene: forest
+    - show: kit
+      at: [560, 770]
+      flip: true
+    - roll: true
+    - narrator: "Привіт! Зараз я розповім тобі казку про пана Коцького. А ти допомагатимеш вибирати, що буде далі."
+    - narrator: "Був собі чоловік, і був у нього кіт. Та такий уже старий, що й мишей не ловив. От чоловік узяв, вивіз його в ліс та й покинув."
+    - roll: false
+    - kit: "Мяу... Що ж мені тепер робити? Ліс великий, а я сам-самісінький."
+    - narrator: "Ходив кіт лісом, ходив, аж тут назустріч — лисичка-сестричка."
+    - show: lysytsia
+      at: [1800, 770]
+    - move: lysytsia
+      to: [1080, 770]
+      ms: 2200
+      wait: true
+    - lysytsia: "Ой, що ж ти за звір такий? Вусатий, хвостатий, а очі — як жарини!"
+    - choice: "Що відповість котик?"
+      options:
+        - label: "«Я — пан Коцький!»"
+          icon: "😼"
+          next: boast
+        - label: "«Я просто котик Мурчик»"
+          icon: "🐱"
+          next: honest
+
+  honest:
+    - kit: "Я просто котик. Мурчиком мене звуть. Старий я став, от хазяїн і покинув мене в лісі."
+    - lysytsia: "Ой, бідненький! Ходи до мене — нагодую, обігрію. Не пропадеш!"
+    - scene: glade
+    - show: kit
+      at: [700, 770]
+      flip: true
+    - show: lysytsia
+      at: [1000, 770]
+    - narrator: "Привела лисичка котика до своєї хатки. А наступного дня покликала в гості всіх своїх друзів."
+    - show: zayets
+      at: [1800, 770]
+    - move: zayets
+      to: [1260, 770]
+      hop: true
+      ms: 1800
+    - show: vovk
+      at: [-250, 770]
+      flip: true
+    - move: vovk
+      to: [380, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - vovk: "Це хто такий вусатий?"
+    - kit: "Я котик Мурчик! Мур-мур. А ви хто?"
+    - zayets: "А ми — твої нові друзі!"
+    - narrator: "Грали звірята з котиком у квача, качалися в листі, а ввечері котик заспівав їм свою котячу пісеньку — муррр-мурр."
+    - fx: hearts
+      on: kit
+    - narrator: "Так і лишився котик жити в лісі, серед друзів. Бо щоб тебе любили, не треба нікого лякати — досить бути собою!"
+    - ending: murchyk
+
+  boast:
+    - kit: "Я — пан Коцький!"
+    - resize: kit
+      to: 1.3
+      ms: 500
+    - fx: sparkle
+      on: kit
+    - resize: kit
+      to: 1
+      ms: 600
+    - lysytsia: "Ох, який пан! Будь же ти моїм чоловіком, пане Коцький! Житимемо разом у моїй хатці."
+    - narrator: "Так і стали вони жити. Лисичка ходить по здобич, а пан Коцький удома сидить."
+    - next: hare_first
+
+  hare_first:
+    - scene: glade
+    - show: lysytsia
+      at: [700, 770]
+    - narrator: "Іде якось лисичка, а назустріч їй — зайчик."
+    - show: zayets
+      at: [1800, 770]
+    - move: zayets
+      to: [1060, 770]
+      hop: true
+      ms: 2000
+      wait: true
+    - zayets: "Лисичко-сестричко, а можна я до тебе в гості прийду?"
+    - lysytsia: "Ой, не йди, зайчику! У мене тепер пан Коцький. Він такий сердитий, що як побачить — то й розірве!"
+    - zayets: "Ой-ой-ой! Побіжу я краще, всім розкажу!"
+    - move: zayets
+      to: [1900, 770]
+      flip: true
+      hop: true
+      ms: 1600
+      wait: true
+    - narrator: "Побіг зайчик і розказав про пана Коцького вовкові, ведмедеві й кабанові. Зібралися звірі та й радяться."
+    - next: council
+
+  council:
+    - scene: forest
+    - show: vovk
+      at: [560, 770]
+      flip: true
+    - show: vedmid
+      at: [880, 770]
+    - show: kaban
+      at: [1160, 770]
+    - show: zayets
+      at: [330, 770]
+      flip: true
+    - vovk: "А що ж то за пан Коцький такий, що всіх розірве?"
+    - kaban: "Треба б на нього хоч одним оком подивитися!"
+    - vedmid: "Понесімо йому гостинців — то, може, й не сердитиметься."
+    - choice: "Що понесе ведмідь у гостинець?"
+      options:
+        - label: "Барильце меду"
+          icon: "🍯"
+          next: gift_med
+        - label: "Кошик малини"
+          icon: "🍓"
+          next: gift_malyna
+
+  gift_med:
+    - vedmid: "Понесу я барильце меду — солодкого-пресолодкого!"
+    - narrator: "Вовк узяв рибки, кабан — кошик яблук, а зайчик — капустину. І послали звірі зайчика до лисички."
+    - next: hare_second_med
+
+  gift_malyna:
+    - vedmid: "Понесу я кошик малини — стиглої, запашної!"
+    - narrator: "Вовк узяв рибки, кабан — кошик яблук, а зайчик — капустину. І послали звірі зайчика до лисички."
+    - next: hare_second_malyna
+
+  hare_second_med:
+    - scene: glade
+    - show: lysytsia
+      at: [700, 770]
+    - show: zayets
+      at: [1800, 770]
+    - move: zayets
+      to: [1060, 770]
+      hop: true
+      ms: 2000
+      wait: true
+    - zayets: "Лисичко-сестричко! Звірі гостинців наносили. Приходь із паном Коцьким на галявину!"
+    - lysytsia: "Добре, прийдемо. Тільки ж поховайтеся, бо як пан Коцький вас побачить — то всіх і розірве!"
+    - next: feast_setup_med
+
+  hare_second_malyna:
+    - scene: glade
+    - show: lysytsia
+      at: [700, 770]
+    - show: zayets
+      at: [1800, 770]
+    - move: zayets
+      to: [1060, 770]
+      hop: true
+      ms: 2000
+      wait: true
+    - zayets: "Лисичко-сестричко! Звірі гостинців наносили. Приходь із паном Коцьким на галявину!"
+    - lysytsia: "Добре, прийдемо. Тільки ж поховайтеся, бо як пан Коцький вас побачить — то всіх і розірве!"
+    - next: feast_setup_malyna
+
+  feast_setup_med:
+    - scene: polyana
+    - show: skatertyna
+      at: [560, 786]
+    - show: dub
+      at: [1100, 770]
+    - show: koloda
+      at: [960, 800]
+    - show: bush
+      at: [1480, 790]
+      size: 1.9
+    - show: bush2
+      at: [130, 790]
+      size: 1.2
+    - show: med
+      at: [640, 772]
+    - next: feast
+
+  feast_setup_malyna:
+    - scene: polyana
+    - show: skatertyna
+      at: [560, 786]
+    - show: dub
+      at: [1100, 770]
+    - show: koloda
+      at: [960, 800]
+    - show: bush
+      at: [1480, 790]
+      size: 1.9
+    - show: bush2
+      at: [130, 790]
+      size: 1.2
+    - show: malyna
+      at: [640, 772]
+    - next: feast
+
+  feast:
+    - show: ryba
+      at: [480, 772]
+    - show: koshyk
+      at: [560, 772]
+    - show: kapusta
+      at: [410, 772]
+      size: 0.8
+    - fx: sparkle
+      on: koshyk
+    - narrator: "Розстелили звірі на галявині скатертину й поклали гостинці. А самі — щоб пан Коцький не побачив — поховалися: ведмідь виліз на дуба, вовк заліг під колодою, кабан зарився в кущі, а зайчик сховався під кущиком."
+    - show: vedmid
+      at: [780, 770]
+    - move: vedmid
+      to: [970, 485]
+      hop: true
+      ms: 1300
+    - show: vovk
+      at: [760, 770]
+      flip: true
+    - move: vovk
+      to: [1110, 770]
+      flip: true
+      ms: 900
+      wait: true
+    - move: vovk
+      to: [1110, 770]
+      flip: false
+      ms: 1
+      wait: true
+    - fx: lie
+      on: vovk
+    - show: kaban
+      at: [1250, 770]
+      flip: true
+    - move: kaban
+      to: [1480, 770]
+      flip: true
+      ms: 1100
+    - show: zayets
+      at: [380, 770]
+      flip: true
+    - move: zayets
+      to: [130, 770]
+      hop: true
+      ms: 1100
+      wait: true
+    - narrator: "Аж ось іде лисичка, а за нею — пан Коцький, хвіст трубою!"
+    - show: lysytsia
+      at: [-250, 770]
+      flip: true
+    - show: kit
+      at: [-400, 770]
+      flip: true
+    - move: lysytsia
+      to: [300, 770]
+      flip: true
+      ms: 2400
+    - move: kit
+      to: [520, 770]
+      flip: true
+      ms: 2800
+      wait: true
+    - narrator: "Побачив кіт гостинці, наїжачився, вуса настовбурчив — та як кинеться на них!"
+    - choice: "Що скаже пан Коцький?"
+      options:
+        - label: "«Мняу! Мняу!»"
+          icon: "😼"
+          next: greedy
+        - label: "«Дякую, друзі!»"
+          icon: "🙏"
+          next: thanks
+
+  thanks:
+    - kit: "Мур-мур! Яка смакота! Дякую, друзі! Та де ж ви? Виходьте — я зовсім не страшний!"
+    - lysytsia: "Виходьте, виходьте, не бійтеся!"
+    - move: vedmid
+      to: [880, 770]
+      hop: true
+      ms: 900
+    - move: vovk
+      to: [760, 770]
+      ms: 900
+    - move: kaban
+      to: [1300, 770]
+      ms: 1200
+    - move: zayets
+      to: [260, 770]
+      flip: true
+      hop: true
+      ms: 1000
+      wait: true
+    - vovk: "А ми думали, ти нас розірвеш!"
+    - kit: "Та що ви! Я ж котик. Я люблю рибку, молочко та щоб мене за вушком почухали."
+    - fx: munch
+      on: kit
+    - narrator: "І влаштували звірі на галявині веселий бенкет. Ведмідь частував солодким, зайчик — капусткою, а пан Коцький муркотів так гучно, що аж листя на дубі тремтіло."
+    - fx: hearts
+      on: kit
+    - ending: feast
+
+  greedy:
+    - fx: munch
+      on: kit
+    - kit: "Мняу! Мняу! Мняу!"
+    - vedmid: "Чуєте? Каже: «Мало! Мало!»"
+    - vovk: "От вражого батька син! Стільки всього наносили — а йому ще мало!"
+    - fx: munch
+      on: kit
+    - hide: ryba
+    - hide: kapusta
+    - fx: munch
+      on: kit
+    - hide: koshyk
+    - hide: med
+    - hide: malyna
+    - narrator: "А пан Коцький усе з'їв — і рибку, і яблука, і капусту, і ведмедів дарунок. Та й ліг на скатертину догори черевцем, качається, вурчить."
+    - fx: belly
+      on: kit
+    - narrator: "А кабан у кущах не втерпів — захотілося й йому на пана подивитися. Ворухнув він хвостиком — шурх-шурх!"
+    - fx: rustle
+      on: bush
+    - choice: "Що зробить пан Коцький?"
+      options:
+        - label: "Кинутися — це миша!"
+          icon: "🐭"
+          next: chaos
+        - label: "Тихенько подивитися"
+          icon: "👀"
+          next: peek
+
+  chaos:
+    - narrator: "Подумав кіт, що то миша, — та як кинеться в кущі, прямо на кабанячий хвостик!"
+    - move: kit
+      to: [1430, 770]
+      flip: true
+      hop: true
+      ms: 900
+      wait: true
+    - fx: rustle
+      on: bush
+    - kaban: "Ой-ой-ой! Рятуйте!"
+    - move: kaban
+      to: [2000, 770]
+      flip: true
+      ms: 1300
+    - narrator: "Кабан — навтьоки! А кіт і сам злякався — та й шусть на дуба, де ведмідь сидів!"
+    - move: kit
+      to: [1210, 478]
+      hop: true
+      ms: 800
+      wait: true
+    - vedmid: "Ой, він і до мене лізе!"
+    - move: vedmid
+      to: [960, 770]
+      hop: true
+      ms: 600
+      wait: true
+    - fx: squash
+      on: vovk
+    - narrator: "Ведмідь із переляку — гуп! — з дуба додолу, та прямо на вовка, що під колодою лежав. Ледь не розчавив сердешного!"
+    - vovk: "Ой-ой-ой! Роздавили! Рятуйся, хто може!"
+    - move: vovk
+      to: [-400, 770]
+      ms: 1500
+    - move: vedmid
+      to: [-500, 770]
+      ms: 1900
+    - move: zayets
+      to: [-300, 770]
+      hop: true
+      ms: 1200
+      wait: true
+    - narrator: "Розбіглися звірі хто куди — тільки п'яти засвітилися."
+    - lysytsia: "Ото мій пан Коцький! Усіх розігнав!"
+    - next: gathered
+
+  gathered:
+    - scene: forest
+    - show: vovk
+      at: [560, 770]
+      flip: true
+    - show: vedmid
+      at: [880, 770]
+    - show: kaban
+      at: [1160, 770]
+    - show: zayets
+      at: [330, 770]
+      flip: true
+    - narrator: "А потім зійшлися звірі докупи, віддихалися та й кажуть:"
+    - vedmid: "Ну й пан Коцький! Отакий малий, а ледь нас усіх не поїв!"
+    - vovk: "А мене ледь не розчавили..."
+    - kaban: "Більше я туди ні ногою!"
+    - narrator: "Відтоді звірі обходили лисичину хатку десятою дорогою. А пан Коцький з лисичкою жили собі, поживали та гостинці їли."
+    - ending: scary
+
+  peek:
+    - narrator: "Пан Коцький скочив на лапи, нашорошив вушка й тихесенько, навшпиньки, підкрався до куща..."
+    - move: kit
+      to: [1290, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - kit: "Хі-хі! Та це ж не миша — це хвостик!"
+    - move: kaban
+      to: [1360, 770]
+      ms: 700
+      wait: true
+    - kaban: "Ой... це я, кабан. Не розривай мене, пане Коцький!"
+    - kit: "Ха-ха! Та я ж нікого не розриваю! Я просто старий котик. Це лисичка всім казала, що я страшний."
+    - lysytsia: "Ой... Ну, трішечки я й перебільшила..."
+    - move: vedmid
+      to: [880, 770]
+      hop: true
+      ms: 900
+    - move: vovk
+      to: [760, 770]
+      ms: 900
+    - move: zayets
+      to: [260, 770]
+      flip: true
+      hop: true
+      ms: 1000
+      wait: true
+    - vovk: "То ти не страшний? А «мало» чого казав?"
+    - kit: "Та я казав «мняу»! Бо так смачно було!"
+    - narrator: "Як засміються звірі — аж дуб зашумів! Хто кого злякався? Усі всіх! І з того дня ніхто нікого не боявся."
+    - fx: hearts
+      on: kit
+    - ending: laugh
