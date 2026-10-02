@@ -18,6 +18,27 @@ let enabled = true;
 // One element reused for every phrase: iOS unlocks playback per element on the first tap.
 let audio: HTMLAudioElement | null = null;
 let finishCurrent: (() => void) | null = null;
+/** the pause button: the phrase stops where it is and goes on from there */
+let paused = false;
+/** a phrase asked for while paused starts on resume */
+let startOnResume: (() => void) | null = null;
+/** the recording was playing when paused (not just sitting there finished) */
+let resumeAudio = false;
+
+/** like setTimeout, but the clock stands still while paused */
+function pausableTimeout(ms: number, fn: () => void) {
+  let left = ms;
+  let last = Date.now();
+  const iv = setInterval(() => {
+    const now = Date.now();
+    if (!paused) left -= now - last;
+    last = now;
+    if (left <= 0) {
+      clearInterval(iv);
+      fn();
+    }
+  }, 100);
+}
 
 function pickVoice() {
   if (!synth) return;
@@ -107,7 +128,32 @@ document.addEventListener('visibilitychange', () => {
   else void ctx.suspend();
 });
 
+export function pauseSpeech() {
+  if (paused) return;
+  paused = true;
+  resumeAudio = !!audio && !audio.paused;
+  if (resumeAudio) audio!.pause();
+  synth?.pause();
+}
+
+export function resumeSpeech() {
+  if (!paused) return;
+  paused = false;
+  if (startOnResume) {
+    const f = startOnResume;
+    startOnResume = null;
+    f();
+  } else if (audio && resumeAudio && finishCurrent) {
+    const p = audio.play();
+    if (p) p.catch(() => {});
+  }
+  resumeAudio = false;
+  synth?.resume();
+}
+
 export function stopSpeech() {
+  startOnResume = null;
+  resumeAudio = false;
   if (audio) audio.pause();
   synth?.cancel();
   const f = finishCurrent;
@@ -138,37 +184,43 @@ export function say(voice: Voice, text: string): Promise<void> {
     };
     finishCurrent = finish;
     if (!enabled) {
-      setTimeout(finish, 1200 + text.length * 45);
+      pausableTimeout(1200 + text.length * 45, finish);
       return;
     }
-    const key = voiceKey(voice, text);
-    if (recorded.has(key)) {
-      if (!audio) audio = new Audio();
-      const a = audio;
-      a.onended = finish;
-      a.onerror = () => {
-        if (!done && finishCurrent === finish) speakWithSynth(voice, text, finish);
-      };
-      const url = ready.get(key);
-      if (url) {
-        ready.delete(key);
-        ready.set(key, url);
-      }
-      a.src = url || fileUrl(key);
-      const p = a.play();
-      if (p)
-        p.catch((err: DOMException) => {
-          if (err && err.name !== 'AbortError') finish();
-        });
-      return;
-    }
-    speakWithSynth(voice, text, finish);
+    if (paused) startOnResume = () => start(voice, text, finish, () => done);
+    else start(voice, text, finish, () => done);
   });
+}
+
+function start(voice: Voice, text: string, finish: () => void, isDone: () => boolean) {
+  if (isDone()) return;
+  const key = voiceKey(voice, text);
+  if (recorded.has(key)) {
+    if (!audio) audio = new Audio();
+    const a = audio;
+    a.onended = finish;
+    a.onerror = () => {
+      if (!isDone() && finishCurrent === finish) speakWithSynth(voice, text, finish);
+    };
+    const url = ready.get(key);
+    if (url) {
+      ready.delete(key);
+      ready.set(key, url);
+    }
+    a.src = url || fileUrl(key);
+    const p = a.play();
+    if (p)
+      p.catch((err: DOMException) => {
+        if (err && err.name !== 'AbortError') finish();
+      });
+    return;
+  }
+  speakWithSynth(voice, text, finish);
 }
 
 function speakWithSynth(voice: Voice, text: string, finish: () => void) {
   if (!synth) {
-    setTimeout(finish, 1200 + text.length * 45);
+    pausableTimeout(1200 + text.length * 45, finish);
     return;
   }
   if (!synthVoice) pickVoice();
@@ -180,6 +232,6 @@ function speakWithSynth(voice: Voice, text: string, finish: () => void) {
   u.onend = finish;
   u.onerror = finish;
   // some Safari versions never fire onend
-  setTimeout(finish, 2500 + text.length * 120);
+  pausableTimeout(2500 + text.length * 120, finish);
   synth.speak(u);
 }

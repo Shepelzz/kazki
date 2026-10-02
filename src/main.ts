@@ -5,7 +5,7 @@
 import './style.css';
 import { makePuppet, el } from './characters';
 import { Teller, type TellerUi } from './engine';
-import { say, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
+import { pauseSpeech, resumeSpeech, say, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
 import { Stage } from './stage';
 import { COMMON, endingPhrase, parseStory, type Story } from './story';
 import kolobokRaw from '../stories/kolobok.yaml';
@@ -17,6 +17,9 @@ const SOON = [
   { title: 'Коза-дереза', icon: '🐐' },
   { title: 'Солом’яний бичок', icon: '🐂' },
 ];
+
+/** backdrops with no road: subtitles at the bottom there */
+const HOME_SCENES = ['hata', 'hata-evening', 'pich', 'pich-evening'];
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -117,6 +120,11 @@ const ui: TellerUi = {
     $('choices').hidden = true;
     $('play').classList.remove('choosing');
   },
+  scene(name) {
+    // at home (no road, the kolobok on a windowsill or a table) the sky is the characters', so the
+    // subtitles go down onto the meadow / floor; on the road they stay up in the sky
+    $('play').classList.toggle('captions-low', HOME_SCENES.indexOf(name) >= 0);
+  },
   curtain(closed) {
     const c = $('curtain');
     c.classList.toggle('closed', closed);
@@ -129,11 +137,32 @@ function show(screen: 'library' | 'play') {
   $('play').hidden = screen !== 'play';
 }
 
+// ---------- the pause ----------
+function setPaused(on: boolean) {
+  stage.paused = on;
+  $('paused').hidden = !on;
+  $('btn-pause').textContent = on ? '▶' : '⏸';
+  if (on) pauseSpeech();
+  else resumeSpeech();
+}
+
+$('btn-pause').addEventListener('click', () => setPaused(!stage.paused));
+$('paused').addEventListener('click', () => {
+  unlockAudio();
+  setPaused(false);
+});
+// the iPad's screen locked, or another app opened: the tale waits for her
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' && teller && $('ending').hidden) setPaused(true);
+});
+
 async function openTale(story: Story, from?: string) {
   unlockAudio();
+  setPaused(false);
   teller?.stop();
   current = story;
   $('ending').hidden = true;
+  $('btn-pause').hidden = false;
   show('play');
   const t = new Teller(story, stage, ui);
   t.fast = fastSpeed > 0;
@@ -159,6 +188,7 @@ async function showEnding(story: Story, ending: string) {
   }
   $('ending-note').textContent = `Знайдено ${got.length} з ${keys.length}`;
   $('ending').hidden = false;
+  $('btn-pause').hidden = true;
   if (fastSpeed) return;
   const narrator = story.voices.narrator;
   await say(narrator, endingPhrase(e));
@@ -167,6 +197,7 @@ async function showEnding(story: Story, ending: string) {
 }
 
 function toLibrary() {
+  setPaused(false);
   teller?.stop();
   teller = null;
   stopSpeech();
@@ -198,6 +229,7 @@ show('library');
     const s = STORIES.find((x) => x.id === id)!;
     if (backdrop) {
       stage.setScene(backdrop);
+      ui.scene(backdrop);
       stage.show('kolobok', [560, 770]);
     }
     return openTale(s, scene);

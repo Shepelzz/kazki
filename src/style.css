@@ -82,14 +82,19 @@ button:focus-visible {
     radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.7), transparent 40%),
     radial-gradient(circle at 85% 90%, rgba(244, 178, 63, 0.25), transparent 45%),
     var(--paper-2);
-  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  padding: env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 24px);
 }
 
 .library-head {
   text-align: center;
   width: 100%;
   max-width: 900px;
-  margin-top: 24px;
+}
+
+/* centred top to bottom; auto margins (not justify-content) so a tall shelf still scrolls from its top */
+.library > :first-child {
+  margin-top: auto;
+  padding-top: 24px;
 }
 
 .library-head h1 {
@@ -109,7 +114,7 @@ button:focus-visible {
 
 .library > .ornament {
   max-width: 900px;
-  margin: 10px 0 30px;
+  margin: 10px 0 auto;
 }
 
 .shelf {
@@ -225,6 +230,14 @@ button.book:active {
   text-align: center;
 }
 
+.topbar-right {
+  display: flex;
+}
+
+.topbar-right .round + .round {
+  margin-left: 12px;
+}
+
 .round:active {
   transform: translateY(2px);
 }
@@ -288,6 +301,12 @@ button.book:active {
 }
 .caption[data-who='lysytsia'] .who {
   color: #c4561a;
+}
+
+/* at home (no road): down on the meadow or the floor — except a choice's question, the buttons are there */
+.play.captions-low:not(.choosing) .caption {
+  top: auto;
+  bottom: calc(env(safe-area-inset-bottom) + 18px);
 }
 
 /* while choosing, the question stands out a bit */
@@ -379,6 +398,45 @@ button.book:active {
 
 .curtain.closed {
   opacity: 1;
+}
+
+/* ---------- the pause ---------- */
+
+.paused {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(74, 46, 28, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-animation: fade-in 0.25s both;
+  animation: fade-in 0.25s both;
+}
+
+.paused-play {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--red);
+  font-size: 74px;
+  line-height: 150px;
+  text-indent: 10px;
+  box-shadow: 0 8px 0 #d9c49a, 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.paused-label {
+  margin-top: 22px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  padding: 0 16px;
 }
 
 /* ---------- the ending ---------- */

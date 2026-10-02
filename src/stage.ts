@@ -511,6 +511,8 @@ export class Stage {
   private noteIn = 0;
   /** speed multiplier for tests (window.tale.fast) */
   speed = 1;
+  /** the pause button: stage time stands still — puppets, effects and waits all freeze */
+  paused = false;
 
   constructor(host: HTMLElement) {
     this.svg = el('svg', { viewBox: `0 ${VIEW_TOP} ${W} ${VIEW_H}`, preserveAspectRatio: 'xMidYMin meet', class: 'stage' });
@@ -529,7 +531,7 @@ export class Stage {
     const frame = (now: number) => {
       const dt = this.last ? Math.min(0.05, (now - this.last) / 1000) : 0;
       this.last = now;
-      this.tick(dt * this.speed);
+      this.tick(this.paused ? 0 : dt * this.speed);
       requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);

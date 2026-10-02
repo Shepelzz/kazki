@@ -14,6 +14,8 @@ export interface TellerUi {
   highlightChoice(i: number): void;
   hideChoices(): void;
   curtain(closed: boolean): Promise<void>;
+  /** the backdrop changed (the subtitles' place depends on it) */
+  scene(name: string): void;
 }
 
 class Cancelled extends Error {}
@@ -85,6 +87,7 @@ export class Teller {
         if (stage.scene) await this.ui.curtain(true);
         this.check(run);
         stage.setScene(s.scene);
+        this.ui.scene(s.scene);
         void this.ui.curtain(false);
         return;
       case 'show':

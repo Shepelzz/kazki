@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#f6e7c8" />
     <title>Казкова стежка</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%23f4b23f%22/%3E%3Ccircle cx=%2236%22 cy=%2242%22 r=%226%22/%3E%3Ccircle cx=%2264%22 cy=%2242%22 r=%226%22/%3E%3Cpath d=%22M34 62 q16 14 32 0%22 stroke=%22%23000%22 stroke-width=%225%22 fill=%22none%22/%3E%3C/svg%3E" />
     <meta name="description" content="Українські народні казки, у яких дитина сама вибирає, що буде далі." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,7 +28,10 @@
       <div id="stage-host" class="stage-host"></div>
       <div class="topbar">
         <button id="btn-home" class="round" aria-label="До казок">🏠</button>
-        <button id="btn-sound" class="round" aria-label="Звук">🔊</button>
+        <div class="topbar-right">
+          <button id="btn-pause" class="round" aria-label="Пауза">⏸</button>
+          <button id="btn-sound" class="round" aria-label="Звук">🔊</button>
+        </div>
       </div>
       <div id="choices" class="choices" hidden></div>
       <div id="caption" class="caption" hidden>
@@ -35,6 +39,10 @@
         <div class="text" id="caption-text"></div>
       </div>
       <div id="curtain" class="curtain"></div>
+      <button id="paused" class="paused" hidden aria-label="Продовжити">
+        <span class="paused-play">▶</span>
+        <span class="paused-label">Пауза — натисни, щоб слухати далі</span>
+      </button>
       <div id="ending" class="ending" hidden>
         <div class="ending-card">
           <div class="ornament"></div>
