@@ -20,6 +20,23 @@ export const GROUND = 770;
  */
 const VIEW_TOP = 80;
 const VIEW_H = 1020;
+/**
+ * The camera closes in on the characters on stage and follows them as they move — a whole 1600-wide
+ * scene would leave them small. Portrait screens: the scene takes the top part of the screen (the
+ * subtitles and the buttons go under it). Landscape: the whole screen, the road low enough to leave
+ * the meadow under it for the choice buttons.
+ */
+const PORTRAIT_SCENE = 0.74; // share of the screen height
+const PORTRAIT_GROUND = 0.86; // where the road is, from the scene's top
+const LANDSCAPE_GROUND = 0.72; // where the road is, from the screen's top…
+const LOW_GROUND = 0.68; // …on a phone on its side (its buttons take a bigger share)
+/** what must stay in view above the road, in scene units: the heads (did's hat, the bear's ears) */
+const HEADROOM = 410;
+const CAM_MIN_W = 640; // closest zoom on a portrait phone, in scene units
+const CAM_MIN_W_LANDSCAPE = 1200;
+const CAM_MAX_SCALE = 0.6; // portrait: never bigger than this many screen px per unit (an upright iPad isn't a phone)
+const CAM_MAX_SCALE_LANDSCAPE = 1;
+const CAM_MARGIN = 150; // room left and right of the outermost characters
 const W = 1600;
 /** px per second the front of the road slides by while rolling */
 const ROLL_SPEED = 300;
@@ -175,7 +192,7 @@ function treeRow(seed: number, forest: boolean) {
 
 /** ground with the dirt road the tale goes along */
 function ground(grass: string, road: string) {
-  return `<rect x="-1600" y="${GROUND - 40}" width="4800" height="1600" fill="${grass}"/>
+  return `<rect x="-1600" y="${GROUND - 40}" width="4800" height="6000" fill="${grass}"/>
     <path d="M-1600 ${GROUND - 14} L3200 ${GROUND - 14} L3200 ${GROUND + 26} L-1600 ${GROUND + 26} Z" fill="${road}"/>`;
 }
 
@@ -328,11 +345,14 @@ function rays() {
 function interior(evening: boolean) {
   const F = GROUND - 40; // where the floor starts
   let planks = '';
-  for (let x = -1600; x < 3200; x += 120) planks += `<path d="M${x} ${F} L${x - 60} 2000" stroke="#8a5e34" stroke-width="3"/>`;
+  for (let x = -1600; x < 3200; x += 120) planks += `<path d="M${x} ${F} L${x - 300} 6000" stroke="#8a5e34" stroke-width="3"/>`;
   return `
   <rect x="-1600" y="-1200" width="4800" height="${F + 1200}" fill="#fbf6ea"/>
   <rect x="-1600" y="${F - 50}" width="4800" height="50" fill="#7aa6d8"/>
-  <rect x="-1600" y="${F}" width="4800" height="1600" fill="#b07a45"/>${planks}
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#b07a45"/>${planks}
+  <!-- wooden ceiling above the beam (seen on tall screens) -->
+  <rect x="-1600" y="-3000" width="4800" height="2960" fill="#b98a5a"/>
+  ${Array.from({ length: 40 }, (_, i) => `<path d="M${-1600 + i * 120} -3000 V-40" stroke="#9c7044" stroke-width="4"/>`).join('')}
   <rect x="-1600" y="-40" width="4800" height="70" fill="#7a5232"/>
   <!-- the stove -->
   <path d="M190 300 L230 -40 L330 -40 L370 300 Z" fill="#f4efe4" stroke="#d8cfbd" stroke-width="5"/>
@@ -374,7 +394,7 @@ function interior(evening: boolean) {
   ${evening ? '<circle cx="1390" cy="350" r="22" fill="#fff6c8"/><circle cx="1240" cy="340" r="3" fill="#fff"/><circle cx="1290" cy="380" r="2.5" fill="#fff"/><circle cx="1350" cy="420" r="3" fill="#fff"/>' : '<circle cx="1390" cy="350" r="26" fill="#ffd54f"/><ellipse cx="1260" cy="400" rx="44" ry="18" fill="#fff"/>'}
   <path d="M1315 300 v220 M1190 410 h250" stroke="#3b6aa0" stroke-width="7"/>
   <rect x="1172" y="522" width="286" height="18" rx="5" fill="#a0703c" stroke="#5a3a22" stroke-width="4"/>
-  ${evening ? '<rect x="-1600" y="-1200" width="4800" height="3200" fill="#24184a" opacity=".22"/><ellipse cx="300" cy="650" rx="420" ry="300" fill="#ffb347" opacity=".12"/>' : ''}`;
+  ${evening ? '<rect x="-1600" y="-1200" width="4800" height="8000" fill="#24184a" opacity=".22"/><ellipse cx="300" cy="650" rx="420" ry="300" fill="#ffb347" opacity=".12"/>' : ''}`;
 }
 
 /** a cross-stitch band (as on the puppets' shirts) */
@@ -440,7 +460,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       sunflower(1540, 280) +
       hata(true) +
       `<g>${verge(11, false)}</g>` +
-      `<rect x="-1600" y="-1200" width="4800" height="3200" fill="#ff7043" opacity=".08"/>`,
+      `<rect x="-1600" y="-1200" width="4800" height="8000" fill="#ff7043" opacity=".08"/>`,
     layers: [],
   }),
   river: () => ({
@@ -522,6 +542,8 @@ export class Stage {
     this.fxLayer = el('g', { 'pointer-events': 'none' });
     this.svg.append(this.backdrop, this.actorsLayer, this.frontLayer, this.fxLayer);
     host.appendChild(this.svg);
+    this.frame();
+    window.addEventListener('resize', () => this.frame());
     // a tap on a puppet makes it jump for joy
     this.svg.addEventListener('click', (e) => {
       const g = (e.target as Element).closest('[data-actor]');
@@ -537,6 +559,73 @@ export class Stage {
     requestAnimationFrame(frame);
   }
 
+  /**
+   * Fit the frame to the screen: landscape shows the whole 1600 width; portrait closes in on the
+   * characters, and the free space under the scene (meadow) is for subtitles and buttons. The
+   * scene's height on screen goes to CSS as --scene-h.
+   */
+  private frame() {
+    const w = this.svg.clientWidth || window.innerWidth;
+    const h = this.svg.clientHeight || window.innerHeight;
+    this.screen = [w, h];
+    this.portrait = h > w;
+    const sceneH = this.portrait ? h * PORTRAIT_SCENE : Math.min(h, (w / W) * VIEW_H);
+    const root = document.documentElement;
+    root.style.setProperty('--scene-h', `${Math.round(sceneH)}px`);
+    root.classList.toggle('portrait', this.portrait);
+    this.camera(0, true);
+  }
+
+  private screen: [number, number] = [0, 0];
+  private portrait = false;
+  /** the camera: centre and width of what it frames, in scene units */
+  private camX = 850;
+  private camW = 1100;
+  private snapCam = false;
+
+  /** Frame the characters on stage, easing towards them (snap: at once). */
+  private camera(dt: number, snap = false) {
+    let lo = Infinity;
+    let hi = -Infinity;
+    for (const a of this.actors.values()) {
+      // ones walking off far away don't drag the camera along
+      if (a.x < -60 || a.x > W + 60) continue;
+      lo = Math.min(lo, a.x);
+      hi = Math.max(hi, a.x);
+    }
+    const [w, h] = this.screen;
+    const p = this.portrait;
+    // the scene's part of the screen, and where the road is in it
+    const sceneH = p ? h * PORTRAIT_SCENE : h;
+    const groundAt = p ? PORTRAIT_GROUND : h < 520 ? LOW_GROUND : LANDSCAPE_GROUND;
+    // wide enough for the heads to fit between the road and the subtitles / round buttons up top
+    const topUi = p ? 76 : h < 520 ? 66 : 100;
+    const tallEnough = (HEADROOM * w) / Math.max(1, sceneH * groundAt - topUi);
+    const minW = Math.max(p ? CAM_MIN_W : CAM_MIN_W_LANDSCAPE, w / (p ? CAM_MAX_SCALE : CAM_MAX_SCALE_LANDSCAPE), tallEnough);
+    let tx = W / 2;
+    let tw = Math.max(minW, p ? 1100 : W);
+    if (lo <= hi) {
+      tw = Math.max(minW, Math.min(W, hi - lo + 2 * CAM_MARGIN));
+      tx = (lo + hi) / 2;
+    }
+    if (this.snapCam && lo <= hi) {
+      this.snapCam = false;
+      snap = true;
+    }
+    if (snap) {
+      this.camX = tx;
+      this.camW = tw;
+    } else {
+      const k = Math.min(1, dt * 1.6);
+      this.camX += (tx - this.camX) * k;
+      this.camW += (tw - this.camW) * k;
+    }
+    const vh = this.camW * (sceneH / w);
+    const vy = GROUND - vh * groundAt;
+    // the rest of the screen below the scene shows more meadow (the backdrop goes far down)
+    this.svg.setAttribute('viewBox', `${(this.camX - this.camW / 2).toFixed(1)} ${vy.toFixed(1)} ${this.camW.toFixed(1)} ${vh.toFixed(1)}`);
+  }
+
   get scene() {
     return this.sceneName;
   }
@@ -547,6 +636,10 @@ export class Stage {
     if (!make) throw new Error(`no scene "${name}"`);
     const b = make();
     this.sceneName = name;
+    // the tale screen may have been hidden (size 0) when the window last changed shape
+    this.frame();
+    // a new place: the camera jumps to whoever comes on first instead of sliding over
+    this.snapCam = true;
     while (this.backdrop.firstChild) this.backdrop.removeChild(this.backdrop.firstChild);
     this.backdrop.appendChild(svg(b.still));
     this.layerEls = b.layers.map(([markup, speed]) => {
@@ -859,6 +952,7 @@ export class Stage {
     // carried puppets last: they follow where their carrier has just moved
     for (const a of this.actors.values()) if (!a.carriedBy) this.tickActor(a, dt, slide);
     for (const a of this.actors.values()) if (a.carriedBy) this.tickActor(a, dt, slide);
+    this.camera(dt);
 
     this.flames.forEach((f, i) => {
       const t = this.time * (7 + i * 3);
