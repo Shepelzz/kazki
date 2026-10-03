@@ -78,6 +78,26 @@ function touch<V>(m: Map<string, V>, k: string, v: V, keep: number) {
   }
 }
 
+const fetchingNow = new Map<string, Promise<void>>();
+
+/** Fetch a recording's bytes (once, however many ask). */
+function fetchBytes(key: string): Promise<void> {
+  if (bytes.has(key)) return Promise.resolve();
+  const going = fetchingNow.get(key);
+  if (going) return going;
+  const p = fetch(fileUrl(key))
+    .then((r) => (r.ok ? r.arrayBuffer() : null))
+    .then((b) => {
+      if (b) touch(bytes, key, b, KEEP_BYTES);
+    })
+    .catch(() => {})
+    .then(() => {
+      fetchingNow.delete(key);
+    });
+  fetchingNow.set(key, p);
+  return p;
+}
+
 function pump() {
   while (fetching < 2 && queue.length) {
     const key = queue.shift()!;
@@ -86,14 +106,8 @@ function pump() {
       continue;
     }
     fetching++;
-    fetch(fileUrl(key))
-      .then((r) => (r.ok ? r.arrayBuffer() : null))
-      .then((b) => {
-        if (!b) return;
-        touch(bytes, key, b, KEEP_BYTES);
-        return decode(key);
-      })
-      .catch(() => {})
+    fetchBytes(key)
+      .then(() => decode(key))
       .then(() => {
         fetching--;
         pump();
@@ -153,6 +167,50 @@ export function preload(phrases: { voice: Voice; text: string }[]) {
 }
 
 // ---------- the audio context (also keeps the output awake) ----------
+//
+// An iPhone with the ring/silent switch on mutes Web Audio (but not <audio>): the first phrase,
+// played by the element, was heard and all the rest were silent. Telling the system this is
+// playback (iOS 17+), or keeping a silent <audio> loop going (older iOS), makes it audible.
+
+/** a second of silence as a WAV file */
+function silentWav(): string {
+  const n = 8000;
+  const b = new DataView(new ArrayBuffer(44 + n));
+  const str = (o: number, t: string) => {
+    for (let i = 0; i < t.length; i++) b.setUint8(o + i, t.charCodeAt(i));
+  };
+  str(0, 'RIFF');
+  b.setUint32(4, 36 + n, true);
+  str(8, 'WAVEfmt ');
+  b.setUint32(16, 16, true);
+  b.setUint16(20, 1, true);
+  b.setUint16(22, 1, true);
+  b.setUint32(24, 8000, true);
+  b.setUint32(28, 8000, true);
+  b.setUint16(32, 1, true);
+  b.setUint16(34, 8, true);
+  str(36, 'data');
+  b.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) b.setUint8(44 + i, 128);
+  return URL.createObjectURL(new Blob([b.buffer], { type: 'audio/wav' }));
+}
+let keeper: HTMLAudioElement | null = null;
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+
+function keepSessionPlaying() {
+  if (!keeper) {
+    keeper = document.createElement('audio');
+    keeper.setAttribute('playsinline', '');
+    keeper.setAttribute('x-webkit-airplay', 'deny');
+    keeper.loop = true;
+    keeper.src = silentWav();
+  }
+  if (keeper.paused) {
+    const p = keeper.play();
+    if (p) p.catch(() => {});
+  }
+}
+
 let ctx: AudioContext | null = null;
 let source: AudioBufferSourceNode | null = null;
 /** the recording playing from a buffer: when it started (audio-context time) and how long it is */
@@ -171,6 +229,15 @@ export function speechProgress(): number | null {
 
 /** Call from a tap (browsers start audio only on a user gesture). */
 export function unlockAudio() {
+  const nav = navigator as unknown as { audioSession?: { type: string } };
+  const modern = !!nav.audioSession;
+  if (modern) {
+    try {
+      nav.audioSession!.type = 'playback';
+    } catch {
+      // read-only somewhere: the keeper below does it
+    }
+  }
   try {
     if (!ctx) {
       const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -184,7 +251,7 @@ export function unlockAudio() {
       // what was fetched before the first tap can be decoded now
       for (const k of bytes.keys()) void decode(k);
     }
-    if (ctx.state === 'suspended' && !paused) void ctx.resume();
+    if (ctx.state !== 'running' && !paused) void ctx.resume();
   } catch {
     // no Web Audio: the <audio> element plays the phrases
   }
@@ -195,13 +262,20 @@ export function unlockAudio() {
     const p = audio.play();
     if (p) p.catch(() => {});
   }
+  if (ctx && !modern && IOS) keepSessionPlaying();
 }
 
 document.addEventListener('visibilitychange', () => {
   if (!ctx) return;
   if (document.visibilityState === 'visible') {
-    if (!paused) void ctx.resume();
-  } else void ctx.suspend();
+    if (!paused) {
+      void ctx.resume();
+      if (keeper) keepSessionPlaying();
+    }
+  } else {
+    void ctx.suspend();
+    if (keeper) keeper.pause();
+  }
 });
 
 export function pauseSpeech() {
@@ -289,14 +363,17 @@ function start(voice: Voice, text: string, finish: () => void, isDone: () => boo
   if (!recorded.has(key)) return speakWithSynth(voice, text, finish);
   const d = decoded.get(key);
   if (d && ctx) return playBuffer(key, d, finish);
-  if (ctx && bytes.has(key)) {
-    // fetched but not decoded yet: decoding takes a moment, still quicker than <audio>
-    void decode(key).then((ok) => {
-      if (isDone() || finishCurrent !== finish) return;
-      const dd = decoded.get(key);
-      if (ok && dd) playBuffer(key, dd, finish);
-      else playElement(key, voice, text, finish, isDone);
-    });
+  if (ctx) {
+    // not in memory yet: fetch and decode it now. Not through the <audio> element: on an iPhone
+    // an element playing next to Web Audio takes the sound over, and the buffers go mute after it.
+    void fetchBytes(key)
+      .then(() => decode(key))
+      .then((ok) => {
+        if (isDone() || finishCurrent !== finish) return;
+        const dd = decoded.get(key);
+        if (ok && dd) playBuffer(key, dd, finish);
+        else playElement(key, voice, text, finish, isDone);
+      });
     return;
   }
   playElement(key, voice, text, finish, isDone);
@@ -306,6 +383,8 @@ function start(voice: Voice, text: string, finish: () => void, isDone: () => boo
 
 function playBuffer(key: string, d: { buf: AudioBuffer; from: number; to: number }, finish: () => void) {
   const c = ctx!;
+  // iOS puts the context into "interrupted" / "suspended" (a call, another app, the lock screen)
+  if (c.state !== 'running' && !paused) void c.resume();
   touch(decoded, key, d, KEEP_DECODED);
   stopSource();
   const s = c.createBufferSource();
