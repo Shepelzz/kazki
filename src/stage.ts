@@ -131,12 +131,12 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky'];
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'koza', 'zmiy'];
-const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska'];
+const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh'];
 
 interface Particle {
   el: SVGElement;
@@ -1239,9 +1239,10 @@ export class Stage {
   }
 
   /** the puppet comes back out (popout / scatter) */
-  private comeOut(id: string): Actor | null {
+  private comeOut(id: string, out?: Actor): Actor | null {
+    // whoever is listed comes out of the given place (also if they went in in an earlier scene)
     const from = this.inside[id];
-    const c = from ? this.actors.get(from) : undefined;
+    const c = out || (from ? this.actors.get(from) : undefined);
     if (!c) return null;
     delete this.inside[id];
     const door = ANCHORS[c.id].mouth;
@@ -1270,7 +1271,7 @@ export class Stage {
     if (!spots.length) spots.push(cx + 300, cx - 300);
     who.forEach((id, i) =>
       this.later(i * 0.15, () => {
-        const p = this.comeOut(id);
+        const p = this.comeOut(id, c);
         if (!p) return;
         const x = spots[i % spots.length];
         p.flip = x < cx;

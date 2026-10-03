@@ -1,0 +1,310 @@
+# Солом'яний бичок — казка з вибором. Головна лінія — як у народній казці; відгалуження — на виборах.
+# Кроки ті самі, що в інших казках.
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Солом'яний бичок
+cover: solombychok
+
+voices:
+  narrator:    { name: "", pitch: 1.1, rate: 1 }
+  did:         { name: "Дід", pitch: 0.72, rate: 0.9 }
+  baba:        { name: "Баба", pitch: 1.0, rate: 0.95 }
+  solombychok: { name: "Бичок", pitch: 1.2, rate: 1 }
+  vedmid:      { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
+  vovk:        { name: "Вовк", pitch: 0.68, rate: 0.95 }
+  lysytsia:    { name: "Лисичка", pitch: 1.18, rate: 0.9 }
+  zayets:      { name: "Зайчик", pitch: 1.4, rate: 1.15 }
+
+endings:
+  canon:   { title: "Солом'яний бичок", icon: "🐂" }
+  nosleep: { title: "Казки не вийшло", icon: "😴" }
+  bear:    { title: "Вдячний ведмідь", icon: "🍯" }
+  feast:   { title: "Звірі в гостях", icon: "🎉" }
+
+start: start
+
+scenes:
+  start:
+    - scene: hata
+    - show: did
+      at: [1060, 770]
+    - show: baba
+      at: [1270, 770]
+    - narrator: "Привіт! Сьогодні — казка про незвичайного бичка. А ти вибиратимеш, що буде далі!"
+    - narrator: "Жили собі дід та баба. Бідно жили: ні корівки, ні бичка — нічого не мали. От баба й каже:"
+    - baba: "Зроби мені, діду, солом'яного бичка та осмоли йому бочок смолою."
+    - did: "Та навіщо тобі такий бичок?"
+    - baba: "Зроби, то сам побачиш!"
+    - narrator: "Зробив дід бичка з соломи та й осмолив йому бочок смолою."
+    - show: solombychok
+      at: [760, 770]
+    - fx: build
+      on: solombychok
+    - next: pasture
+
+  pasture:
+    - scene: luh
+    - show: solombychok
+      at: [900, 770]
+    - show: baba
+      at: [520, 770]
+      flip: true
+    - show: kuzhil
+      at: [600, 770]
+    - narrator: "Уранці погнала баба бичка на пашу, сіла під горбочком, кужіль пряде та й приказує:"
+    - baba: "Пасись, пасись, бичку, на травичці, а я кужіль попряду!"
+    - choice: "Що зробить баба?"
+      options:
+        - label: "Задрімати"
+          icon: "💤"
+          next: bear
+        - label: "Не спати, пильнувати"
+          icon: "👀"
+          next: nosleep
+
+  nosleep:
+    - baba: "Ні, не засну! Пильнуватиму свого бичка!"
+    - narrator: "І не заснула. Пряде баба, бичок пасеться, сонечко світить... Ніхто не прийшов, ніхто не прилип."
+    - narrator: "Увечері пригнала баба бичка додому. І все. От і казки не вийшло! Хі-хі. А хочеш — спробуй ще раз, і хай баба задрімає?"
+    - ending: nosleep
+
+  bear:
+    - narrator: "Пряла баба, пряла — та й задрімала. Аж тут із темного лісу вибігає ведмідь."
+    - eyes: baba
+      state: closed
+    - show: vedmid
+      at: [1900, 770]
+    - move: vedmid
+      to: [1140, 770]
+      ms: 2400
+      wait: true
+    - vedmid: "Хто ти такий? Скажи мені!"
+    - solombychok: "Я бичок-третячок, із соломи зроблений, смолою засмолений!"
+    - vedmid: "Коли ти солом'яний та смолою засмолений, то дай мені смоли — обідраний бік залатати!"
+    - narrator: "Бичок нічого — стоїть. Ведмідь тоді давай його за бочок рвати — та й прилип, не відірветься!"
+    - move: vedmid
+      to: [1010, 770]
+      ms: 700
+      wait: true
+    - fx: squash
+      on: vedmid
+    - vedmid: "Ой! Відпусти мене, бичку!"
+    - narrator: "А бичок рушив — та й поволік ведмедя додому."
+    - eyes: baba
+      state: open
+    - move: solombychok
+      to: [-300, 770]
+      ms: 3200
+    - move: vedmid
+      to: [-190, 770]
+      ms: 3200
+      wait: true
+    - next: home_bear
+
+  home_bear:
+    - scene: hata
+    - show: did
+      at: [1000, 770]
+    - show: lokh
+      at: [1440, 770]
+    - show: solombychok
+      at: [-300, 770]
+      flip: true
+    - show: vedmid
+      at: [-420, 770]
+      flip: true
+    - move: solombychok
+      to: [620, 770]
+      flip: true
+      ms: 2800
+    - move: vedmid
+      to: [500, 770]
+      flip: true
+      ms: 2800
+      wait: true
+    - did: "Ого! Бабо, бабо! Бичок ведмедя привів!"
+    - choice: "Що зробить дід із ведмедем?"
+      options:
+        - label: "Посадити в льох"
+          icon: "🚪"
+          next: lokh_bear
+        - label: "Відпустити"
+          icon: "🍯"
+          next: free_bear
+
+  free_bear:
+    - did: "Іди собі, ведмедю, з Богом. Чого тебе тримати?"
+    - narrator: "Відліпив дід ведмедя від бичка й відпустив."
+    - move: vedmid
+      to: [-300, 770]
+      ms: 2400
+      wait: true
+    - narrator: "А назавтра, тільки сонечко зійшло, — тук-тук під вікном! Стоїть ведмідь, а в лапах — барильце меду."
+    - show: vedmid
+      at: [-250, 770]
+      flip: true
+    - show: med
+      at: [-160, 680]
+    - move: vedmid
+      to: [640, 770]
+      flip: true
+      ms: 2400
+    - move: med
+      to: [760, 770]
+      ms: 2400
+      wait: true
+    - vedmid: "Це тобі, діду, за добре серце!"
+    - fx: hearts
+      on: vedmid
+    - narrator: "Відтоді ведмідь щоліта носив дідові й бабі мед, а солом'яний бичок пасся собі на лузі — і ніхто вже до нього не липнув."
+    - ending: bear
+
+  lokh_bear:
+    - narrator: "Узяв дід ведмедя — та й укинув у льох."
+    - enter: vedmid
+      into: lokh
+    - next: wolf
+
+  wolf:
+    - scene: luh
+    - show: solombychok
+      at: [900, 770]
+    - show: baba
+      at: [520, 770]
+      flip: true
+    - show: kuzhil
+      at: [600, 770]
+    - narrator: "Назавтра знову погнала баба бичка на пашу, знову кужіль пряде — та й задрімала. Аж біжить сірий вовк."
+    - eyes: baba
+      state: closed
+    - show: vovk
+      at: [1900, 770]
+    - move: vovk
+      to: [1140, 770]
+      ms: 2200
+      wait: true
+    - vovk: "Хто ти такий? Скажи мені!"
+    - solombychok: "Я бичок-третячок, із соломи зроблений, смолою засмолений!"
+    - vovk: "Коли ти смолою засмолений, дай мені смоли — бік залатати, бо собаки обідрали!"
+    - move: vovk
+      to: [1010, 770]
+      ms: 700
+      wait: true
+    - fx: squash
+      on: vovk
+    - narrator: "Ухопив вовк бичка за смоляний бочок — та й прилип."
+    - eyes: baba
+      state: open
+    - move: solombychok
+      to: [-300, 770]
+      ms: 3200
+    - move: vovk
+      to: [-190, 770]
+      ms: 3200
+      wait: true
+    - narrator: "Приволік бичок і вовка додому, а дід — у льох його, до ведмедя."
+    - next: fox
+
+  fox:
+    - scene: luh
+    - show: solombychok
+      at: [900, 770]
+    - show: baba
+      at: [520, 770]
+      flip: true
+    - show: kuzhil
+      at: [600, 770]
+    - narrator: "На третій день так само: баба задрімала, а до бичка — лисичка."
+    - eyes: baba
+      state: closed
+    - show: lysytsia
+      at: [1900, 770]
+    - move: lysytsia
+      to: [1140, 770]
+      ms: 2200
+      wait: true
+    - lysytsia: "Хто ти такий?"
+    - solombychok: "Я бичок-третячок, із соломи зроблений, смолою засмолений!"
+    - lysytsia: "Дай мені смоли, голубчику, — прикласти до боку, бо хорти обідрали!"
+    - move: lysytsia
+      to: [1010, 770]
+      ms: 700
+      wait: true
+    - fx: squash
+      on: lysytsia
+    - narrator: "Та й прилипла лисичка. І зайчик на четвертий день прилип так само."
+    - eyes: baba
+      state: open
+    - move: solombychok
+      to: [-300, 770]
+      ms: 3200
+    - move: lysytsia
+      to: [-190, 770]
+      ms: 3200
+      wait: true
+    - next: cellar
+
+  cellar:
+    - scene: hata
+    - show: did
+      at: [1000, 770]
+    - show: baba
+      at: [1200, 770]
+    - show: lokh
+      at: [1440, 770]
+    - narrator: "Сидять у дідовому льоху і ведмідь, і вовк, і лисичка, і зайчик."
+    - choice: "Що зробить дід зі звірами?"
+      options:
+        - label: "Ножа гострити"
+          icon: "🔪"
+          next: knife
+        - label: "Покликати на вечерю"
+          icon: "🎉"
+          next: feast
+
+  knife:
+    - narrator: "Сів дід біля льоху та й ножа гострить. А ведмідь із льоху питає:"
+    - vedmid: "Діду, навіщо ти ножа гостриш?"
+    - did: "Шкуру з тебе зніму — буде мені й бабі кожушок."
+    - vedmid: "Ой, не ріж мене, діду! Пусти — я тобі меду принесу!"
+    - did: "Гляди ж!"
+    - vovk: "І мене пусти, діду, — я тобі овечок пригоню!"
+    - lysytsia: "І мене, діду, — я тобі курочок та гусочок наношу!"
+    - zayets: "І мене! А я тобі капусти принесу — повну торбу!"
+    - narrator: "Повипускав дід звірів. А назавтра, ще й не розвиднілося, — аж стукає хтось під вікном."
+    - fx: popout
+      on: lokh
+      who: [vedmid, vovk, lysytsia, zayets]
+    - narrator: "Приніс ведмідь меду, вовк пригнав овечок, лисичка — курочок, а зайчик — капусти цілу торбу."
+    - show: med
+      at: [760, 770]
+    - show: ovechka
+      at: [600, 770]
+    - show: kurka
+      at: [460, 770]
+    - show: kapusta
+      at: [880, 770]
+    - fx: sparkle
+      on: ovechka
+    - baba: "От бачиш, діду, а ти питав, навіщо той бичок!"
+    - narrator: "Розбагатіли дід та баба. А солом'яний бичок так і стоїть у них на подвір'ї — на щастя."
+    - ending: canon
+
+  feast:
+    - did: "Гей, звірі! Виходьте з льоху — ходіть до хати вечеряти!"
+    - fx: popout
+      on: lokh
+      who: [vedmid, vovk, lysytsia, zayets]
+    - vedmid: "Вечеряти? А ми думали, ти нас на кожушок..."
+    - did: "Та що ви! Бичок вас привів — значить, ви наші гості."
+    - narrator: "Сіли всі до столу: дід, баба, ведмідь, вовк, лисичка й зайчик. А солом'яний бичок на радощах аж затанцював!"
+    - show: solombychok
+      at: [700, 770]
+    - fx: tumble
+      on: solombychok
+    - fx: hearts
+      on: solombychok
+    - zayets: "А ми вам завтра гостинців принесемо — бо друзі мають ходити в гості з гостинцями!"
+    - narrator: "Так і подружилися звірі з дідом і бабою. А бичка з того часу ніхто вже за бочок не рвав."
+    - ending: feast
