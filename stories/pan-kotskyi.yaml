@@ -365,13 +365,16 @@ scenes:
       hop: true
       ms: 900
       wait: true
-    - fx: rustle
+    - fx: bang
       on: bush
+      word: "МЯУ!"
     - kaban: "Ой-ой-ой! Рятуйте!"
     - move: kaban
       to: [2000, 770]
       flip: true
       ms: 1300
+    - fx: whoosh
+      on: kaban
     - narrator: "Кабан — навтьоки! А кіт і сам злякався — та й шусть на дуба, де ведмідь сидів!"
     - move: kit
       to: [1210, 478]
@@ -384,8 +387,11 @@ scenes:
       hop: true
       ms: 600
       wait: true
-    - fx: squash
+    - fx: bang
       on: vovk
+      word: "ГУП!"
+    - fx: shake
+      on: vedmid
     - narrator: "Ведмідь із переляку — гуп! — з дуба додолу, та прямо на вовка, що під колодою лежав. Ледь не розчавив сердешного!"
     - vovk: "Ой-ой-ой! Роздавили! Рятуйся, хто може!"
     - move: vovk

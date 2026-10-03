@@ -18,7 +18,7 @@ export type Step =
   | { kind: 'put'; actor: string; to: Point; ms: number }
   | { kind: 'roll'; on: boolean }
   | { kind: 'eyes'; actor: string; open: boolean }
-  | { kind: 'fx'; fx: string; on?: string; at?: Point; who?: string[] }
+  | { kind: 'fx'; fx: string; on?: string; at?: Point; who?: string[]; word?: string }
   | { kind: 'pause'; ms: number }
   | { kind: 'choice'; question: string; options: ChoiceOption[] }
   | { kind: 'next'; scene: string }
@@ -69,7 +69,7 @@ export function parseStory(id: string, raw: Raw): Story {
       if ('put' in s) return { kind: 'put', actor: s.put, to: s.to ?? fail(name, i, 'put needs to'), ms: s.ms ?? 700 };
       if ('roll' in s) return { kind: 'roll', on: !!s.roll };
       if ('eyes' in s) return { kind: 'eyes', actor: s.eyes, open: s.state !== 'closed' };
-      if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at, who: s.who };
+      if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at, who: s.who, word: s.word };
       if ('pause' in s) return { kind: 'pause', ms: s.pause };
       if ('choice' in s) return { kind: 'choice', question: s.choice, options: s.options };
       if ('next' in s) return { kind: 'next', scene: s.next };

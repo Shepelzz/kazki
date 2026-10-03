@@ -131,12 +131,12 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky'];
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'koza', 'zmiy'];
-const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh'];
+const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
 
 interface Particle {
   el: SVGElement;
@@ -599,6 +599,30 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       `<g>${verge(104, false)}${verge(105, false)}</g>`,
     layers: [],
   }),
+  pidzemne: () => ({
+    // the world under the ground: a violet sky, glowing crystals, a golden palace
+    still:
+      sky('#3b1f5c', '#8e5bb5') +
+      Array.from({ length: 30 }, (_, i) => `<circle cx="${(i * 149) % 2400 - 400}" cy="${-300 + ((i * 71) % 800)}" r="${i % 3 ? 3 : 5}" fill="#e1bee7"/>`).join('') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${mountains(201, '#5e3a7a', GROUND - 60, 340, false)}</g>`).join('') +
+      `<g transform="translate(1180 ${GROUND - 40})">
+        <rect x="-220" y="-300" width="440" height="300" fill="#f5c542" stroke="#c99a1e" stroke-width="8"/>
+        ${[-150, -50, 50, 150].map((x) => `<rect x="${x - 26}" y="-250" width="52" height="90" rx="26" fill="#7e57c2" stroke="#c99a1e" stroke-width="5"/>`).join('')}
+        <path d="M-60 0 v-120 Q0 -170 60 -120 v120 Z" fill="#7e57c2" stroke="#c99a1e" stroke-width="6"/>
+        ${[-180, 0, 180].map((x) => `<path d="M${x - 50} -300 Q${x - 50} -380 ${x} -410 Q${x + 50} -380 ${x + 50} -300 Z" fill="#ffd54f" stroke="#c99a1e" stroke-width="6"/><circle cx="${x}" cy="-420" r="12" fill="#e53935"/>`).join('')}
+      </g>` +
+      `<rect x="-1600" y="${GROUND - 40}" width="4800" height="6000" fill="#4a2f63"/>` +
+      Array.from({ length: 14 }, (_, i) => `<path d="M${(i * 113) % 1700 - 50} ${GROUND + 40 + ((i * 37) % 120)} l14 -50 l14 50 z" fill="${['#80deea', '#ce93d8', '#fff59d'][i % 3]}" opacity=".9"/>`).join(''),
+    layers: [],
+  }),
+  nebo: () => ({
+    // high in the sky: only clouds rush past (the griffin's flight)
+    still: sky('#64b5f6', '#e3f2fd'),
+    layers: [
+      [clouds(211), 0.4],
+      [clouds(212), 0.9],
+    ],
+  }),
   oranka: () => ({
     // a ploughed field: brown furrows to the edge of the forest
     still:
@@ -979,6 +1003,8 @@ export class Stage {
   private camX = 850;
   private camW = 1100;
   private snapCam = false;
+  /** seconds of camera shake left */
+  private shake = 0;
 
   /** Frame the characters on stage, easing towards them (snap: at once). */
   private camera(dt: number, snap = false) {
@@ -1024,7 +1050,16 @@ export class Stage {
     const vy = GROUND - vh * groundAt;
     // the rest of the screen below the scene shows more meadow (the backdrop goes far down)
     // whole units: a camera that has settled doesn't touch the viewBox (that repaints everything)
-    setAttr(this.svg, 'viewBox', `${Math.round(this.camX - this.camW / 2)} ${Math.round(vy)} ${Math.round(this.camW)} ${Math.round(vh)}`);
+    // a blow or a fall shakes the picture for a moment
+    let sx = 0;
+    let sy = 0;
+    if (this.shake > 0) {
+      this.shake = Math.max(0, this.shake - dt);
+      const k = this.shake * this.camW * 0.03;
+      sx = (Math.random() - 0.5) * k;
+      sy = (Math.random() - 0.5) * k;
+    }
+    setAttr(this.svg, 'viewBox', `${Math.round(this.camX - this.camW / 2 + sx)} ${Math.round(vy + sy)} ${Math.round(this.camW)} ${Math.round(vh)}`);
   }
 
   get scene() {
@@ -1331,7 +1366,7 @@ export class Stage {
 
   // ---------- effects ----------
 
-  fx(name: string, on?: string, at?: Point, who: string[] = []): Promise<void> {
+  fx(name: string, on?: string, at?: Point, who: string[] = [], word?: string): Promise<void> {
     const a = on ? this.actors.get(on) : undefined;
     switch (name) {
       case 'munch': {
@@ -1358,6 +1393,29 @@ export class Stage {
         for (let i = 0; i < 8; i++) this.later(i * 0.22, () => this.tear(x + (i % 2 ? 14 : -10), y - 30));
         return this.wait(1900);
       }
+      case 'bang': {
+        // a comic-book blow: a burst star with a word, a shock ring, dust, the picture shakes
+        const [x, y] = at || (a ? [a.x, a.y + ANCHORS[a.id].top * a.size * 0.5] : [800, 500]);
+        this.burst(x, y, word || 'БАХ!');
+        for (let i = 0; i < 8; i++) this.dustAt(x + (Math.random() - 0.5) * 200, GROUND);
+        for (let i = 0; i < 10; i++) this.star(x, y, (i / 10) * Math.PI * 2);
+        this.shake = 0.45;
+        return this.wait(700);
+      }
+      case 'shake':
+        // the ground trembles (something heavy fell)
+        this.shake = 0.7;
+        if (a) for (let i = 0; i < 10; i++) this.dustAt(a.x + (Math.random() - 0.5) * 300, GROUND);
+        return this.wait(600);
+      case 'whoosh': {
+        // speed lines streaming behind someone dashing off
+        if (!a) return this.wait(200);
+        for (let i = 0; i < 12; i++) this.later(i * 0.05, () => this.speedLine(a));
+        return this.wait(300);
+      }
+      case 'dust':
+        if (a) for (let i = 0; i < 8; i++) this.later(i * 0.05, () => this.dustAt(a.x + (Math.random() - 0.5) * 120, GROUND));
+        return this.wait(400);
       case 'sparrows': {
         // a flock of sparrows bursts out — and there's nothing left where they were
         if (!a) return this.wait(300);
@@ -1563,6 +1621,53 @@ export class Stage {
       c.setAttribute('cx', String(x + vx * k));
       c.setAttribute('cy', String(y + vy * k + 700 * k * k));
       c.setAttribute('opacity', String(1 - k * k));
+    });
+  }
+
+  /** a jagged comic burst with a word on it, popping out and fading */
+  private burst(x: number, y: number, text: string) {
+    let pts = '';
+    for (let i = 0; i < 18; i++) {
+      const r = i % 2 ? 70 : 130;
+      const ang = (i / 18) * Math.PI * 2;
+      pts += `${(Math.cos(ang) * r).toFixed(0)},${(Math.sin(ang) * r * 0.75).toFixed(0)} `;
+    }
+    const g = svg(`<g><polygon points="${pts}" fill="#ffd600" stroke="#d84315" stroke-width="10" stroke-linejoin="round"/>
+      <polygon points="${pts}" fill="#ff7043" transform="scale(0.62)"/>
+      <text x="0" y="16" font-size="54" font-weight="900" text-anchor="middle" fill="#fff" stroke="#b71c1c" stroke-width="5" paint-order="stroke" font-family="Nunito, Arial, sans-serif">${text}</text></g>`);
+    const ring = el('ellipse', { cx: x, cy: y, rx: 10, ry: 8, fill: 'none', stroke: '#fff', 'stroke-width': 10 });
+    this.particle(ring, 0.5, (p, k) => {
+      ring.setAttribute('rx', String(10 + k * 260));
+      ring.setAttribute('ry', String(8 + k * 180));
+      ring.setAttribute('opacity', String(1 - k));
+    });
+    this.particle(g, 0.9, (p, k) => {
+      const sc = k < 0.25 ? 0.3 + (k / 0.25) * 0.9 : 1.2 - (k - 0.25) * 0.2;
+      g.setAttribute('transform', `translate(${x} ${y}) rotate(${-8 + k * 6}) scale(${sc.toFixed(3)})`);
+      g.setAttribute('opacity', String(k < 0.7 ? 1 : (1 - k) / 0.3));
+    });
+  }
+
+  private dustAt(x: number, y: number) {
+    const c = el('circle', { r: 16, fill: '#d7c4a3' });
+    const vx = (Math.random() - 0.5) * 220;
+    this.particle(c, 0.9, (p, k) => {
+      c.setAttribute('cx', String(x + vx * k));
+      c.setAttribute('cy', String(y - 10 - k * 60));
+      c.setAttribute('r', String(14 + k * 36));
+      c.setAttribute('opacity', String(0.8 * (1 - k)));
+    });
+  }
+
+  private speedLine(a: Actor) {
+    const dir = a.move ? Math.sign(a.move.to[0] - a.move.from[0]) || 1 : a.flip ? 1 : -1;
+    const y = a.y + ANCHORS[a.id].top * a.size * (0.2 + Math.random() * 0.6);
+    const x0 = a.x - dir * 60;
+    const len = 80 + Math.random() * 120;
+    const l = el('path', { d: `M0 0 h${-dir * len}`, stroke: '#ffffff', 'stroke-width': 6, 'stroke-linecap': 'round' });
+    this.particle(l, 0.45, (p, k) => {
+      l.setAttribute('transform', `translate(${x0 - dir * k * 120} ${y})`);
+      l.setAttribute('opacity', String(0.9 * (1 - k)));
     });
   }
 

@@ -8,6 +8,7 @@
 //   data-part="ears"     the hare's ears, they twitch
 //   data-part="raw"      pale dough over the kolobok's crust, fades as he bakes
 
+import { bochka, hnizdo, hryfon, krutyvus, muzhychok, skarb, vernydub, vernyhora, yama } from './puppets-kotyhoroshko2';
 import { hlechyk, pyrih, tarilka, zhuravel } from './puppets-zhuravel';
 import { husli, pivnyk, torba, vyazanka } from './puppets-pivnyk';
 import { kurka, kuzhil, lokh, ovechka, solombychok } from './puppets-bychok';
@@ -441,6 +442,17 @@ export const PUPPETS: Record<string, () => string> = {
   tarilka,
   hlechyk,
   pyrih,
+  vernyhora,
+  vernydub,
+  krutyvus,
+  muzhychok,
+  hryfon,
+  hnizdo,
+  yama,
+  skarb,
+  skarb2: skarb,
+  bochka,
+  tsarivna: knyazivna,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -547,4 +559,15 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   tarilka: { mouth: [0, -12], top: -30 },
   hlechyk: { mouth: [0, -210], top: -230 },
   pyrih: { mouth: [0, -40], top: -80 },
+  vernyhora: { mouth: [0, -314], top: -410, hands: [118, -150] },
+  vernydub: { mouth: [0, -314], top: -410, hands: [118, -150] },
+  krutyvus: { mouth: [0, -314], top: -410, hands: [118, -150] },
+  muzhychok: { mouth: [0, -104], top: -164 },
+  hryfon: { mouth: [-190, -236], top: -320, hands: [10, -150] },
+  hnizdo: { mouth: [0, -60], top: -100 },
+  yama: { mouth: [0, -10], top: -50 },
+  skarb: { mouth: [0, -60], top: -115 },
+  skarb2: { mouth: [0, -60], top: -115 },
+  bochka: { mouth: [0, -60], top: -120 },
+  tsarivna: { mouth: [0, -258], top: -360 },
 };

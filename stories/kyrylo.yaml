@@ -180,24 +180,35 @@ scenes:
       to: [820, 770]
       ms: 600
       wait: true
-    - fx: squash
+    - fx: bang
       on: kyrylo
+      word: "ХРУМ!"
     - narrator: "Кинувся змій на Кирила — ухопить зубами, та тільки смоли й конопель повен рот. А Кирило його булавою — бах!"
-    - fx: squash
+    - fx: bang
       on: zmiy
+      word: "БАХ!"
     - move: zmiy
       to: [960, 770]
       ms: 400
       wait: true
     - narrator: "Бились-бились — аж курить, аж іскри скачуть!"
-    - fx: sparkle
-      on: zmiy
-    - fx: squash
-      on: zmiy
-    - fx: sparkle
+    - fx: whoosh
       on: kyrylo
+    - fx: bang
+      on: zmiy
+      word: "ДЗЕНЬ!"
+    - fx: dust
+      on: kyrylo
+    - fx: bang
+      on: zmiy
+      word: "ТРАХ!"
     - narrator: "Аж зміюка — бубух! — аж земля затряслася. Отак і подужав Кирило змія."
     - fx: lie
+      on: zmiy
+    - fx: bang
+      on: zmiy
+      word: "БУБУХ!"
+    - fx: shake
       on: zmiy
     - eyes: zmiy
       state: closed

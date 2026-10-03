@@ -87,8 +87,9 @@ scenes:
       to: [1010, 770]
       ms: 700
       wait: true
-    - fx: squash
+    - fx: bang
       on: vedmid
+      word: "ЛИП!"
     - vedmid: "Ой! Відпусти мене, бичку!"
     - narrator: "А бичок рушив — та й поволік ведмедя додому."
     - eyes: baba
@@ -191,8 +192,9 @@ scenes:
       to: [1010, 770]
       ms: 700
       wait: true
-    - fx: squash
+    - fx: bang
       on: vovk
+      word: "ЛИП!"
     - narrator: "Ухопив вовк бичка за смоляний бочок — та й прилип."
     - eyes: baba
       state: open
@@ -231,8 +233,9 @@ scenes:
       to: [1010, 770]
       ms: 700
       wait: true
-    - fx: squash
+    - fx: bang
       on: lysytsia
+      word: "ЛИП!"
     - narrator: "Та й прилипла лисичка. І зайчик на четвертий день прилип так само."
     - eyes: baba
       state: open

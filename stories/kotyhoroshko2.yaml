@@ -1,0 +1,492 @@
+# Котигорошко. Частина 2 — казка з вибором. Головна лінія — як у народній казці (kazky.org.ua),
+# одне місце пом'якшене: у польоті на грифоні Котигорошко віддає йому мамині сухарі (а не власну литку).
+# Відгалуження — на виборах.
+# Кроки ті самі, що в інших казках, плюс яскраві ефекти дії:
+#   - fx: bang       комікс-вибух зі словом (word: "БАХ!"), ударна хвиля, пил, камера трясеться (on: хто / at: [x, y])
+#   - fx: shake      земля двигтить (on: хто впав)
+#   - fx: whoosh     лінії швидкості за тим, хто мчить (on: хто)
+#   - fx: dust       пил з-під ніг (on: хто)
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Котигорошко. Частина 2
+cover: hryfon
+
+voices:
+  narrator:     { name: "", pitch: 1.1, rate: 1 }
+  kotyhoroshko: { name: "Котигорошко", pitch: 0.95, rate: 1 }
+  vernyhora:    { name: "Вернигора", pitch: 0.6, rate: 0.9 }
+  vernydub:     { name: "Вернидуб", pitch: 0.7, rate: 0.95 }
+  krutyvus:     { name: "Крутивус", pitch: 0.8, rate: 1 }
+  muzhychok:    { name: "Мужичок-з-нігтик", pitch: 1.5, rate: 1.1 }
+  tsarivna:     { name: "Царівна", pitch: 1.2, rate: 1 }
+  hryfon:       { name: "Грифон", pitch: 0.6, rate: 0.9 }
+
+endings:
+  canon: { title: "Котигорошкове весілля", icon: "👑" }
+  dwarf: { title: "Добрий мужичок", icon: "🧔" }
+  loyal: { title: "Вірні товариші", icon: "🤝" }
+  work:  { title: "Чесна праця", icon: "🌳" }
+
+start: start
+
+scenes:
+  start:
+    - scene: mountains
+    - show: kotyhoroshko
+      at: [560, 770]
+      flip: true
+    - roll: true
+    - narrator: "Привіт! Це друга частина казки про Котигорошка. Пам'ятаєш, як він пішов світ за очі? А ти й далі вибиратимеш, що буде!"
+    - narrator: "Іде Котигорошко, йде — аж бачить: стоїть велетень і гори розсуває, щоб дорога була."
+    - roll: false
+    - show: vernyhora
+      at: [1180, 770]
+    - fx: bang
+      on: vernyhora
+      word: "ГУП!"
+    - fx: shake
+      on: vernyhora
+    - kotyhoroshko: "Здоров був! Хто ти такий і що робиш?"
+    - vernyhora: "Я Вернигора — гори вертаю, щоб людям дорога була. А ти хто?"
+    - kotyhoroshko: "А я Котигорошко. Іду щастя шукати. Ходімо разом!"
+    - vernyhora: "Ходімо!"
+    - next: oaks
+
+  oaks:
+    - scene: forest
+    - show: kotyhoroshko
+      at: [480, 770]
+      flip: true
+    - show: vernyhora
+      at: [300, 770]
+      flip: true
+    - narrator: "Ідуть далі — аж у лісі велетень дуби з корінням вириває та на бік кидає."
+    - show: vernydub
+      at: [1100, 770]
+    - show: dub
+      at: [1350, 770]
+      size: 0.6
+    - fx: bang
+      on: dub
+      word: "ТРІСЬ!"
+    - move: dub
+      to: [2100, 300]
+      ms: 800
+    - fx: whoosh
+      on: dub
+    - vernydub: "Я Вернидуб — дуби вертаю, щоб ширше було ходити!"
+    - narrator: "Пристав і Вернидуб до товариства. Ідуть утрьох — аж річка, а над нею велетень з такими вусами, що як крутне — так вода й розступиться."
+    - next: river
+
+  river:
+    - scene: river
+    - show: kotyhoroshko
+      at: [420, 770]
+      flip: true
+    - show: vernyhora
+      at: [260, 770]
+      flip: true
+    - show: vernydub
+      at: [120, 770]
+      flip: true
+    - show: krutyvus
+      at: [1050, 770]
+    - fx: rock
+      on: krutyvus
+    - fx: bang
+      at: [1250, 660]
+      word: "ШУУХ!"
+    - krutyvus: "Я Крутивус — вусом воду кручу, щоб можна було річку перейти!"
+    - narrator: "Пристав і Крутивус. Отак учотирьох і пішли далі світом."
+    - next: cabin
+
+  cabin:
+    - scene: pich
+    - show: vernyhora
+      at: [1100, 770]
+    - narrator: "Знайшли вони в лісі хатку й домовилися: троє йдуть на полювання, а один лишається обід варити. Першим лишився Вернигора."
+    - narrator: "Наварив він обід, аж чує — щось у двері стукає. Відчиняє — а там мужичок-з-нігтик, а борода на сім ліктів!"
+    - show: muzhychok
+      at: [520, 770]
+      flip: true
+    - muzhychok: "Пусти мене, чоловіче, пообідати!"
+    - vernyhora: "Не великий пан — і сам відчиниш."
+    - narrator: "А мужичок як скочить — та й ухопив Вернигору за чуприну, та й повісив на кілочок на стіні!"
+    - move: muzhychok
+      to: [1000, 770]
+      hop: true
+      ms: 600
+      wait: true
+    - fx: bang
+      on: vernyhora
+      word: "ЩИГЛЬ!"
+    - move: vernyhora
+      to: [1180, 600]
+      ms: 400
+      wait: true
+    - fx: rock
+      on: vernyhora
+    - narrator: "З'їв мужичок увесь обід — та й пішов собі."
+    - fx: munch
+      on: muzhychok
+    - move: muzhychok
+      to: [-200, 770]
+      ms: 1400
+      wait: true
+    - narrator: "Так само було й з Вернидубом, і з Крутивусом. А вчетверте лишився варити сам Котигорошко."
+    - next: k_cooks
+
+  k_cooks:
+    - scene: pich
+    - show: kotyhoroshko
+      at: [1100, 770]
+    - show: muzhychok
+      at: [-200, 770]
+      flip: true
+    - move: muzhychok
+      to: [520, 770]
+      flip: true
+      ms: 1600
+      wait: true
+    - muzhychok: "Пусти мене, чоловіче, пообідати!"
+    - choice: "Що зробить Котигорошко з мужичком?"
+      options:
+        - label: "Схопити за бороду"
+          icon: "✊"
+          next: beard
+        - label: "Пригостити обідом"
+          icon: "🍲"
+          next: dwarf_kind
+
+  dwarf_kind:
+    - kotyhoroshko: "Заходь, дідусю, сідай. Ось тобі борщу, ось і пиріжок."
+    - muzhychok: "Ти диви... Ніхто мене ще не частував. Усі гонять, а ти пригостив!"
+    - fx: munch
+      on: muzhychok
+    - muzhychok: "За добре серце відкрию тобі таємницю: під землею, в глибокій ямі, я царівну тримаю. Іди визволи її — я тобі й дорогу покажу."
+    - narrator: "Повів мужичок Котигорошка до ями, і спустилися вони вдвох у підземне царство."
+    - scene: pidzemne
+    - show: tsarivna
+      at: [900, 770]
+    - show: kotyhoroshko
+      at: [560, 770]
+      flip: true
+    - show: muzhychok
+      at: [400, 770]
+      flip: true
+    - muzhychok: "Прости мене, царівно. Іди додому з цим добрим молодцем."
+    - tsarivna: "Дякую тобі, Котигорошку! І тобі дякую, мужичку!"
+    - fx: hearts
+      on: tsarivna
+    - narrator: "Вивів Котигорошко царівну нагору, а мужичок-з-нігтик відтоді жив тихо й мирно, та ще й до товаришів на обід заходив — уже як гість."
+    - ending: dwarf
+
+  beard:
+    - kotyhoroshko: "А, то ти такий! Посидь же тут, поки я вернуся!"
+    - narrator: "Ухопив Котигорошко мужичка за бороду, виніс надвір, розколов сокирою дуба, вклав туди бороду — та й защемив!"
+    - scene: glade
+    - show: dub
+      at: [1100, 770]
+    - show: kotyhoroshko
+      at: [760, 770]
+      flip: true
+    - show: muzhychok
+      at: [960, 770]
+      flip: true
+    - fx: bang
+      on: dub
+      word: "ХРЯСЬ!"
+    - fx: rock
+      on: muzhychok
+    - muzhychok: "Пусти! Пусти, бо пожалкуєш!"
+    - narrator: "Пішов Котигорошко за товаришами. Приходять — а ні дуба, ні мужичка! Вирвав мужичок дуба з корінням і поволік за собою."
+    - move: dub
+      to: [2200, 770]
+      ms: 1400
+    - move: muzhychok
+      to: [2100, 770]
+      ms: 1400
+    - fx: dust
+      on: dub
+    - fx: shake
+      on: dub
+    - next: pit
+
+  pit:
+    - scene: glade
+    - show: yama
+      at: [820, 790]
+    - show: kotyhoroshko
+      at: [520, 770]
+      flip: true
+    - show: vernyhora
+      at: [1120, 770]
+    - show: vernydub
+      at: [1300, 770]
+    - show: krutyvus
+      at: [1460, 770]
+    - narrator: "Пішли вони тим слідом, де дуб волочився, — аж до глибокої-превеликої ями. Без дна!"
+    - kotyhoroshko: "Лізь, Вернигоро!"
+    - vernyhora: "Цур їй! Не полізу."
+    - krutyvus: "І я не полізу!"
+    - kotyhoroshko: "Ну, як так — то я сам полізу. Вийте мотуз!"
+    - narrator: "Звили вони мотуз, і спустився Котигорошко в яму — аж в інше царство."
+    - enter: kotyhoroshko
+      into: yama
+    - next: underworld
+
+  underworld:
+    - scene: pidzemne
+    - show: kotyhoroshko
+      at: [400, 770]
+      flip: true
+    - show: tsarivna
+      at: [-250, 770]
+      flip: true
+    - narrator: "Аж тут стоїть палац — увесь золотом і самоцвітами сяє. Вибігла звідти царівна, така гарна, що й сказати не можна."
+    - move: tsarivna
+      to: [700, 770]
+      ms: 900
+      wait: true
+    - tsarivna: "Ой, добрий молодцю, чого ти сюди зайшов? Тут мужичок-з-нігтик живе — він мене вкрав, і багато людей занапастив!"
+    - move: tsarivna
+      to: [260, 770]
+      ms: 900
+    - narrator: "Аж іде мужичок — бороду з дуба визволяє."
+    - show: muzhychok
+      at: [1400, 770]
+    - move: muzhychok
+      to: [950, 770]
+      ms: 1400
+      wait: true
+    - muzhychok: "А, це ти! Ну, битися чи миритися?"
+    - kotyhoroshko: "Де вже миритися — битися!"
+    - move: kotyhoroshko
+      to: [760, 770]
+      flip: true
+      ms: 400
+      wait: true
+    - fx: bang
+      on: muzhychok
+      word: "БАХ!"
+    - fx: whoosh
+      on: kotyhoroshko
+    - fx: bang
+      on: muzhychok
+      word: "ТРАХ!"
+    - narrator: "Бились вони, бились — аж земля гула. Та як ударив Котигорошко булавою — полетів мужичок-з-нігтик аж за тридев'ять земель, і більше його ніхто не бачив!"
+    - fx: bang
+      on: muzhychok
+      word: "ГУП!"
+    - move: muzhychok
+      to: [1900, -200]
+      ms: 900
+    - fx: whoosh
+      on: muzhychok
+    - tsarivna: "Ти мене визволив! Дякую тобі, Котигорошку!"
+    - narrator: "Набрали вони золота й самоцвітів три мішки — та й пішли до ями."
+    - next: rope
+
+  rope:
+    - scene: pidzemne
+    - show: kotyhoroshko
+      at: [700, 770]
+    - show: tsarivna
+      at: [900, 770]
+    - kotyhoroshko: "Гей, братці, ви ще там? Тягніть!"
+    - narrator: "Витягли товариші три мішки золота: «Це твоє, це твоє, а це моє». А тоді Котигорошко прив'язав до мотуза царівну — і її витягли."
+    - fx: sparkle
+      on: tsarivna
+    - hide: tsarivna
+    - narrator: "А товариші нагорі вже й радяться: «Нащо нам його витягати? Хай царівна нам буде. Підтягнемо до половини та й пустимо — хай уб'ється!»"
+    - choice: "Що зробить Котигорошко?"
+      options:
+        - label: "Спершу прив'язати камінь"
+          icon: "🧱"
+          next: stone
+        - label: "Довіритися товаришам"
+          icon: "🤝"
+          next: loyal
+
+  loyal:
+    - kotyhoroshko: "Тягніть, братці! Я вам вірю!"
+    - narrator: "А нагорі царівна почула їхню змову та як скрикне:"
+    - scene: glade
+    - show: yama
+      at: [820, 790]
+    - show: vernyhora
+      at: [1120, 770]
+    - show: vernydub
+      at: [1300, 770]
+    - show: krutyvus
+      at: [1460, 770]
+    - show: tsarivna
+      at: [520, 770]
+      flip: true
+    - tsarivna: "Як вам не соромно?! Він же вам вірить — і мене визволив, і вас від мужичка врятував!"
+    - vernyhora: "Правда... Соромно нам, братці. Тягнімо!"
+    - fx: popout
+      on: yama
+      who: [kotyhoroshko]
+    - fx: bang
+      on: kotyhoroshko
+      word: "УРА!"
+    - narrator: "Витягли товариші Котигорошка, попросили в нього пробачення — і всі разом пішли до царівниного батька. Бо справжні товариші одне одного не кидають."
+    - fx: hearts
+      on: kotyhoroshko
+    - ending: loyal
+
+  stone:
+    - narrator: "Догадався Котигорошко, що товариші щось лихе задумали. Прив'язав до мотуза великий камінь та й гукає:"
+    - kotyhoroshko: "Тягніть!"
+    - scene: glade
+    - show: yama
+      at: [820, 790]
+    - show: vernyhora
+      at: [1120, 770]
+    - show: vernydub
+      at: [1300, 770]
+    - show: krutyvus
+      at: [1460, 770]
+    - show: kamin
+      at: [820, 780]
+      size: 0.5
+    - move: kamin
+      to: [820, 300]
+      ms: 1400
+      wait: true
+    - narrator: "Витягли товариші камінь аж до половини — та й пустили!"
+    - move: kamin
+      to: [820, 800]
+      ms: 400
+      wait: true
+    - fx: bang
+      on: yama
+      word: "БУБУХ!"
+    - fx: shake
+      on: yama
+    - hide: kamin
+    - vernyhora: "Ну, тепер уже не вилізе. Ходімо, братці, з царівною!"
+    - narrator: "Пішли вони з царівною, а Котигорошко лишився в підземному царстві. Ходив він, ходив — аж насунула чорна хмара, загриміло, полилася злива з градом."
+    - next: storm
+
+  storm:
+    - scene: pidzemne
+    - show: dub
+      at: [1060, 770]
+    - show: hnizdo
+      at: [1000, 490]
+    - show: kotyhoroshko
+      at: [500, 770]
+      flip: true
+    - fx: bang
+      at: [800, 120]
+      word: "ГРІМ!"
+    - fx: shake
+      on: dub
+    - narrator: "Сховався Котигорошко під дубом, аж чує — на дубі в гнізді пищать пташенята, бо їх злива заливає."
+    - kotyhoroshko: "Ой, бідненькі! Зараз я вас укрию."
+    - move: kotyhoroshko
+      to: [1000, 500]
+      hop: true
+      ms: 900
+      wait: true
+    - narrator: "Виліз Котигорошко на дуба й укрив пташенят своєю свитою. А сам мокне під дощем."
+    - fx: bang
+      at: [700, 100]
+      word: "ГУР-Р-Р!"
+    - narrator: "Минула злива. Аж летить величезний птах — грифон. Сів на дуба й бачить: діточки його живі, ще й свитою вкриті!"
+    - show: hryfon
+      at: [2100, 300]
+      size: 1.3
+    - move: hryfon
+      to: [1420, 640]
+      ms: 1800
+      wait: true
+    - fx: whoosh
+      on: hryfon
+    - hryfon: "Хто це моїх діток укрив? Уперше вони в мене живі лишилися! Проси, чого хочеш, — усе дам."
+    - kotyhoroshko: "Винеси мене на той світ, грифоне!"
+    - hryfon: "Добре. Тільки набери шість бочок м'яса й шість бочок води. Як поверну голову праворуч — кидай мені м'ясо, а ліворуч — давай води."
+    - next: flight
+
+  flight:
+    - scene: nebo
+    - show: hryfon
+      at: [800, 640]
+      size: 1.6
+    - show: kotyhoroshko
+      at: [800, 400]
+    - carry: kotyhoroshko
+      by: hryfon
+    - roll: true
+    - fx: whoosh
+      on: hryfon
+    - narrator: "Полетіли! Летить грифон, вгору здіймається, а Котигорошко його годує: голову праворуч — м'ясо, ліворуч — воду."
+    - fx: whoosh
+      on: hryfon
+    - narrator: "Летять, летять — аж тут м'ясо скінчилося, а до світу ще трохи. Що робити?"
+    - kotyhoroshko: "Ось тобі, грифоне, мамині сухарі з торби — останні, а все ж підкріпишся!"
+    - narrator: "Віддав Котигорошко все, що мав у торбі, — і грифон із останніх сил таки виніс його нагору."
+    - fx: whoosh
+      on: hryfon
+    - roll: false
+    - hryfon: "Дякую тобі, Котигорошку: і за дітей, і за сухарі. Ти добрий і щедрий."
+    - next: palace
+
+  palace:
+    - scene: kyiv
+    - show: vernyhora
+      at: [700, 770]
+    - show: vernydub
+      at: [900, 770]
+    - show: krutyvus
+      at: [1100, 770]
+    - show: tsarivna
+      at: [1420, 770]
+    - narrator: "Пішов Котигорошко шукати товаришів. Аж вони в царівниного батька в палаці живуть та сваряться: кожен хоче з царівною одружитися."
+    - fx: bang
+      at: [900, 300]
+      word: "СВАРКА!"
+    - show: kotyhoroshko
+      at: [-250, 770]
+      flip: true
+    - move: kotyhoroshko
+      to: [420, 770]
+      flip: true
+      ms: 1800
+      wait: true
+    - fx: dust
+      on: kotyhoroshko
+    - vernyhora: "Ой! Котигорошко! Живий! Не губи нас, брате!"
+    - choice: "Що скаже Котигорошко?"
+      options:
+        - label: "Простити"
+          icon: "👑"
+          next: canon_end
+        - label: "Хай спершу відпрацюють"
+          icon: "🌳"
+          next: work
+
+  canon_end:
+    - kotyhoroshko: "Названі брати, ви мене зрадили, та я вам прощаю."
+    - narrator: "Простив він їм. А тоді одружився з царівною, і було весілля на весь світ — Вернигора гори розсував, щоб гості прийшли, Вернидуб дубів на столи нарубав, а Крутивус вусом вино по чарках розливав!"
+    - fx: hearts
+      on: tsarivna
+    - fx: bang
+      at: [800, 250]
+      word: "ВЕСІЛЛЯ!"
+    - narrator: "Та й досі живуть, хліб жують. І я там був, мед-вино пив — по вусах текло, а в роті не було!"
+    - ending: canon
+
+  work:
+    - kotyhoroshko: "Прощу я вас, як відпрацюєте. Вернигоро — прокладеш дороги людям через усі гори. Вернидубе — посадиш стільки дубів, скільки повиривав. А Крутивусе — збудуєш мости через усі ріки!"
+    - vernydub: "Робитимемо, брате! Заслужили."
+    - narrator: "Цілий рік працювали товариші: прокладали дороги, садили діброви, будували мости. А як закінчили — Котигорошко їх простив, і всі разом гуляли на його весіллі з царівною."
+    - fx: bang
+      at: [800, 250]
+      word: "МОЛОДЦІ!"
+    - fx: hearts
+      on: kotyhoroshko
+    - ending: work

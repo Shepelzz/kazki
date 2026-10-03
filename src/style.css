@@ -186,6 +186,10 @@ button.book:active {
   background: linear-gradient(#9fd8f7, #e0f4ff 70%, #9ccc65 70%);
 }
 
+.book-art-kotyhoroshko2 {
+  background: linear-gradient(#64b5f6, #e3f2fd);
+}
+
 .book-art-kotyhoroshko {
   background: linear-gradient(#9fd8f7, #e0f4ff 70%, #7a5232 70%);
 }

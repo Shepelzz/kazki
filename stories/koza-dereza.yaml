@@ -280,8 +280,9 @@ scenes:
     - yizhachok: "А в мене голки гострі! Як наставлю голки — розбіжаться й вовки!"
     - enter: yizhachok
       into: khatynka
-    - fx: pinch
+    - fx: bang
       on: khatynka
+      word: "ОЙ!"
     - koza: "Ой-ой-ой! Колеться! Ой, голки! Тікаю!"
     - fx: scatter
       on: khatynka
@@ -309,8 +310,9 @@ scenes:
     - rak: "Я рак-неборак! Як ущипну — буде знак!"
     - enter: rak
       into: khatynka
-    - fx: pinch
+    - fx: bang
       on: khatynka
+      word: "ЩИП!"
     - koza: "Ой-ой-ой! Хто це щипається? Ой, боляче! Тікаю!"
     - fx: scatter
       on: khatynka

@@ -100,6 +100,9 @@ scenes:
       wait: true
     - carry: pivnyk
       by: lysytsia
+    - fx: bang
+      on: pivnyk
+      word: "ХАП!"
     - pivnyk: "Котику-братику, рятуй мене! Несе мене лиса за темні ліси, за високі гори, за бистрі води!"
     - move: lysytsia
       to: [-300, 770]
@@ -127,6 +130,8 @@ scenes:
       ms: 2400
       wait: true
     - roll: false
+    - fx: whoosh
+      on: kit
     - kit: "Ану, руда, віддавай мого братика!"
     - put: pivnyk
       to: [760, 770]
@@ -260,6 +265,9 @@ scenes:
       ms: 900
       wait: true
     - narrator: "Тільки виглянула лисичка-дочка — котик її в торбинку!"
+    - fx: bang
+      on: torba
+      word: "ХАП!"
     - enter: lysenia1
       into: torba
     - kit: "Тринь-брень, гусельки, золоті струноньки! Чи вдома лисичка з своїми діточками?"

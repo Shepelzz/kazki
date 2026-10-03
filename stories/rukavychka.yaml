@@ -324,6 +324,9 @@ scenes:
     - enter: vedmid
       into: rukavychka
     - narrator: "Поліз ведмідь у рукавичку. Пихтів-пихтів, крутився-вертівся... аж раптом —"
+    - fx: bang
+      on: rukavychka
+      word: "ТРІСЬ!"
     - fx: burst
       on: rukavychka
       who: [myshka, zhabka, zayets, lysytsia, vovk, kaban, vedmid]

@@ -78,7 +78,10 @@ scenes:
     - show: zemlia
       at: [800, 770]
     - narrator: "Пішли вони на залізне поле. Як ударив змій — так і вбив братів у те поле по самі плечі."
-    - fx: squash
+    - fx: bang
+      on: braty
+      word: "БАХ!"
+    - fx: shake
       on: braty
     - move: braty
       to: [520, 900]
@@ -129,6 +132,8 @@ scenes:
     - put: kamin
       to: [2100, 300]
       ms: 900
+    - fx: whoosh
+      on: kamin
     - did: "Ото сила! Аж люди полякалися."
     - show: zalizo
       at: [960, 770]
@@ -168,6 +173,9 @@ scenes:
       to: [700, 640]
       ms: 700
       wait: true
+    - fx: bang
+      on: bulava
+      word: "ТРІСЬ!"
     - fx: break
       on: bulava
     - kotyhoroshko: "Ні, з такою булавою не можна йти братів і сестру шукати. Ковалю, скуй іншу, ще більшу!"
@@ -257,28 +265,38 @@ scenes:
     - show: zemlia
       at: [800, 770]
     - narrator: "Пішли вони на залізне поле. Ударив змій першим — і вбив Котигорошка в землю по кісточки."
-    - fx: squash
+    - fx: bang
       on: kotyhoroshko
+      word: "БАХ!"
     - move: kotyhoroshko
       to: [520, 800]
       ms: 400
       wait: true
     - narrator: "А Котигорошко як ударить булавою — так і вбив змія по коліна!"
-    - fx: squash
+    - fx: whoosh
+      on: kotyhoroshko
+    - fx: bang
       on: zmiy
+      word: "ТРАХ!"
     - move: zmiy
       to: [1120, 850]
       ms: 400
       wait: true
     - narrator: "Удруге вдарив — по пояс!"
-    - fx: squash
+    - fx: bang
+      on: zmiy
+      word: "ГУП!"
+    - fx: shake
       on: zmiy
     - move: zmiy
       to: [1120, 930]
       ms: 400
       wait: true
     - narrator: "А втретє як ударив — так і вбив змія в те залізне поле зовсім."
-    - fx: squash
+    - fx: bang
+      on: zmiy
+      word: "БУБУХ!"
+    - fx: shake
       on: zmiy
     - move: zmiy
       to: [1120, 1400]
@@ -346,7 +364,10 @@ scenes:
     - fx: rock
       on: dub
     - hide: motuzky
-    - fx: squash
+    - fx: bang
+      on: dub
+      word: "ХРЯСЬ!"
+    - fx: shake
       on: dub
     - narrator: "Узяв того дуба на плечі — та й пішов додому."
     - next: home_angry
@@ -368,7 +389,10 @@ scenes:
       ms: 2400
       wait: true
     - narrator: "Прийшов він до хати — а там брати сидять, хваляться, як вони змія подужали. Як кинув Котигорошко дуба об землю — аж хата задвигтіла!"
-    - fx: squash
+    - fx: bang
+      at: [700, 600]
+      word: "ГУП!"
+    - fx: shake
       on: braty
     - braty: "Ой! Котигорошко!"
     - choice: "Що скаже Котигорошко братам?"

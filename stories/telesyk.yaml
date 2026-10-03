@@ -258,7 +258,10 @@ scenes:
       to: [1000, 770]
       ms: 900
       wait: true
-    - fx: rock
+    - fx: bang
+      on: yavir
+      word: "ХРУМ!"
+    - fx: shake
       on: yavir
     - fx: rock
       on: yavir

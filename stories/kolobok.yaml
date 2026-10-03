@@ -470,6 +470,9 @@ scenes:
       ms: 900
       wait: true
     - narrator: "Скочив колобок лисичці на носик, а лисичка — гам!"
+    - fx: bang
+      on: lysytsia
+      word: "ГАМ!"
     - fx: chomp
       on: lysytsia
     - pause: 900

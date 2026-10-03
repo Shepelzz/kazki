@@ -162,6 +162,9 @@ scenes:
       hop: true
       ms: 500
       wait: true
+    - fx: bang
+      on: sanky
+      word: "ТРІСЬ!"
     - fx: break
       on: sanky
     - move: lysytsia
@@ -326,7 +329,10 @@ scenes:
     - move: vovk
       to: [-400, 770]
       ms: 1500
-      wait: true
+    - fx: whoosh
+      on: vovk
+    - fx: dust
+      on: vovk
     - narrator: "А лисичка тим часом забігла до хати, де баба тісто місила, вмочила голову в діжу — та й навтьоки."
     - next: ride
 

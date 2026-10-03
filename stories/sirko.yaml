@@ -104,6 +104,8 @@ scenes:
       wait: true
     - carry: dytyna
       by: vovk
+    - fx: whoosh
+      on: vovk
     - baba: "Ой, лишенько! Вовк дитину вхопив! Рятуйте!"
     - show: sirko
       at: [-250, 770]
@@ -226,6 +228,9 @@ scenes:
   song:
     - vovk: "Ау-у-у-у! Ау-у-у!"
       sing: true
+    - fx: bang
+      on: vovk
+      word: "АУ-У!"
     - did: "Вовк! Вовк під столом! Бийте його!"
     - baba: "Ой, рятуйте, людоньки!"
     - sirko: "Стривайте, я його сам!"

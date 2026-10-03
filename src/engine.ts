@@ -182,7 +182,7 @@ export class Teller {
         stage.setEyes(s.actor, s.open);
         return;
       case 'fx':
-        return stage.fx(s.fx, s.on, s.at, s.who);
+        return stage.fx(s.fx, s.on, s.at, s.who, s.word);
       case 'pause':
         return stage.wait(s.ms);
       case 'choice':
