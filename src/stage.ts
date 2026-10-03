@@ -131,11 +131,11 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil'];
 /** animals on four legs (lying down = flat on the belly) */
-const FOUR_LEGS = ['sirko', 'sobaka', 'koza'];
+const FOUR_LEGS = ['sirko', 'sobaka', 'koza', 'zmiy'];
 const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska'];
 
 interface Particle {
@@ -509,6 +509,30 @@ function streamAndBridge(x: number) {
     <path d="M${x - 160} ${GROUND - 60} Q${x} ${GROUND - 116} ${x + 160} ${GROUND - 60}" stroke="#6d4426" stroke-width="8" fill="none"/>`;
 }
 
+/** Kyiv over the Dnipro: hills with white churches and golden domes, the river below */
+function kyivView() {
+  const church = (x: number, s: number) => `<g transform="translate(${x} ${GROUND - 250}) scale(${s})">
+    <rect x="-70" y="-120" width="140" height="120" fill="#fdfaf2" stroke="#d9cdb4" stroke-width="5"/>
+    <rect x="-24" y="-200" width="48" height="80" fill="#fdfaf2" stroke="#d9cdb4" stroke-width="5"/>
+    <path d="M-30 -200 Q-30 -250 0 -262 Q30 -250 30 -200 Z" fill="#f5c542" stroke="#c99a1e" stroke-width="4"/>
+    <path d="M0 -262 v-30 M-10 -282 h20" stroke="#c99a1e" stroke-width="5"/>
+    <path d="M-70 -120 Q-70 -150 -50 -156 Q-30 -150 -30 -120 Z M30 -120 Q30 -150 50 -156 Q70 -150 70 -120 Z" fill="#f5c542" stroke="#c99a1e" stroke-width="4"/>
+    <path d="M-12 -60 v40 h24 v-40 Q0 -76 -12 -60 Z" fill="#8b5a2b"/></g>`;
+  return (
+    sky('#7cc4f2', '#e0f4ff') +
+    sun(1400, 230) +
+    clouds(171) +
+    [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#81c784', GROUND - 200, 90, 172)}</g>`).join('') +
+    church(330, 0.9) +
+    church(620, 0.7) +
+    church(1280, 0.8) +
+    `<rect x="-1600" y="${GROUND - 180}" width="4800" height="90" fill="#4aa3df"/>` +
+    Array.from({ length: 14 }, (_, i) => `<path d="M${(i * 157) % 2200 - 300} ${GROUND - 150 + (i % 3) * 22} q20 -8 40 0" stroke="#d6f0ff" stroke-width="4" fill="none"/>`).join('') +
+    ground('#7cb342', '#c9a77a') +
+    `<g>${verge(173, false)}</g>`
+  );
+}
+
 // ---------- winter ----------
 
 /** a fir under snow */
@@ -573,6 +597,33 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       streamAndBridge(1360) +
       maple(260) +
       `<g>${verge(104, false)}${verge(105, false)}</g>`,
+    layers: [],
+  }),
+  kyiv: () => ({
+    // Kyiv on the hills over the Dnipro: golden domes, the river below
+    still: kyivView(),
+    layers: [],
+  }),
+  kozhum: () => ({
+    // Kyrylo's yard by the Dnipro: hides drying on poles, a tanning vat
+    still:
+      kyivView() +
+      `<path d="M-200 ${GROUND - 260} H1800" stroke="#6d4426" stroke-width="8"/>` +
+      [80, 380, 1240, 1520].map((x) => `<rect x="${x - 8}" y="${GROUND - 270}" width="16" height="270" fill="#6d4426"/>`).join('') +
+      [140, 300, 1180, 1340, 1480].map((x, i) => `<path d="M${x - 60} ${GROUND - 262} Q${x - 70} ${GROUND - 170} ${x - 40} ${GROUND - 120} L${x + 40} ${GROUND - 120} Q${x + 70} ${GROUND - 170} ${x + 60} ${GROUND - 262} Z" fill="${i % 2 ? '#a1704a' : '#8b5a2b'}" stroke="#5a3a22" stroke-width="4"/>`).join('') +
+      `<path d="M1000 ${GROUND} L980 ${GROUND - 120} L1120 ${GROUND - 120} L1100 ${GROUND} Z" fill="#8b5a2b" stroke="#5a3a22" stroke-width="5"/><ellipse cx="1050" cy="${GROUND - 120}" rx="70" ry="14" fill="#5d4037"/>`,
+    layers: [],
+  }),
+  lihvo: () => ({
+    // the dragon's lair: grey rocks, a dark cave, scorched earth
+    still:
+      sky('#6d6f86', '#c9b7a6') +
+      clouds(161).replace(/opacity=".92"/, 'opacity=".45"') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${mountains(162, '#7e7a74', GROUND - 60, 360, false)}</g>`).join('') +
+      `<path d="M1100 ${GROUND - 40} Q1130 ${GROUND - 300} 1300 ${GROUND - 320} Q1480 ${GROUND - 300} 1520 ${GROUND - 40} Z" fill="#5d5a55" stroke="#3e3c39" stroke-width="6"/>` +
+      `<path d="M1220 ${GROUND - 40} Q1230 ${GROUND - 200} 1310 ${GROUND - 210} Q1390 ${GROUND - 200} 1400 ${GROUND - 40} Z" fill="#1d1b1a"/>` +
+      ground('#8a7f62', '#6e6450') +
+      Array.from({ length: 18 }, (_, i) => `<ellipse cx="${(i * 97) % 1700 - 50}" cy="${GROUND + 50 + ((i * 41) % 130)}" rx="${18 + (i % 4) * 8}" ry="${10 + (i % 3) * 4}" fill="#7a7468"/>`).join(''),
     layers: [],
   }),
   bereh: () => ({
@@ -1296,8 +1347,11 @@ export class Stage {
         if (!a) return this.wait(300);
         const [x, y] = [a.x, a.y - 40];
         for (let i = 0; i < 14; i++) this.wool(x, y, i % 2 ? '#b07e55' : '#6d4426');
-        this.hide(a.id);
-        this.show('lamani', [x, GROUND]);
+        const id = a.id;
+        this.hide(id);
+        // the sledge leaves its broken pieces; torn hides are replaced by the next stack
+        if (id === 'sanky') this.show('lamani', [x, GROUND]);
+        else this.later(0.6, () => this.show(id, [x, a.y]));
         return this.wait(700);
       }
       case 'throwfish': {

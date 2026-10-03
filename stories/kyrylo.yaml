@@ -1,0 +1,329 @@
+# Кирило Кожум'яка — казка з вибором. Головна лінія — як у народній казці (kazky.org.ua); відгалуження — на виборах.
+# Кроки ті самі, що в інших казках; show: kyrylo + look: konopli — Кирило, обмотаний конопелями й смолою.
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Кирило Кожум'яка
+cover: kyrylo
+
+voices:
+  narrator:   { name: "", pitch: 1.1, rate: 1 }
+  kyrylo:     { name: "Кирило", pitch: 0.7, rate: 0.9 }
+  zmiy:       { name: "Змій", pitch: 0.55, rate: 0.9 }
+  knyaz:      { name: "Князь", pitch: 0.75, rate: 0.9 }
+  knyazivna:  { name: "Князівна", pitch: 1.2, rate: 1 }
+  did:        { name: "Старий", pitch: 0.72, rate: 0.9 }
+  pastushok:  { name: "Парубок", pitch: 1.2, rate: 1.05 }
+  dity:       { name: "Діти", pitch: 1.6, rate: 1.05 }
+
+endings:
+  canon:  { title: "Кожум'яки", icon: "🛡️" }
+  kids:   { title: "Кирило і діти", icon: "🧸" }
+  riddle: { title: "Змій-невдаха", icon: "🧩" }
+  friend: { title: "Добрий змій", icon: "🐲" }
+
+start: start
+
+scenes:
+  start:
+    - scene: kyiv
+    - show: knyaz
+      at: [860, 770]
+    - show: knyazivna
+      at: [1080, 770]
+    - narrator: "Привіт! Сьогодні — казка про найдужчого чоловіка в Києві, Кирила Кожум'яку. А ти вибиратимеш, що буде далі!"
+    - narrator: "Колись давно під Києвом жив змій. І щороку посилали йому дань: або молодого парубка, або дівчину. Аж ось прийшла черга й до князевої дочки."
+    - knyaz: "Ой, доню моя! Нікому не віддав би, та що ж удієш..."
+    - show: zmiy
+      at: [2100, 770]
+    - move: zmiy
+      to: [1440, 770]
+      ms: 2200
+      wait: true
+    - carry: knyazivna
+      by: zmiy
+    - narrator: "Прилетів змій, ухопив князівну — та й поніс до свого лігва."
+    - move: zmiy
+      to: [2300, 600]
+      ms: 2400
+      wait: true
+    - next: lair
+
+  lair:
+    - scene: lihvo
+    - show: zmiy
+      at: [1000, 770]
+    - show: knyazivna
+      at: [560, 770]
+      flip: true
+    - narrator: "Та князівна була така гарна, що змій її не з'їв, а взяв собі за жінку. От вона якось і питає його лагідно:"
+    - knyazivna: "Чи є на світі хтось, кого б ти боявся?"
+    - zmiy: "Є такий. У Києві над Дніпром живе Кирило Кожум'яка. Як дихне — то й мені страшно!"
+    - narrator: "А в князівни був голубок, якого вона ще вдома вигодувала. Написала вона батькові листа, прив'язала голубкові під крильце."
+    - show: holub
+      at: [480, 640]
+    - knyazivna: "Лети, голубочку, до мого батенька! Хай шукають Кирила Кожум'яку."
+    - move: holub
+      to: [-300, 300]
+      ms: 2400
+      wait: true
+    - next: letter
+
+  letter:
+    - scene: kyiv
+    - show: knyaz
+      at: [900, 770]
+    - show: holub
+      at: [2000, 300]
+    - move: holub
+      to: [1060, 600]
+      ms: 2200
+      wait: true
+    - knyaz: "Лист від доні! Шукайте Кирила Кожум'яку — він один змія подужає!"
+    - choice: "Кого послати до Кирила?"
+      options:
+        - label: "Старих, поважних людей"
+          icon: "👴"
+          next: elders
+        - label: "Одразу дітей"
+          icon: "🧒"
+          next: kids_go
+
+  elders:
+    - scene: kozhum
+    - show: kozhi
+      at: [760, 780]
+    - show: kyrylo
+      at: [960, 770]
+    - narrator: "Пішли до Кирила старі, поважні люди. Відчинили тихенько двері, а Кирило саме м'яв дванадцять кож."
+    - show: did
+      at: [-250, 770]
+      flip: true
+    - move: did
+      to: [420, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - narrator: "Як побачив їх Кирило, злякався — та й дванадцять кож тільки трісь!"
+    - fx: break
+      on: kozhi
+    - did: "Кириле, будь ласкав, порятуй князівну від змія!"
+    - narrator: "Та Кирило розсердився, що його налякали, й не схотів. Послали тоді молодших."
+    - move: did
+      to: [-300, 770]
+      ms: 1600
+    - show: pastushok
+      at: [-250, 770]
+      flip: true
+    - move: pastushok
+      to: [420, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - pastushok: "Кириле, допоможи! Змій князівну тримає!"
+    - narrator: "А Кирило мовчить та сопе, наче не йому й кажуть."
+    - move: pastushok
+      to: [-300, 770]
+      ms: 1600
+      wait: true
+    - next: kids_go
+
+  kids_go:
+    - scene: kozhum
+    - show: kozhi
+      at: [760, 780]
+    - show: kyrylo
+      at: [960, 770]
+    - narrator: "Тоді послали до нього маленьких діточок."
+    - show: dity
+      at: [-250, 770]
+    - move: dity
+      to: [460, 770]
+      ms: 2200
+      wait: true
+    - dity: "Дядечку Кириле, порятуйте князівну! Бо змій і нас колись забере!"
+    - narrator: "Як заплакали діточки, то й сам Кожум'яка не витерпів, заплакав та й каже:"
+    - kyrylo: "Ну, для вас я вже зроблю. Дайте мені дванадцять бочок смоли й дванадцять возів конопель."
+    - choice: "Як Кирило подужає змія?"
+      options:
+        - label: "Битися — в конопель і смолі"
+          icon: "⚔️"
+          next: battle
+        - label: "Загадати загадку"
+          icon: "🧩"
+          next: riddle
+        - label: "Поговорити по-доброму"
+          icon: "🤝"
+          next: friend
+
+  battle:
+    - narrator: "Обмотався Кирило конопелями, обмазався смолою, взяв булаву — та й пішов до змія."
+    - scene: lihvo
+    - show: zmiy
+      at: [1120, 770]
+    - show: kyrylo
+      look: konopli
+      at: [-250, 770]
+      flip: true
+    - show: bulava
+      at: [-130, 640]
+    - carry: bulava
+      by: kyrylo
+    - move: kyrylo
+      to: [520, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - zmiy: "Ну що, Кириле, будемо битися чи миритися?"
+    - kyrylo: "Де вже миритися! Будемо битися!"
+    - move: zmiy
+      to: [820, 770]
+      ms: 600
+      wait: true
+    - fx: squash
+      on: kyrylo
+    - narrator: "Кинувся змій на Кирила — ухопить зубами, та тільки смоли й конопель повен рот. А Кирило його булавою — бах!"
+    - fx: squash
+      on: zmiy
+    - move: zmiy
+      to: [960, 770]
+      ms: 400
+      wait: true
+    - narrator: "Бились-бились — аж курить, аж іскри скачуть!"
+    - fx: sparkle
+      on: zmiy
+    - fx: squash
+      on: zmiy
+    - fx: sparkle
+      on: kyrylo
+    - narrator: "Аж зміюка — бубух! — аж земля затряслася. Отак і подужав Кирило змія."
+    - fx: lie
+      on: zmiy
+    - eyes: zmiy
+      state: closed
+    - show: knyazivna
+      at: [1320, 770]
+    - move: knyazivna
+      to: [760, 770]
+      ms: 1600
+      wait: true
+    - knyazivna: "Дякую тобі, Кириле! Тепер я вільна!"
+    - next: reward
+
+  reward:
+    - scene: kyiv
+    - show: knyaz
+      at: [1040, 770]
+    - show: knyazivna
+      at: [1260, 770]
+    - show: kyrylo
+      at: [700, 770]
+      flip: true
+    - fx: hearts
+      on: knyazivna
+    - knyaz: "Дякую тобі, Кириле! Проси, чого хочеш!"
+    - choice: "Що попросить Кирило?"
+      options:
+        - label: "Нічого — до своїх кож"
+          icon: "🛡️"
+          next: canon_end
+        - label: "Щоб діти в гості ходили"
+          icon: "🧸"
+          next: kids_end
+
+  canon_end:
+    - kyrylo: "Нічого мені не треба, княже. Піду я до своїх кож."
+    - narrator: "Так і зробив. А з того часу почало зватися те урочище в Києві, де він жив, Кожум'яками. Так і досі зветься!"
+    - ending: canon
+
+  kids_end:
+    - kyrylo: "Нічого мені, княже, не треба. Хай лише до мене діти в гості ходять — я їх кожі м'яти навчу!"
+    - scene: kozhum
+    - show: kozhi
+      at: [760, 780]
+    - show: kyrylo
+      at: [960, 770]
+    - show: dity
+      at: [540, 770]
+    - dity: "Ура! Дядько Кирило — найдужчий у світі!"
+    - fx: hearts
+      on: dity
+    - narrator: "І щодня бігли до Кирила діти — то кожу м'яти, то казок послухати. А урочище, де він жив, і досі зветься Кожум'яками."
+    - ending: kids
+
+  riddle:
+    - scene: lihvo
+    - show: zmiy
+      at: [1120, 770]
+    - show: kyrylo
+      at: [-250, 770]
+      flip: true
+    - move: kyrylo
+      to: [560, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - zmiy: "Ну що, Кириле, будемо битися чи миритися?"
+    - kyrylo: "Ні те, ні те. Давай загадки загадувати! Як не відгадаєш — відпускаєш князівну й летиш за море, і щоб не вертався!"
+    - zmiy: "Ха! Та я наймудріший змій на світі! Згода!"
+    - kyrylo: "Що то за звір: зимою білий, літом сірий, а як скаче — вуха трусяться?"
+    - zmiy: "Е-е-е... Змій?.. Ні... Ведмідь?.. Ні..."
+    - narrator: "Думає змій, аж дим із ніздрів іде. А ти як думаєш, хто це?"
+    - pause: 2500
+    - kyrylo: "Зайчик!"
+    - zmiy: "Ох... Програв я. Та що ж, слово треба тримати."
+    - narrator: "Розправив змій крила — та й полетів за синє море. Тільки його й бачили!"
+    - move: zmiy
+      to: [2300, 300]
+      flip: true
+      ms: 2600
+      wait: true
+    - show: knyazivna
+      at: [1320, 770]
+    - move: knyazivna
+      to: [800, 770]
+      ms: 1600
+      wait: true
+    - knyazivna: "Дякую, Кириле! Ти не лише дужий, а й мудрий!"
+    - fx: hearts
+      on: knyazivna
+    - ending: riddle
+
+  friend:
+    - scene: lihvo
+    - show: zmiy
+      at: [1120, 770]
+    - show: kyrylo
+      at: [-250, 770]
+      flip: true
+    - move: kyrylo
+      to: [560, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - zmiy: "Ну що, Кириле, будемо битися чи миритися?"
+    - kyrylo: "Миритися. Скажи-но мені, змію: навіщо ти людей кривдиш?"
+    - zmiy: "Бо... мені самотньо. Ніхто зі мною не дружить. Як побачать — то й тікають..."
+    - kyrylo: "То відпусти князівну, а я тебе в Київ поведу, з людьми познайомлю. Будеш дітей на спині катати!"
+    - zmiy: "Справді? Мене? Катати дітей?"
+    - narrator: "Відпустив змій князівну, і пішли вони всі разом до Києва."
+    - scene: kyiv
+    - show: knyaz
+      at: [1300, 770]
+    - show: knyazivna
+      at: [1480, 770]
+    - show: zmiy
+      at: [700, 770]
+    - show: dity
+      at: [560, 520]
+    - carry: dity
+      by: zmiy
+    - show: kyrylo
+      at: [1060, 770]
+      flip: true
+    - dity: "Ура! Ми летимо на змієві!"
+    - zmiy: "Ха-ха! Тримайтеся міцніше!"
+    - fx: hearts
+      on: zmiy
+    - narrator: "І став змій найдобрішим у Києві: катав дітей над Дніпром, а на свята пускав із ніздрів кольорові іскри. А всі казали: це Кирило Кожум'яка його подружив із людьми!"
+    - ending: friend

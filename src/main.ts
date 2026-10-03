@@ -15,15 +15,15 @@ import kotskyiRaw from '../stories/pan-kotskyi.yaml';
 import sirkoRaw from '../stories/sirko.yaml';
 import lysychkaRaw from '../stories/lysychka.yaml';
 import telesykRaw from '../stories/telesyk.yaml';
+import kyryloRaw from '../stories/kyrylo.yaml';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw), parseStory('lysychka', lysychkaRaw), parseStory('telesyk', telesykRaw)];
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw), parseStory('lysychka', lysychkaRaw), parseStory('telesyk', telesykRaw), parseStory('kyrylo', kyryloRaw)];
 /** tales still being written: shown on the shelf as "soon" */
 const SOON = [
   { title: 'Котик і Півник', icon: '🐓' },
   { title: 'Солом’яний бичок', icon: '🐂' },
   { title: 'Лисичка і Журавель', icon: '🐦' },
   { title: 'Котигорошко', icon: '💪' },
-  { title: 'Кирило Кожум’яка', icon: '🐉' },
 ];
 
 /** backdrops with no road: subtitles at the bottom there */
@@ -60,6 +60,7 @@ const COVER_VIEW: Record<string, string> = {
   sirko: '-140 -180 260 190',
   lysytsia: '-120 -300 280 310',
   telesyk: '-90 -240 180 250',
+  kyrylo: '-150 -420 300 430',
 };
 
 function cover(story: Story) {
