@@ -19,11 +19,11 @@ import kyryloRaw from '../stories/kyrylo.yaml';
 import kotyhoroshkoRaw from '../stories/kotyhoroshko.yaml';
 import bychokRaw from '../stories/solomyanyi-bychok.yaml';
 import pivnykRaw from '../stories/kotyk-pivnyk.yaml';
+import zhuravelRaw from '../stories/lysychka-zhuravel.yaml';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw), parseStory('lysychka', lysychkaRaw), parseStory('telesyk', telesykRaw), parseStory('kyrylo', kyryloRaw), parseStory('kotyhoroshko', kotyhoroshkoRaw), parseStory('solomyanyi-bychok', bychokRaw), parseStory('kotyk-pivnyk', pivnykRaw)];
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw), parseStory('lysychka', lysychkaRaw), parseStory('telesyk', telesykRaw), parseStory('kyrylo', kyryloRaw), parseStory('kotyhoroshko', kotyhoroshkoRaw), parseStory('solomyanyi-bychok', bychokRaw), parseStory('kotyk-pivnyk', pivnykRaw), parseStory('lysychka-zhuravel', zhuravelRaw)];
 /** tales still being written: shown on the shelf as "soon" */
 const SOON = [
-  { title: 'Лисичка і Журавель', icon: '🐦' },
   { title: 'Котигорошко. Частина 2', icon: '💪' },
 ];
 
@@ -65,6 +65,7 @@ const COVER_VIEW: Record<string, string> = {
   kotyhoroshko: '-130 -390 260 400',
   solombychok: '-130 -210 250 220',
   pivnyk: '-100 -210 220 220',
+  zhuravel: '-160 -370 270 380',
 };
 
 function cover(story: Story) {

@@ -8,6 +8,7 @@
 //   data-part="ears"     the hare's ears, they twitch
 //   data-part="raw"      pale dough over the kolobok's crust, fades as he bakes
 
+import { hlechyk, pyrih, tarilka, zhuravel } from './puppets-zhuravel';
 import { husli, pivnyk, torba, vyazanka } from './puppets-pivnyk';
 import { kurka, kuzhil, lokh, ovechka, solombychok } from './puppets-bychok';
 import { braty, horoshyna, kamin, kotyhoroshko, motuzky, zalizo, zemlia } from './puppets-kotyhoroshko';
@@ -436,6 +437,10 @@ export const PUPPETS: Record<string, () => string> = {
   vyazanka,
   lysenia1: lysytsia,
   lysenia2: lysytsia,
+  zhuravel,
+  tarilka,
+  hlechyk,
+  pyrih,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -538,4 +543,8 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   vyazanka: { mouth: [0, -40], top: -100 },
   lysenia1: { mouth: [-70, -180], top: -300 },
   lysenia2: { mouth: [-70, -180], top: -300 },
+  zhuravel: { mouth: [-100, -330], top: -360 },
+  tarilka: { mouth: [0, -12], top: -30 },
+  hlechyk: { mouth: [0, -210], top: -230 },
+  pyrih: { mouth: [0, -40], top: -80 },
 };
