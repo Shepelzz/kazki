@@ -1,0 +1,453 @@
+# Котигорошко. Частина 1 — казка з вибором. Головна лінія — як у народній казці (kazky.org.ua):
+# від змієвої борозни до «А я піду світ за очі». Друга частина (Вернигора, Вернидуб, Крутивус,
+# Мужичок-з-нігтик, грифон) — окрема книжка. Відгалуження — на виборах.
+# Кроки ті самі, що в інших казках. show: zemlia — залізне поле попереду: кого в нього «вбивають»,
+# той просто опускається нижче (move з більшим y).
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Котигорошко
+cover: kotyhoroshko
+
+voices:
+  narrator:     { name: "", pitch: 1.1, rate: 1 }
+  kotyhoroshko: { name: "Котигорошко", pitch: 0.95, rate: 1 }
+  sestra:       { name: "Оленка", pitch: 1.25, rate: 1 }
+  braty:        { name: "Брати", pitch: 0.85, rate: 1 }
+  zmiy:         { name: "Змій", pitch: 0.55, rate: 0.9 }
+  baba:         { name: "Мати", pitch: 1.0, rate: 0.95 }
+  did:          { name: "Батько", pitch: 0.72, rate: 0.9 }
+  koval:        { name: "Коваль", pitch: 0.65, rate: 0.9 }
+
+endings:
+  world:   { title: "Світ за очі", icon: "➡️" }
+  family:  { title: "Дружна родина", icon: "👨‍👩‍👧" }
+  forgive: { title: "Прощення", icon: "🤗" }
+  trick:   { title: "Хитрий Котигорошко", icon: "🧠" }
+
+start: start
+
+scenes:
+  start:
+    - scene: oranka
+    - show: braty
+      at: [1080, 770]
+    - narrator: "Привіт! Сьогодні — казка про найдужчого хлопця на світі, Котигорошка. А ти вибиратимеш, що буде далі!"
+    - narrator: "Були собі чоловік і жінка, і мали вони шестеро синів та одну дочку, Оленку. Пішли якось сини в поле орати й кажуть сестрі:"
+    - braty: "Принось нам, сестро, обід. А щоб не заблукала, ми борозну проорем — по ній і йди."
+    - narrator: "А в лісі жив змій. Почув він те — та й загорнув їхню борозну, а свою проорав — аж до своїх палаців."
+    - next: taken
+
+  taken:
+    - scene: lihvo
+    - show: zmiy
+      at: [1180, 770]
+    - show: sestra
+      at: [-250, 770]
+      flip: true
+    - move: sestra
+      to: [560, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - narrator: "Пішла Оленка по борозні — та й прийшла просто на змієве подвір'я. А там змій її й ухопив."
+    - carry: sestra
+      by: zmiy
+    - move: zmiy
+      to: [1320, 770]
+      ms: 900
+      wait: true
+    - hide: sestra
+    - narrator: "Шукали брати сестру, та й самі прийшли до змія."
+    - show: braty
+      at: [-300, 770]
+    - move: braty
+      to: [520, 770]
+      ms: 2400
+      wait: true
+    - braty: "Віддай нам сестру, зміюко!"
+    - zmiy: "Ось ходіть-но на залізне поле — будемо битися!"
+    - next: brothers_field
+
+  brothers_field:
+    - scene: zalizne
+    - show: braty
+      at: [520, 770]
+    - show: zmiy
+      at: [1120, 770]
+    - show: zemlia
+      at: [800, 770]
+    - narrator: "Пішли вони на залізне поле. Як ударив змій — так і вбив братів у те поле по самі плечі."
+    - fx: squash
+      on: braty
+    - move: braty
+      to: [520, 900]
+      ms: 600
+      wait: true
+    - narrator: "Та й повкидав їх усіх у глибоку темницю — і братів, і сестру."
+    - next: pea
+
+  pea:
+    - scene: hata
+    - show: did
+      at: [1060, 770]
+    - show: baba
+      at: [1270, 770]
+    - narrator: "Тужать батько з матір'ю — нема в них ні синів, ні дочки. Пішла раз мати на річку білизну прати. Іде дорогою — аж котиться горошинка."
+    - show: horoshyna
+      at: [700, 770]
+    - fx: sparkle
+      on: horoshyna
+    - move: baba
+      to: [780, 770]
+      ms: 1600
+      wait: true
+    - narrator: "Підняла мати горошинку — та й з'їла. А згодом народився в неї син. Назвали його Котигорошком."
+    - hide: horoshyna
+    - show: kotyhoroshko
+      at: [900, 770]
+      size: 0.45
+    - fx: sparkle
+      on: kotyhoroshko
+    - narrator: "Росте Котигорошко не по днях, а по годинах, — як з води. Небагато й років, а вже чималий виріс."
+    - resize: kotyhoroshko
+      to: 1
+      ms: 2500
+    - next: strength
+
+  strength:
+    - scene: hata
+    - show: did
+      at: [1180, 770]
+    - show: kotyhoroshko
+      at: [760, 770]
+    - show: kamin
+      at: [960, 770]
+    - narrator: "Копали якось батько з сином криницю, аж натрапили на великий-превеликий камінь. Батько й зрушити не може, а Котигорошко взяв його — та й викинув сам!"
+    - carry: kamin
+      by: kotyhoroshko
+    - put: kamin
+      to: [2100, 300]
+      ms: 900
+    - did: "Ото сила! Аж люди полякалися."
+    - show: zalizo
+      at: [960, 770]
+    - narrator: "Копають далі — аж знайшли великий шматок заліза. Узяв його Котигорошко — знадобиться."
+    - kotyhoroshko: "Тату, а чи були в мене брати й сестри?"
+    - did: "Були, сину. Шестеро братів і сестра Оленка. Та всіх їх ухопив змій."
+    - kotyhoroshko: "Тоді я піду їх визволяти!"
+    - next: mace
+
+  mace:
+    - scene: kuznya
+    - show: koval
+      at: [1150, 770]
+    - show: kovadlo
+      at: [900, 770]
+    - show: kotyhoroshko
+      at: [560, 770]
+      flip: true
+    - kotyhoroshko: "Ковалю, скуй мені з цього заліза булаву, та велику!"
+    - fx: rock
+      on: koval
+    - fx: sparkle
+      on: kovadlo
+    - narrator: "Скував коваль булаву — таку, що вдвох ледве піднімеш. Вийшов Котигорошко надвір та як підкине її вгору!"
+    - show: bulava
+      at: [700, 640]
+    - move: bulava
+      to: [700, -900]
+      ms: 900
+      wait: true
+    - eyes: kotyhoroshko
+      state: closed
+    - narrator: "Ліг та й спить. Дванадцять днів спав, а на тринадцятий — летить булава згори, аж гуде! Підставив Котигорошко палець — а булава й розкололася надвоє."
+    - eyes: kotyhoroshko
+      state: open
+    - move: bulava
+      to: [700, 640]
+      ms: 700
+      wait: true
+    - fx: break
+      on: bulava
+    - kotyhoroshko: "Ні, з такою булавою не можна йти братів і сестру шукати. Ковалю, скуй іншу, ще більшу!"
+    - fx: rock
+      on: koval
+    - fx: sparkle
+      on: kovadlo
+    - show: bulava
+      at: [700, 640]
+      size: 1.3
+    - move: bulava
+      to: [700, -900]
+      ms: 900
+      wait: true
+    - narrator: "Знову підкинув, знову дванадцять днів спав. На тринадцятий упала булава — та тільки трохи погнулася об палець."
+    - move: bulava
+      to: [700, 640]
+      ms: 700
+      wait: true
+    - kotyhoroshko: "Ну, з цією булавою можна йти братів і сестру шукати! Печіть, мамо, хліб та сушіть сухарі — піду."
+    - next: journey
+
+  journey:
+    - scene: forest
+    - show: kotyhoroshko
+      at: [560, 770]
+      flip: true
+    - show: bulava
+      at: [660, 640]
+      size: 1.3
+    - carry: bulava
+      by: kotyhoroshko
+    - roll: true
+    - narrator: "Пішов Котигорошко за тією старою борозною — через поле, через ліс — аж до змієвого подвір'я."
+    - roll: false
+    - next: lair2
+
+  lair2:
+    - scene: lihvo
+    - show: sestra
+      at: [1060, 770]
+    - show: kotyhoroshko
+      at: [-250, 770]
+      flip: true
+    - show: bulava
+      at: [-150, 640]
+      size: 1.3
+    - carry: bulava
+      by: kotyhoroshko
+    - move: kotyhoroshko
+      to: [560, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - sestra: "Здоров був, парубче! Чого ти сюди прийшов? Тут змій живе — він тебе з'їсть!"
+    - kotyhoroshko: "Не бійся, сестро! Я твій брат, Котигорошко. Прийшов вас визволяти."
+    - narrator: "Аж тут прилетів змій."
+    - show: zmiy
+      at: [2100, 770]
+    - move: zmiy
+      to: [1300, 770]
+      ms: 2000
+      wait: true
+    - zmiy: "Ого, людським духом пахне! Ну що, будемо битися чи миритися?"
+    - choice: "Що відповість Котигорошко?"
+      options:
+        - label: "«Де вже миритися — битися!»"
+          icon: "⚔️"
+          next: fight
+        - label: "Перехитрити змія"
+          icon: "🧠"
+          next: trick
+
+  fight:
+    - kotyhoroshko: "Де вже миритися! Будемо битися!"
+    - scene: zalizne
+    - show: kotyhoroshko
+      at: [520, 770]
+      flip: true
+    - show: bulava
+      at: [620, 640]
+      size: 1.3
+    - carry: bulava
+      by: kotyhoroshko
+    - show: zmiy
+      at: [1120, 770]
+    - show: zemlia
+      at: [800, 770]
+    - narrator: "Пішли вони на залізне поле. Ударив змій першим — і вбив Котигорошка в землю по кісточки."
+    - fx: squash
+      on: kotyhoroshko
+    - move: kotyhoroshko
+      to: [520, 800]
+      ms: 400
+      wait: true
+    - narrator: "А Котигорошко як ударить булавою — так і вбив змія по коліна!"
+    - fx: squash
+      on: zmiy
+    - move: zmiy
+      to: [1120, 850]
+      ms: 400
+      wait: true
+    - narrator: "Удруге вдарив — по пояс!"
+    - fx: squash
+      on: zmiy
+    - move: zmiy
+      to: [1120, 930]
+      ms: 400
+      wait: true
+    - narrator: "А втретє як ударив — так і вбив змія в те залізне поле зовсім."
+    - fx: squash
+      on: zmiy
+    - move: zmiy
+      to: [1120, 1400]
+      ms: 600
+      wait: true
+    - next: freed
+
+  freed:
+    - scene: lihvo
+    - show: kotyhoroshko
+      at: [700, 770]
+    - show: sestra
+      at: [480, 770]
+      flip: true
+    - narrator: "Пішов Котигорошко в глибокі темниці й повипускав братів. Ледве живі були, сердеги!"
+    - show: braty
+      at: [1320, 770]
+    - move: braty
+      to: [1080, 770]
+      ms: 1600
+      wait: true
+    - braty: "Дякуємо тобі, брате! Визволив ти нас!"
+    - narrator: "Забрали вони сестру, забрали змієве золото й срібло — та й пішли додому."
+    - next: oak
+
+  oak:
+    - scene: polyana
+    - show: dub
+      at: [1100, 770]
+    - show: kotyhoroshko
+      at: [1060, 770]
+    - show: braty
+      at: [500, 770]
+    - show: sestra
+      at: [260, 770]
+      flip: true
+    - narrator: "Ішли, ішли — та й сіли під дубом спочити. Котигорошко натомився, ліг — та й заснув. А брати й радяться:"
+    - eyes: kotyhoroshko
+      state: closed
+    - braty: "Люди сміятимуться: нас шестеро змія не подужали, а він сам подужав!"
+    - choice: "Що буде далі?"
+      options:
+        - label: "Брати змовляються"
+          icon: "😠"
+          next: tied
+        - label: "Оленка не спить"
+          icon: "👧"
+          next: sister_wakes
+
+  tied:
+    - braty: "Прив'яжімо його лозою до дуба, та й годі. А самі підемо додому."
+    - narrator: "Так і зробили: прив'язали Котигорошка міцною лозою до дуба, а самі пішли додому, і сестру повели."
+    - show: motuzky
+      at: [1060, 770]
+    - move: braty
+      to: [-300, 770]
+      ms: 2200
+    - move: sestra
+      to: [-400, 770]
+      ms: 2400
+      wait: true
+    - narrator: "Прокинувся Котигорошко — аж він прив'язаний. Як понатужився — та й вирвав дуба з корінням!"
+    - eyes: kotyhoroshko
+      state: open
+    - fx: rock
+      on: dub
+    - hide: motuzky
+    - fx: squash
+      on: dub
+    - narrator: "Узяв того дуба на плечі — та й пішов додому."
+    - next: home_angry
+
+  home_angry:
+    - scene: hata
+    - show: did
+      at: [1180, 770]
+    - show: baba
+      at: [1360, 770]
+    - show: braty
+      at: [860, 770]
+    - show: kotyhoroshko
+      at: [-250, 770]
+      flip: true
+    - move: kotyhoroshko
+      to: [420, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - narrator: "Прийшов він до хати — а там брати сидять, хваляться, як вони змія подужали. Як кинув Котигорошко дуба об землю — аж хата задвигтіла!"
+    - fx: squash
+      on: braty
+    - braty: "Ой! Котигорошко!"
+    - choice: "Що скаже Котигорошко братам?"
+      options:
+        - label: "«Піду світ за очі»"
+          icon: "➡️"
+          next: world
+        - label: "«Прощаю вам»"
+          icon: "🤗"
+          next: forgive
+
+  world:
+    - kotyhoroshko: "Зостаньтеся ж, коли ви такі! А я піду світ за очі."
+    - move: kotyhoroshko
+      to: [-350, 770]
+      ms: 2600
+      wait: true
+    - narrator: "Та й пішов Котигорошко у світ. А які з ним пригоди були далі — про Вернигору, Вернидуба й Крутивуса, — то вже інша казка. Слухай її в другій частині!"
+    - ending: world
+
+  forgive:
+    - kotyhoroshko: "Брати мої рідні... Хоч ви мене й зрадили, а я вам прощаю. Бо ми ж родина."
+    - braty: "Пробач нам, брате! Нам соромно. Ти найдужчий — і найдобріший."
+    - fx: hearts
+      on: kotyhoroshko
+    - narrator: "Обнялися брати, і батько з матір'ю аж заплакали з радості. Відтоді жили вони всі разом, дружно та весело."
+    - ending: forgive
+
+  sister_wakes:
+    - narrator: "А Оленка не спала й усе почула."
+    - sestra: "Що ви таке кажете?! Він же нас усіх урятував! Як вам не соромно?"
+    - braty: "Правда твоя, сестро... Нам соромно."
+    - eyes: kotyhoroshko
+      state: open
+    - kotyhoroshko: "Що тут таке? Чого ви такі сумні?"
+    - braty: "Пробач нам, брате, за погані думки. Ти — наш найкращий брат!"
+    - narrator: "І пішли вони додому всі разом — сім братів і сестра."
+    - scene: hata
+    - show: did
+      at: [1180, 770]
+    - show: baba
+      at: [1360, 770]
+    - show: braty
+      at: [760, 770]
+    - show: kotyhoroshko
+      at: [480, 770]
+      flip: true
+    - show: sestra
+      at: [980, 770]
+    - baba: "Діточки мої! Усі живі, всі вдома!"
+    - fx: hearts
+      on: baba
+    - narrator: "Ото була радість! І жили вони дружно, бо в родині головне — бути одне за одного."
+    - ending: family
+
+  trick:
+    - kotyhoroshko: "Битися? Навіщо? Давай краще силою мірятися: хто вище булаву підкине!"
+    - zmiy: "Ха! Та я наймогутніший! Дивись!"
+    - narrator: "Підкинув змій свою булаву — полетіла вона вище хмар, та за хвилинку й упала."
+    - kotyhoroshko: "А тепер я!"
+    - move: bulava
+      to: [700, -900]
+      ms: 900
+      wait: true
+    - narrator: "Підкинув Котигорошко свою — а вона все летить і летить. Годину нема, день нема..."
+    - zmiy: "Ой... А як вона впаде — то й мене приб'є! Ні, з таким силачем мені не впоратися!"
+    - narrator: "Злякався змій, повипускав з темниці братів і сестру — та й полетів за тридев'ять земель, і більше його ніхто не бачив."
+    - move: zmiy
+      to: [2300, 300]
+      flip: true
+      ms: 2400
+    - show: braty
+      at: [1350, 770]
+    - move: braty
+      to: [1060, 770]
+      ms: 1600
+      wait: true
+    - braty: "Котигорошку! Ти нас визволив — і навіть без бійки!"
+    - fx: hearts
+      on: kotyhoroshko
+    - narrator: "А булава, кажуть, на тринадцятий день упала аж у Дніпро. Так розумом Котигорошко подужав змія."
+    - ending: trick

@@ -131,9 +131,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky'];
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'koza', 'zmiy'];
 const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska'];
@@ -597,6 +597,26 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       streamAndBridge(1360) +
       maple(260) +
       `<g>${verge(104, false)}${verge(105, false)}</g>`,
+    layers: [],
+  }),
+  oranka: () => ({
+    // a ploughed field: brown furrows to the edge of the forest
+    still:
+      sky('#7cc4f2', '#e0f4ff') +
+      sun(1380, 230) +
+      clouds(181) +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#a5d6a7', GROUND - 160, 60, 182)}${treeRow(183, true)}</g>`).join('') +
+      `<rect x="-1600" y="${GROUND - 60}" width="4800" height="6000" fill="#7a5232"/>` +
+      Array.from({ length: 14 }, (_, i) => `<path d="M-1600 ${GROUND - 40 + i * 22} H3200" stroke="${i % 2 ? '#6d4426' : '#8b5a2b'}" stroke-width="9"/>`).join(''),
+    layers: [],
+  }),
+  zalizne: () => ({
+    // the dragon's iron field: grey sky, grey ground (the front ground is an actor: zemlia)
+    still:
+      sky('#5f6577', '#b0b4bf') +
+      clouds(191).replace(/opacity=".92"/, 'opacity=".4"') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${mountains(192, '#6b6f7a', GROUND - 40, 300, false)}</g>`).join('') +
+      `<rect x="-1600" y="${GROUND - 60}" width="4800" height="6000" fill="#6b6f76"/>`,
     layers: [],
   }),
   kyiv: () => ({
@@ -1351,7 +1371,7 @@ export class Stage {
         this.hide(id);
         // the sledge leaves its broken pieces; torn hides are replaced by the next stack
         if (id === 'sanky') this.show('lamani', [x, GROUND]);
-        else this.later(0.6, () => this.show(id, [x, a.y]));
+        else if (id === 'kozhi') this.later(0.6, () => this.show(id, [x, a.y]));
         return this.wait(700);
       }
       case 'throwfish': {

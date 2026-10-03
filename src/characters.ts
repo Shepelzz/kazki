@@ -8,6 +8,7 @@
 //   data-part="ears"     the hare's ears, they twitch
 //   data-part="raw"      pale dough over the kolobok's crust, fades as he bakes
 
+import { braty, horoshyna, kamin, kotyhoroshko, motuzky, zalizo, zemlia } from './puppets-kotyhoroshko';
 import { bulava, dity, holub, knyaz, knyazivna, kozhi, kyrylo, kyrylo_konopli, zmiy } from './puppets-kyrylo';
 import { chovnyk, gusenia, gusy, koval, kovadlo, kolyska, lopata, olenka, pyrohy, telesyk, yavir, zmiyuchka } from './puppets-telesyk';
 import { bychok, drova, lunka, lysytsia_tisto, pastushok, pyrizhok, sanky, sanky_lamani, viz, vudka } from './puppets-lysychka';
@@ -414,6 +415,14 @@ export const PUPPETS: Record<string, () => string> = {
   dity,
   kozhi,
   bulava,
+  kotyhoroshko,
+  braty,
+  sestra: nevista,
+  horoshyna,
+  kamin,
+  zalizo,
+  zemlia,
+  motuzky,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -497,4 +506,12 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   dity: { mouth: [0, -126], top: -175 },
   kozhi: { mouth: [0, -60], top: -110 },
   bulava: { mouth: [0, -240], top: -290 },
+  kotyhoroshko: { mouth: [0, -296], top: -380, hands: [104, -140] },
+  braty: { mouth: [0, -120], top: -210 },
+  sestra: { mouth: [0, -258], top: -330 },
+  horoshyna: { mouth: [0, -18], top: -40 },
+  kamin: { mouth: [0, -70], top: -150 },
+  zalizo: { mouth: [0, -40], top: -80 },
+  zemlia: { mouth: [0, 0], top: 0 },
+  motuzky: { mouth: [0, -180], top: -280 },
 };
