@@ -172,6 +172,10 @@ scenes:
       at: [600, 770]
     - show: did
       at: [1300, 770]
+    - fx: sit
+      on: baba
+    - fx: sit
+      on: did
     - narrator: "Лишився колобок удома. Переклала його баба з віконця на стіл, а дід і баба сіли вечеряти та й кажуть:"
     - did: "Ох і гарний колобок! Рум'яний, пухкенький. Зараз ми його з чаєм і з'їмо!"
     - move: did
@@ -238,6 +242,16 @@ scenes:
       ms: 2200
     - show: baba
       at: [320, 770]
+      flip: true
+    - show: did
+      at: [-200, 770]
+      flip: true
+    - move: did
+      to: [1000, 770]
+      flip: true
+      ms: 2600
+    - fx: whoosh
+      on: did
     - baba: "Тримай його, діду!"
     - narrator: "Та де там! Колобка вже й слід прохолов."
     - next: road
@@ -406,9 +420,9 @@ scenes:
     - next: fox
 
   bear_stone:
-    - narrator: "Колобок заплющив оченята, затамував подих і завмер — ніби він не колобок, а круглий камінчик."
     - eyes: kolobok
       state: closed
+    - narrator: "Колобок заплющив оченята, затамував подих і завмер — ніби він не колобок, а круглий камінчик."
     - move: vedmid
       to: [720, 770]
       ms: 1800
@@ -470,8 +484,9 @@ scenes:
       ms: 900
       wait: true
     - narrator: "Скочив колобок лисичці на носик, а лисичка — гам!"
-    - fx: bang
+    - fx: hit
       on: lysytsia
+      who: [kolobok]
       word: "ГАМ!"
     - fx: chomp
       on: lysytsia
@@ -504,6 +519,10 @@ scenes:
       at: [1060, 770]
     - show: baba
       at: [1270, 770]
+    - fx: sit
+      on: did
+    - fx: sit
+      on: baba
     - narrator: "А дід і баба тим часом сиділи біля хати та сумували."
     - baba: "Де ж наш колобок? Чи все з ним гаразд?"
     - show: kolobok
@@ -513,6 +532,10 @@ scenes:
       roll: true
       ms: 2400
       wait: true
+    - fx: stand
+      on: did
+    - fx: stand
+      on: baba
     - kolobok: "Дідусю! Бабусю! Я повернувся!"
     - did: "Колобок! Живий-здоровий!"
     - baba: "А ми вже так за тобою скучили!"

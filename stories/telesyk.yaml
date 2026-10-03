@@ -39,14 +39,35 @@ scenes:
     - narrator: "Привіт! Сьогодні — казка про Івасика-Телесика. А ти допомагатимеш вибирати, що буде далі!"
     - narrator: "Жили собі дід та баба, і не було в них діточок. От баба й каже:"
     - baba: "Піди, діду, в ліс, вирубай мені деревинку. Покладу її в колисочку — та й колихатиму, наче дитинку."
+    - move: did
+      to: [1900, 770]
+      flip: true
+      ms: 1400
+      wait: true
+    - show: drova
+      at: [1900, 700]
+    - carry: drova
+      by: did
+    - move: did
+      to: [1120, 770]
+      flip: false
+      ms: 1800
     - narrator: "Пішов дід, вирубав деревинку, приніс. Поклала баба її в колисочку, колише та співає."
+    - put: drova
+      to: [900, 640]
+      ms: 600
     - fx: rock
       on: kolyska
     - baba: "Люлі-люлі, Телесику, люлі-люлі, синочку..."
       sing: true
     - fx: rock
       on: kolyska
+    - fx: sleep
+      on: baba
     - narrator: "Колихала-колихала — та й заснула. А вранці дивиться — аж у колисці замість деревинки хлопчик!"
+    - fx: wake
+      on: baba
+    - hide: drova
     - show: telesyk
       at: [900, 620]
     - fx: sparkle
@@ -58,6 +79,10 @@ scenes:
       wait: true
     - baba: "Ой, діду! Синочок у нас! Телесик!"
     - telesyk: "Зробіть мені, тату, золотий човник і срібнеє весельце. Буду рибку ловити та вас годувати!"
+    - show: chovnyk
+      at: [1290, 780]
+    - fx: sparkle
+      on: chovnyk
     - narrator: "Зробив йому дід золотий човник і срібнеє весельце. І став Телесик на річці рибку ловити."
     - next: river
 
@@ -72,6 +97,10 @@ scenes:
     - narrator: "Ловить Телесик рибку, а мати йому їсти носить. Прийде до бережка та й кличе:"
     - show: baba
       at: [-200, 720]
+    - show: pyrohy
+      at: [-200, 640]
+    - carry: pyrohy
+      by: baba
     - move: baba
       to: [260, 720]
       ms: 2000
@@ -82,7 +111,13 @@ scenes:
       to: [620, 800]
       ms: 2200
       wait: true
+    - put: pyrohy
+      to: [560, 760]
+      ms: 500
+    - fx: munch
+      on: telesyk
     - narrator: "Наївся Телесик, напився — та й знову поплив рибку ловити."
+    - hide: pyrohy
     - move: chovnyk
       to: [1180, 800]
       ms: 2200
@@ -93,8 +128,10 @@ scenes:
     - narrator: "А зміючка в очереті все те підслухала. Прийшла до бережка та й кличе товстим голосом:"
     - show: zmiyuchka
       at: [-300, 720]
+      flip: true
     - move: zmiyuchka
       to: [240, 720]
+      flip: true
       ms: 2200
       wait: true
     - zmiyuchka: "Телесику, Телесику! Приплинь, приплинь до бережка — я тобі їсти й пити принесла!"
@@ -106,6 +143,7 @@ scenes:
     - zmiyuchka: "Ну, стривай же! Піду до коваля."
     - move: zmiyuchka
       to: [-350, 720]
+      flip: false
       ms: 2000
       wait: true
     - next: smith
@@ -118,8 +156,10 @@ scenes:
       at: [1150, 770]
     - show: zmiyuchka
       at: [-300, 770]
+      flip: true
     - move: zmiyuchka
       to: [520, 770]
+      flip: true
       ms: 2200
       wait: true
     - zmiyuchka: "Ковалю, ковалю! Скуй мені такий тоненький голосок, як у Телесикової матері!"
@@ -134,13 +174,20 @@ scenes:
 
   forge:
     - koval: "Клади язика на ковадло."
-    - fx: rock
+    - move: zmiyuchka
+      to: [760, 770]
+      flip: true
+      ms: 700
+      wait: true
+    - fx: hit
       on: koval
-    - fx: sparkle
-      on: kovadlo
+      who: [kovadlo]
+      word: "ДЗЕНЬ!"
     - narrator: "Поклала зміючка язика на ковадло, а коваль — дзень, дзень! — і перекував їй голос на тоненький."
-    - fx: rock
+    - fx: hit
       on: koval
+      who: [kovadlo]
+      word: "ДЗЕНЬ!"
     - fx: sparkle
       on: kovadlo
     - next: lure
@@ -155,8 +202,10 @@ scenes:
       by: chovnyk
     - show: zmiyuchka
       at: [-300, 720]
+      flip: true
     - move: zmiyuchka
       to: [240, 720]
+      flip: true
       ms: 2000
       wait: true
     - narrator: "Прибігла зміючка до бережка та й кличе тоненьким голосом:"
@@ -181,6 +230,7 @@ scenes:
       by: zmiyuchka
     - move: zmiyuchka
       to: [-400, 720]
+      flip: false
       ms: 2200
       wait: true
     - next: snake_house
@@ -219,6 +269,12 @@ scenes:
       hop: true
       ms: 600
       wait: true
+    - fx: sit
+      on: olenka
+    - move: telesyk
+      to: [680, 770]
+      ms: 600
+      wait: true
     - narrator: "Тільки Оленка вмостилася на лопату, а Телесик — шасть! — ухопив лопату, та й укинув її в піч, і заслінкою затулив."
     - move: olenka
       to: [300, 690]
@@ -248,18 +304,25 @@ scenes:
       to: [700, 770]
       ms: 2400
       wait: true
-    - fx: tumble
+    - fx: belly
       on: zmiyuchka
     - zmiyuchka: "Покочуся, повалюся, Телесикового м'ясця наївшись!"
     - telesyk: "Покотися, повалися, Оленчиного м'ясця наївшись!"
+    - fx: wake
+      on: zmiyuchka
     - zmiyuchka: "Що?! А-а-а! Он він — на яворі!"
     - narrator: "Кинулася зміючка явір гризти. Гризла-гризла — аж зуби повищерблювала, а явір хитається, тріщить..."
     - move: zmiyuchka
       to: [1000, 770]
       ms: 900
       wait: true
-    - fx: bang
-      on: yavir
+    - fx: hit
+      on: zmiyuchka
+      who: [yavir]
+      word: "ХРУМ!"
+    - fx: hit
+      on: zmiyuchka
+      who: [yavir]
       word: "ХРУМ!"
     - fx: shake
       on: yavir
@@ -320,6 +383,7 @@ scenes:
       ms: 3200
     - move: zmiyuchka
       to: [-200, 770]
+      flip: false
       ms: 3600
       wait: true
     - next: home
@@ -354,6 +418,9 @@ scenes:
     - did: "Та це ж наш Телесик! Повернувся!"
     - fx: hearts
       on: telesyk
+    - move: baba
+      to: [920, 770]
+      ms: 800
     - narrator: "Обіймають, цілують, не натішаться. А баба глянула на гусеня та й каже:"
     - baba: "А гусеня заріжемо — буде нам на обід."
     - choice: "Що скаже Телесик?"
@@ -370,6 +437,7 @@ scenes:
     - narrator: "Нагодували гусеня, напоїли, підсипали пшінця на крильце — та й випустили. Полетіло воно до своїх, аж ґелґоче."
     - move: gusenia
       to: [-400, 300]
+      flip: false
       ms: 3000
       wait: true
     - narrator: "От вам казочка, а мені бубликів в'язочка!"
@@ -416,10 +484,15 @@ scenes:
 
   bell:
     - koval: "Добре, клади язика на ковадло."
-    - fx: rock
+    - move: zmiyuchka
+      to: [760, 770]
+      flip: true
+      ms: 700
+      wait: true
+    - fx: hit
       on: koval
-    - fx: sparkle
-      on: kovadlo
+      who: [kovadlo]
+      word: "ДЗЕНЬ!"
     - narrator: "Поклала зміючка язика на ковадло, а коваль — хитрий! — замість тоненького голоску приклепав їй на язика дзвіночок."
     - next: bell_river
 
@@ -433,8 +506,10 @@ scenes:
       by: chovnyk
     - show: zmiyuchka
       at: [-300, 720]
+      flip: true
     - move: zmiyuchka
       to: [240, 720]
+      flip: true
       ms: 2000
       wait: true
     - zmiyuchka: "Телесику — дзень! — Телесику — дзелень! Приплинь — дзінь! — до бережка!"
@@ -444,6 +519,7 @@ scenes:
     - zmiyuchka: "Дзень-дзелень! Ой, лишенько — дзінь!"
     - move: zmiyuchka
       to: [-400, 720]
+      flip: false
       ms: 2000
       wait: true
     - narrator: "Так і дзеленчала зміючка, поки в очерет не сховалася. А всі риби в річці з неї сміялися! Телесик ловив рибку спокійно, а мати носила йому їсти — і ніхто їх більше не чіпав."

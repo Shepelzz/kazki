@@ -50,6 +50,8 @@ scenes:
       flip: true
       ms: 2200
       wait: true
+    - fx: sit
+      on: lysytsia
     - lysytsia: "Півнику, півнику, золотий гребінчику! Виглянь у віконце — дам тобі горошку!"
     - choice: "Чи вигляне півник?"
       options:
@@ -78,6 +80,7 @@ scenes:
     - kit: "А ти що тут робиш, руда? Гей, геть звідси!"
     - move: lysytsia
       to: [-300, 770]
+      flip: false
       ms: 1400
       wait: true
     - fx: popout
@@ -98,14 +101,16 @@ scenes:
       to: [620, 770]
       ms: 500
       wait: true
+    - fx: hit
+      on: lysytsia
+      who: [pivnyk]
+      word: "ХАП!"
     - carry: pivnyk
       by: lysytsia
-    - fx: bang
-      on: pivnyk
-      word: "ХАП!"
     - pivnyk: "Котику-братику, рятуй мене! Несе мене лиса за темні ліси, за високі гори, за бистрі води!"
     - move: lysytsia
       to: [-300, 770]
+      flip: false
       ms: 2200
       wait: true
     - next: chase1
@@ -140,6 +145,8 @@ scenes:
       to: [1900, 770]
       flip: true
       ms: 1400
+    - carry: pivnyk
+      by: kit
     - narrator: "Злякалася лисиця, кинула півника — та й у кущі. А котик приніс півника додому."
     - kit: "Я ж тобі казав: не виглядай у віконце!"
     - pivnyk: "Більше не буду, котику!"
@@ -161,6 +168,10 @@ scenes:
       to: [620, 770]
       ms: 500
       wait: true
+    - fx: hit
+      on: lysytsia
+      who: [pivnyk]
+      word: "ХАП!"
     - carry: pivnyk
       by: lysytsia
     - narrator: "Не втерпів півник, виглянув — а лисиця його й ухопила."
@@ -192,6 +203,10 @@ scenes:
     - enter: pivnyk
       into: khatynka
     - lysytsia: "Ох! Перехитрив мене півень!"
+    - move: lysytsia
+      to: [-300, 770]
+      flip: false
+      ms: 1600
     - narrator: "Та й побігла лисиця ні з чим. А як котик вернувся, півник йому все розповів."
     - show: kit
       at: [1900, 770]
@@ -210,6 +225,7 @@ scenes:
   carried:
     - move: lysytsia
       to: [-300, 770]
+      flip: false
       ms: 2000
       wait: true
     - narrator: "Віднесла лисиця півника до своєї нори. А котик вернувся додому — аж півника нема."
@@ -220,6 +236,13 @@ scenes:
       ms: 2200
       wait: true
     - kit: "Ой, біда! Лисиця знову мого братика вкрала! Ну стривай же, руда!"
+    - show: husli
+      at: [1070, 710]
+    - carry: husli
+      by: kit
+    - move: kit
+      to: [-300, 770]
+      ms: 3000
     - narrator: "Узяв котик гусельки й торбинку — та й пішов до лисиччиної нори."
     - next: nora
 
@@ -265,8 +288,9 @@ scenes:
       ms: 900
       wait: true
     - narrator: "Тільки виглянула лисичка-дочка — котик її в торбинку!"
-    - fx: bang
-      on: torba
+    - fx: hit
+      on: kit
+      who: [lysenia1]
       word: "ХАП!"
     - enter: lysenia1
       into: torba
@@ -282,6 +306,10 @@ scenes:
       to: [920, 770]
       ms: 900
       wait: true
+    - fx: hit
+      on: kit
+      who: [lysenia2]
+      word: "ХАП!"
     - enter: lysenia2
       into: torba
     - narrator: "Друга — та й туди ж. А тоді вийшла й сама лисиця."
@@ -314,6 +342,14 @@ scenes:
     - pivnyk: "Котику-братику, дякую! Більше ніколи у віконце не вигляну!"
     - fx: hearts
       on: kit
+    - move: pivnyk
+      to: [-300, 770]
+      flip: false
+      ms: 2600
+    - move: kit
+      to: [-300, 770]
+      flip: false
+      ms: 3000
     - narrator: "І з того часу жили котик і півник дружно, а лисиця обходила їхню хатку десятою дорогою."
     - ending: canon
 

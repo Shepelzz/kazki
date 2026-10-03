@@ -52,6 +52,8 @@ scenes:
       flip: true
     - show: kuzhil
       at: [600, 770]
+    - fx: sit
+      on: baba
     - narrator: "Уранці погнала баба бичка на пашу, сіла під горбочком, кужіль пряде та й приказує:"
     - baba: "Пасись, пасись, бичку, на травичці, а я кужіль попряду!"
     - choice: "Що зробить баба?"
@@ -66,13 +68,20 @@ scenes:
   nosleep:
     - baba: "Ні, не засну! Пильнуватиму свого бичка!"
     - narrator: "І не заснула. Пряде баба, бичок пасеться, сонечко світить... Ніхто не прийшов, ніхто не прилип."
+    - move: solombychok
+      to: [-300, 770]
+      ms: 3200
+    - move: baba
+      to: [-420, 770]
+      flip: false
+      ms: 3200
     - narrator: "Увечері пригнала баба бичка додому. І все. От і казки не вийшло! Хі-хі. А хочеш — спробуй ще раз, і хай баба задрімає?"
     - ending: nosleep
 
   bear:
+    - fx: sleep
+      on: baba
     - narrator: "Пряла баба, пряла — та й задрімала. Аж тут із темного лісу вибігає ведмідь."
-    - eyes: baba
-      state: closed
     - show: vedmid
       at: [1900, 770]
     - move: vedmid
@@ -87,13 +96,14 @@ scenes:
       to: [1010, 770]
       ms: 700
       wait: true
-    - fx: bang
+    - fx: hit
       on: vedmid
+      who: [solombychok]
       word: "ЛИП!"
     - vedmid: "Ой! Відпусти мене, бичку!"
     - narrator: "А бичок рушив — та й поволік ведмедя додому."
-    - eyes: baba
-      state: open
+    - fx: wake
+      on: baba
     - move: solombychok
       to: [-300, 770]
       ms: 3200
@@ -176,9 +186,11 @@ scenes:
       flip: true
     - show: kuzhil
       at: [600, 770]
+    - fx: sit
+      on: baba
+    - fx: sleep
+      on: baba
     - narrator: "Назавтра знову погнала баба бичка на пашу, знову кужіль пряде — та й задрімала. Аж біжить сірий вовк."
-    - eyes: baba
-      state: closed
     - show: vovk
       at: [1900, 770]
     - move: vovk
@@ -192,12 +204,13 @@ scenes:
       to: [1010, 770]
       ms: 700
       wait: true
-    - fx: bang
+    - fx: hit
       on: vovk
+      who: [solombychok]
       word: "ЛИП!"
     - narrator: "Ухопив вовк бичка за смоляний бочок — та й прилип."
-    - eyes: baba
-      state: open
+    - fx: wake
+      on: baba
     - move: solombychok
       to: [-300, 770]
       ms: 3200
@@ -217,9 +230,9 @@ scenes:
       flip: true
     - show: kuzhil
       at: [600, 770]
+    - fx: sleep
+      on: baba
     - narrator: "На третій день так само: баба задрімала, а до бичка — лисичка."
-    - eyes: baba
-      state: closed
     - show: lysytsia
       at: [1900, 770]
     - move: lysytsia
@@ -233,18 +246,33 @@ scenes:
       to: [1010, 770]
       ms: 700
       wait: true
-    - fx: bang
+    - fx: hit
       on: lysytsia
+      who: [solombychok]
       word: "ЛИП!"
+    - show: zayets
+      at: [1900, 770]
+    - move: zayets
+      to: [1150, 770]
+      ms: 1600
+      hop: true
     - narrator: "Та й прилипла лисичка. І зайчик на четвертий день прилип так само."
-    - eyes: baba
-      state: open
+    - fx: hit
+      on: zayets
+      who: [solombychok]
+      word: "ЛИП!"
+    - fx: wake
+      on: baba
     - move: solombychok
       to: [-300, 770]
       ms: 3200
     - move: lysytsia
       to: [-190, 770]
       ms: 3200
+    - move: zayets
+      to: [-60, 770]
+      ms: 3200
+      hop: true
       wait: true
     - next: cellar
 
@@ -267,6 +295,8 @@ scenes:
           next: feast
 
   knife:
+    - fx: sit
+      on: did
     - narrator: "Сів дід біля льоху та й ножа гострить. А ведмідь із льоху питає:"
     - vedmid: "Діду, навіщо ти ножа гостриш?"
     - did: "Шкуру з тебе зніму — буде мені й бабі кожушок."
@@ -275,6 +305,8 @@ scenes:
     - vovk: "І мене пусти, діду, — я тобі овечок пригоню!"
     - lysytsia: "І мене, діду, — я тобі курочок та гусочок наношу!"
     - zayets: "І мене! А я тобі капусти принесу — повну торбу!"
+    - fx: stand
+      on: did
     - narrator: "Повипускав дід звірів. А назавтра, ще й не розвиднілося, — аж стукає хтось під вікном."
     - fx: popout
       on: lokh
@@ -301,9 +333,23 @@ scenes:
       who: [vedmid, vovk, lysytsia, zayets]
     - vedmid: "Вечеряти? А ми думали, ти нас на кожушок..."
     - did: "Та що ви! Бичок вас привів — значить, ви наші гості."
+    - show: stil
+      at: [820, 800]
+    - fx: sit
+      on: did
+    - fx: sit
+      on: baba
+    - fx: sit
+      on: vedmid
+    - fx: sit
+      on: vovk
+    - fx: sit
+      on: lysytsia
+    - fx: sit
+      on: zayets
     - narrator: "Сіли всі до столу: дід, баба, ведмідь, вовк, лисичка й зайчик. А солом'яний бичок на радощах аж затанцював!"
     - show: solombychok
-      at: [700, 770]
+      at: [450, 770]
     - fx: tumble
       on: solombychok
     - fx: hearts

@@ -124,7 +124,19 @@ interface Actor {
   /** a thing, not a creature: doesn't walk or blink */
   prop: boolean;
   /** lying down: 'lie' — flat (the wolf behind the log), 'roll' — rolling side to side (the cat, full of presents) */
-  pose: '' | 'lie' | 'roll';
+  pose: '' | 'lie' | 'roll' | 'sit';
+  /** asleep: eyes shut, the head nods, "z-z-z" floats up (wakes when it moves or opens its eyes) */
+  asleep: boolean;
+  zIn: number;
+  /** a blow: lunging at someone (jab) / thrown back by one (knock) — seconds left and how far */
+  jab: number;
+  jabDx: number;
+  knock: number;
+  knockDx: number;
+  /** where that puts it, off its place for now */
+  ox: number;
+  /** eating (seconds left): bends down and chews */
+  munch: number;
   /** tumbling head over heels: degrees still to turn, and how fast */
   spin: number;
   spinSpeed: number;
@@ -134,6 +146,9 @@ interface Actor {
 const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky'];
+/** a blow: the lunge and the being thrown back (seconds) */
+const HIT = 0.55;
+const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'koza', 'zmiy'];
 const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
@@ -1158,6 +1173,14 @@ export class Stage {
       wobble: 0,
       prop: PROPS.indexOf(id) >= 0,
       pose: '',
+      asleep: false,
+      zIn: 0,
+      jab: 0,
+      jabDx: 0,
+      knock: 0,
+      knockDx: 0,
+      ox: 0,
+      munch: 0,
       spin: 0,
       spinSpeed: 0,
       parts: {
@@ -1203,6 +1226,7 @@ export class Stage {
     a.move?.done();
     a.carriedBy = null;
     a.pose = '';
+    a.asleep = false;
     if (opts.flip !== undefined) a.flip = opts.flip;
     return new Promise((resolve) => {
       const m: Move = {
@@ -1339,6 +1363,12 @@ export class Stage {
     const a = this.actors.get(id);
     if (!a) return;
     a.eyesOpen = open;
+    // opening the eyes = waking up (and standing up, if dozing sitting)
+    if (open && a.asleep) {
+      a.asleep = false;
+      if (a.pose === 'sit') a.pose = '';
+      a.bounce = 1;
+    }
     if (a.parts.eyes) a.parts.eyes.style.display = open ? '' : 'none';
     if (a.parts.eyesClosed) a.parts.eyesClosed.style.display = open ? 'none' : '';
     // playing a stone: no smile either
@@ -1372,7 +1402,12 @@ export class Stage {
       case 'munch': {
         // the goat tips her head down to the grass, three times
         const h = a && a.parts.head;
-        if (!a || !h) return this.wait(300);
+        if (!a) return this.wait(300);
+        if (!h) {
+          // no head of its own to tip: the whole body bends to the food, the mouth chews, crumbs
+          a.munch = 2.4;
+          return this.wait(2400);
+        }
         const t0 = this.time;
         const cx = h.getAttribute('data-cx');
         const cy = h.getAttribute('data-cy');
@@ -1458,6 +1493,67 @@ export class Stage {
         // lies down and rolls from side to side (gets up as soon as it moves)
         if (a) a.pose = 'roll';
         return this.wait(1600);
+      case 'hit': {
+        // a blow: the one hitting (on) lunges at the others (who) and swings; they are thrown back
+        // with a comic-book burst and stars, and come back to their place
+        if (!a) return this.wait(300);
+        const targets = who.map((id) => this.actors.get(id)).filter((t): t is Actor => !!t);
+        const t0 = targets[0];
+        const dir = t0 ? (t0.x >= a.x ? 1 : -1) : a.flip ? 1 : -1;
+        if (!a.prop) a.flip = dir > 0;
+        a.jab = HIT;
+        // right up to the target (bodies touching), not through it
+        a.jabDx = t0 ? dir * Math.min(420, Math.max(60, Math.abs(t0.x - a.x) - 280 * Math.max(a.size, t0.size))) : dir * 120;
+        for (let i = 0; i < 6; i++) this.later(i * 0.03, () => this.speedLine(a));
+        this.later(HIT * 0.4, () => {
+          for (const t of targets) {
+            const d = t.x >= a.x ? 1 : -1;
+            // the kolobok being bitten stays where the mouth is
+            if (t.id !== 'kolobok') {
+              t.knock = KNOCK;
+              t.knockDx = d * (t.prop ? 30 : 110);
+            }
+            t.asleep = false;
+            const [x, y] = at || [t.x - d * 30, t.y + ANCHORS[t.id].top * t.size * 0.5];
+            this.burst(x, y, word || 'БАХ!');
+            for (let i = 0; i < 10; i++) this.star(x, y, (i / 10) * Math.PI * 2);
+            for (let i = 0; i < 5; i++) this.dustAt(t.x + (Math.random() - 0.5) * 160, GROUND);
+          }
+          if (!targets.length && at) this.burst(at[0], at[1], word || 'БАХ!');
+          this.shake = 0.4;
+        });
+        return this.wait(HIT * 1000 + 250);
+      }
+      case 'sit':
+        // sits down (on the ground, a bench): until it moves or stands up
+        if (a) a.pose = 'sit';
+        return this.wait(400);
+      case 'stand':
+        if (a) {
+          a.pose = '';
+          a.bounce = 1;
+        }
+        return this.wait(400);
+      case 'sleep':
+        // falls asleep: sits down (unless lying already), eyes shut, nods, z-z-z
+        if (!a) return this.wait(300);
+        if (!a.pose) a.pose = 'sit';
+        this.setEyes(a.id, false);
+        a.asleep = true;
+        a.zIn = 0;
+        return this.wait(900);
+      case 'wake':
+        // wakes with a start: eyes open, jumps up, "!"
+        if (!a) return this.wait(300);
+        this.setEyes(a.id, true);
+        a.asleep = false;
+        a.pose = '';
+        a.bounce = 1;
+        {
+          const [x, y] = this.anchor(a, 'top');
+          this.exclaim(x, y);
+        }
+        return this.wait(600);
       case 'lie':
         // lies flat on the ground (behind the log: only the ears show)
         if (a) a.pose = 'lie';
@@ -1740,6 +1836,25 @@ export class Stage {
     });
   }
 
+  /** a "z" floating up from a sleeper's head */
+  private zed(x: number, y: number, flip: boolean) {
+    const t = el('text', { 'font-size': 58, fill: '#3f51b5', 'font-weight': 800, 'font-family': 'Georgia, serif' }, ['z']);
+    const dx = (50 + Math.random() * 30) * (flip ? -1 : 1);
+    this.particle(t, 2.4, (p, k) => {
+      t.setAttribute('transform', `translate(${x + dx * k + Math.sin(k * 7) * 12} ${y - 20 - k * 170}) scale(${0.5 + k * 0.9})`);
+      t.setAttribute('opacity', String(k < 0.15 ? k / 0.15 : 1 - (k - 0.15) / 0.85));
+    });
+  }
+
+  /** "!" above someone startled */
+  private exclaim(x: number, y: number) {
+    const t = el('text', { 'font-size': 110, fill: '#e53935', 'font-weight': 900, 'text-anchor': 'middle', stroke: '#fff', 'stroke-width': 6, 'paint-order': 'stroke' }, ['!']);
+    this.particle(t, 1, (p, k) => {
+      t.setAttribute('transform', `translate(${x} ${y - 30 - Math.min(1, k * 4) * 40}) scale(${Math.min(1, k * 5)})`);
+      t.setAttribute('opacity', String(k < 0.7 ? 1 : (1 - k) / 0.3));
+    });
+  }
+
   private note(x: number, y: number) {
     const glyph = Math.random() < 0.5 ? '♪' : '♫';
     const t = el('text', { 'font-size': 54, fill: ['#6a1b9a', '#1565c0', '#c62828', '#2e7d32'][Math.floor(Math.random() * 4)], 'font-weight': 700 }, [glyph]);
@@ -1796,7 +1911,7 @@ export class Stage {
 
   private place(a: Actor) {
     const k = a.scale * a.size;
-    setAttr(a.g, 'transform', `translate(${a.x.toFixed(1)} ${a.y.toFixed(1)}) scale(${(a.flip ? -k : k).toFixed(3)} ${k.toFixed(3)})`);
+    setAttr(a.g, 'transform', `translate(${(a.x + a.ox).toFixed(1)} ${a.y.toFixed(1)}) scale(${(a.flip ? -k : k).toFixed(3)} ${k.toFixed(3)})`);
   }
 
   private tick(dt: number) {
@@ -1867,12 +1982,51 @@ export class Stage {
         // bobbing along with the carrier's steps
         const step = c.move && !c.move.hop ? Math.abs(Math.sin(c.phase * 9)) * 9 : 0;
         // held on the side the carrier faces
-        a.x = c.x + h[0] * (c.flip ? -1 : 1);
+        a.x = c.x + c.ox + h[0] * (c.flip ? -1 : 1);
         a.y = c.y + h[1] - step;
       }
     }
     let lift = 0;
     let lean = 0;
+    // eating: bending to the food in bites, mouth going, crumbs
+    let chew = 0;
+    if (a.munch > 0) {
+      a.munch = Math.max(0, a.munch - dt);
+      chew = -Math.abs(Math.sin(a.munch * Math.PI * 2.5)) * 12;
+      if (Math.random() < 0.2) this.mouth(a, Math.random() < 0.5);
+      if (a.munch === 0) this.mouth(a, false);
+      if (Math.random() < 0.12) {
+        const [mx, my] = this.anchor(a, 'mouth');
+        this.crumbOf(mx, my, ['#c8873a', '#e6b450', '#7cb342'][Math.floor(Math.random() * 3)]);
+      }
+    }
+    // a blow given or taken
+    a.ox = 0;
+    let blow = 0;
+    let blowLift = 0;
+    if (a.jab > 0) {
+      a.jab = Math.max(0, a.jab - dt);
+      const p = 1 - a.jab / HIT;
+      // fast out, a little slower back
+      const out = p < 0.4 ? Math.sin((p / 0.4) * Math.PI * 0.5) : Math.cos(((p - 0.4) / 0.6) * Math.PI * 0.5);
+      a.ox += a.jabDx * out;
+      blow -= 16 * out;
+    }
+    // a club, a stick in the hands of one hitting swings at the target
+    const holder = a.carriedBy;
+    if (holder && holder.jab > 0) {
+      const p = 1 - holder.jab / HIT;
+      const out = p < 0.4 ? Math.sin((p / 0.4) * Math.PI * 0.5) : Math.cos(((p - 0.4) / 0.6) * Math.PI * 0.5);
+      blow += (holder.flip ? 1 : -1) * (a.flip ? -1 : 1) * 75 * out;
+    }
+    if (a.knock > 0) {
+      a.knock = Math.max(0, a.knock - dt);
+      const p = 1 - a.knock / KNOCK;
+      const out = p < 0.2 ? p / 0.2 : 1 - (p - 0.2) / 0.8;
+      a.ox += a.knockDx * out;
+      blow += 18 * out;
+      blowLift = Math.sin(Math.min(1, p / 0.45) * Math.PI) * 40;
+    }
     let dx = 0;
     if (a.move) {
       const m = a.move;
@@ -1924,12 +2078,16 @@ export class Stage {
     let pivotY = 0;
     // four-legged ones lie down on their belly: flattened to the ground, not turned over
     const flat = a.pose === 'lie' && FOUR_LEGS.indexOf(a.id) >= 0;
-    if (a.pose && !flat) {
+    const sit = a.pose === 'sit';
+    if (sit) {
+      // sitting: lower and a bit wider; asleep, the head nods slowly
+      if (a.asleep) lean += 5 + Math.sin(a.phase * 1.4) * 4;
+    } else if (a.pose && !flat) {
       // on its side, head towards where it faces, turning about a point near the feet
       spinAt = a.pose === 'roll' ? -90 + Math.sin(a.phase * 4) * 22 : -88;
       pivotY = -40;
     }
-    const pivot = a.pose ? pivotY : (ANCHORS[a.id] ? ANCHORS[a.id].top : -100) / 2;
+    const pivot = a.pose && !sit ? pivotY : (ANCHORS[a.id] ? ANCHORS[a.id].top : -100) / 2;
     let breathe = a.id === 'khatka' || a.id === 'rvana' ? 1 : 1 + Math.sin(a.phase * 2.2) * 0.012;
     // a thing talking (the mitten, for those inside) or just moved into: squash and stretch
     if (a.prop && a.talking) breathe += Math.sin(a.phase * 14) * 0.025;
@@ -1942,8 +2100,18 @@ export class Stage {
     setAttr(
       a.body,
       'transform',
-      `translate(0 ${(-lift).toFixed(1)}) rotate(${(lean + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${((2 - breathe) * (flat ? 1.08 : 1)).toFixed(4)} ${(breathe * (flat ? 0.62 : 1)).toFixed(4)})`,
+      `translate(0 ${(-lift - blowLift).toFixed(1)}) rotate(${(lean + blow + chew + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${((2 - breathe) * (flat ? 1.08 : sit ? 1.06 : 1)).toFixed(4)} ${(breathe * (flat ? 0.62 : sit ? 0.8 : 1)).toFixed(4)})`,
     );
+
+    // asleep: z-z-z from the head
+    if (a.asleep) {
+      a.zIn -= dt;
+      if (a.zIn <= 0) {
+        a.zIn = 0.9;
+        const [x, y] = this.anchor(a, 'top');
+        this.zed(x + (a.flip ? -30 : 30), y + (a.pose === 'lie' || a.pose === 'roll' ? -ANCHORS[a.id].top * 0.55 : a.pose === 'sit' ? -ANCHORS[a.id].top * 0.2 : 0), a.flip);
+      }
+    }
 
     // blink
     const eyes = a.parts.eyes;

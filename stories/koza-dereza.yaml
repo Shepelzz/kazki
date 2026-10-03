@@ -113,13 +113,16 @@ scenes:
       at: [1000, 770]
     - show: did
       at: [600, 770]
-    - narrator: "Наступного дня пішов дід із козою на луг. А сам — хитрий! — сховався за кущем та й дивиться."
     - show: bush
       at: [520, 790]
     - move: did
       to: [520, 770]
+      flip: true
       ms: 1000
       wait: true
+    - fx: sit
+      on: did
+    - narrator: "Наступного дня пішов дід із козою на луг. А сам — хитрий! — сховався за кущем та й дивиться."
     - fx: munch
       on: koza
     - koza: "Ням-ням-ням! Ой, як смачно! Травичка, конюшинка, ще й водички поп'ю!"
@@ -214,6 +217,8 @@ scenes:
       ms: 500
     - zayets: "Хто-хто в моїй хатці?"
     - koza: "Я коза-дереза, за три копи куплена, рогата-бородата! Тупу-тупу ногами, сколю тебе рогами, ніжками затопчу, хвостиком замету — тікай, бо як дам!"
+    - fx: sit
+      on: zayets
     - narrator: "Злякався зайчик, сів на пеньочок та й заплакав."
     - fx: tears
       on: zayets
@@ -291,6 +296,8 @@ scenes:
     - fx: popout
       on: khatynka
       who: [yizhachok]
+    - fx: stand
+      on: zayets
     - zayets: "Дякую тобі, їжачку! Ти найхоробріший!"
     - fx: hearts
       on: yizhachok
@@ -321,6 +328,8 @@ scenes:
     - fx: popout
       on: khatynka
       who: [rak]
+    - fx: stand
+      on: zayets
     - rak: "Ось і все! Живи, зайчику, у своїй хатці."
     - zayets: "Дякую, раче-небораче! Маленький, а сміливий!"
     - fx: hearts
@@ -350,6 +359,10 @@ scenes:
     - put: kapusta
       to: [1060, 770]
       ms: 500
+    - fx: munch
+      on: koza
+    - fx: munch
+      on: zayets
     - fx: munch
       on: koza
     - narrator: "З'їли вони разом капустину — хрум-хрум! А потім зайчик провів козу аж до дідової хати."

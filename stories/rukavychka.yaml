@@ -74,6 +74,8 @@ scenes:
       to: [1080, 770]
       ms: 1800
       wait: true
+    - fx: rock
+      on: myshka
     - myshka: "Ой, яка рукавичка! Тепла, пухнаста, ще й пиріжками пахне..."
     - choice: "Що зробить мишка?"
       options:
@@ -127,6 +129,16 @@ scenes:
     - did: "Ох ти ж моя розумничко! Спасибі тобі, мишко. Ходи до хати — погрієшся біля печі, ще й сиру тобі дам."
     - fx: hearts
       on: myshka
+    - move: myshka
+      to: [320, 770]
+      flip: false
+      ms: 1800
+    - move: did
+      to: [340, 770]
+      ms: 2200
+      wait: true
+    - hide: myshka
+    - hide: did
     - narrator: "І пішла мишка до діда в гості. Пили вони чай з калачами, а мишка знайшла собі тепленьку нірку під самою піччю. Бо добрі справи завжди повертаються добром!"
     - ending: honest
 
@@ -246,7 +258,11 @@ scenes:
       to: [860, 770]
       ms: 900
       wait: true
-    - fx: sparkle
+    - fx: hit
+      on: kaban
+      who: [rukavychka]
+      word: "ТИЦЬ!"
+    - fx: rock
       on: rukavychka
     - narrator: "Тицьнув кабан рило в рукавичку, а звірята як запищать, як зарепетують! Аж раптом..."
     - sobaka: "Гав-гав-гав!"

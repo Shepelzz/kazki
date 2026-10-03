@@ -45,6 +45,7 @@ scenes:
     - narrator: "Прилетів змій, ухопив князівну — та й поніс до свого лігва."
     - move: zmiy
       to: [2300, 600]
+      flip: true
       ms: 2400
       wait: true
     - next: lair
@@ -95,6 +96,8 @@ scenes:
       at: [760, 780]
     - show: kyrylo
       at: [960, 770]
+    - fx: rock
+      on: kozhi
     - narrator: "Пішли до Кирила старі, поважні люди. Відчинили тихенько двері, а Кирило саме м'яв дванадцять кож."
     - show: did
       at: [-250, 770]
@@ -111,6 +114,7 @@ scenes:
     - narrator: "Та Кирило розсердився, що його налякали, й не схотів. Послали тоді молодших."
     - move: did
       to: [-300, 770]
+      flip: false
       ms: 1600
     - show: pastushok
       at: [-250, 770]
@@ -124,6 +128,7 @@ scenes:
     - narrator: "А Кирило мовчить та сопе, наче не йому й кажуть."
     - move: pastushok
       to: [-300, 770]
+      flip: false
       ms: 1600
       wait: true
     - next: kids_go
@@ -142,7 +147,11 @@ scenes:
       ms: 2200
       wait: true
     - dity: "Дядечку Кириле, порятуйте князівну! Бо змій і нас колись забере!"
+    - fx: tears
+      on: dity
     - narrator: "Як заплакали діточки, то й сам Кожум'яка не витерпів, заплакав та й каже:"
+    - fx: tears
+      on: kyrylo
     - kyrylo: "Ну, для вас я вже зроблю. Дайте мені дванадцять бочок смоли й дванадцять возів конопель."
     - choice: "Як Кирило подужає змія?"
       options:
@@ -180,29 +189,38 @@ scenes:
       to: [820, 770]
       ms: 600
       wait: true
-    - fx: bang
-      on: kyrylo
+    - fx: hit
+      on: zmiy
+      who: [kyrylo]
       word: "ХРУМ!"
     - narrator: "Кинувся змій на Кирила — ухопить зубами, та тільки смоли й конопель повен рот. А Кирило його булавою — бах!"
-    - fx: bang
-      on: zmiy
+    - fx: hit
+      on: kyrylo
+      who: [zmiy]
       word: "БАХ!"
     - move: zmiy
       to: [960, 770]
       ms: 400
       wait: true
     - narrator: "Бились-бились — аж курить, аж іскри скачуть!"
-    - fx: whoosh
-      on: kyrylo
-    - fx: bang
+    - fx: hit
       on: zmiy
+      who: [kyrylo]
       word: "ДЗЕНЬ!"
+    - fx: hit
+      on: kyrylo
+      who: [zmiy]
+      word: "ТРАХ!"
     - fx: dust
       on: kyrylo
-    - fx: bang
+    - fx: hit
       on: zmiy
-      word: "ТРАХ!"
-    - narrator: "Аж зміюка — бубух! — аж земля затряслася. Отак і подужав Кирило змія."
+      who: [kyrylo]
+      word: "ХРЯСЬ!"
+    - fx: hit
+      on: kyrylo
+      who: [zmiy]
+      word: "БАХ!"
     - fx: lie
       on: zmiy
     - fx: bang
@@ -210,6 +228,7 @@ scenes:
       word: "БУБУХ!"
     - fx: shake
       on: zmiy
+    - narrator: "Аж зміюка — бубух! — аж земля затряслася. Отак і подужав Кирило змія."
     - eyes: zmiy
       state: closed
     - show: knyazivna
@@ -244,6 +263,10 @@ scenes:
 
   canon_end:
     - kyrylo: "Нічого мені не треба, княже. Піду я до своїх кож."
+    - move: kyrylo
+      to: [-300, 770]
+      flip: false
+      ms: 2000
     - narrator: "Так і зробив. А з того часу почало зватися те урочище в Києві, де він жив, Кожум'яками. Так і досі зветься!"
     - ending: canon
 
@@ -317,6 +340,22 @@ scenes:
     - zmiy: "Бо... мені самотньо. Ніхто зі мною не дружить. Як побачать — то й тікають..."
     - kyrylo: "То відпусти князівну, а я тебе в Київ поведу, з людьми познайомлю. Будеш дітей на спині катати!"
     - zmiy: "Справді? Мене? Катати дітей?"
+    - show: knyazivna
+      at: [1450, 770]
+    - move: knyazivna
+      to: [900, 770]
+      ms: 1400
+      wait: true
+    - move: kyrylo
+      to: [-300, 770]
+      flip: false
+      ms: 3000
+    - move: zmiy
+      to: [-400, 770]
+      ms: 3400
+    - move: knyazivna
+      to: [-350, 770]
+      ms: 3600
     - narrator: "Відпустив змій князівну, і пішли вони всі разом до Києва."
     - scene: kyiv
     - show: knyaz
@@ -332,6 +371,10 @@ scenes:
     - show: kyrylo
       at: [1060, 770]
       flip: true
+    - move: zmiy
+      to: [760, 560]
+      ms: 1400
+      wait: true
     - dity: "Ура! Ми летимо на змієві!"
     - zmiy: "Ха-ха! Тримайтеся міцніше!"
     - fx: hearts

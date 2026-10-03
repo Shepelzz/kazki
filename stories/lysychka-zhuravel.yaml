@@ -57,11 +57,22 @@ scenes:
     - show: tarilka
       at: [820, 776]
     - lysytsia: "Їж, куме, їж, голубчику! Сама варила!"
+    - move: zhuravel
+      to: [930, 770]
+      ms: 700
+      wait: true
     - narrator: "Журавель дзьобом — стук-стук! — стукає по тарілці, а нічого не вхопить."
     - fx: munch
       on: zhuravel
+    - move: lysytsia
+      to: [700, 770]
+      flip: true
+      ms: 600
+      wait: true
+    - fx: munch
+      on: lysytsia
     - narrator: "А лисичка тим часом лиже та лиже — поки всю кашу сама й не з'їла."
-    - fx: tumble
+    - fx: rock
       on: lysytsia
     - lysytsia: "Вибачай, куме, більше пригощати нічим."
     - zhuravel: "Спасибі, кумо, й на тому. Приходь же й ти до мене в гості!"
@@ -71,7 +82,6 @@ scenes:
     - scene: bereh
     - show: zhuravel
       at: [300, 720]
-      flip: true
     - narrator: "Назавтра прийшла лисиця до журавля. А журавель наварив окрошки й думає, як би лисичку пригостити..."
     - show: lysytsia
       at: [-250, 720]
@@ -102,11 +112,20 @@ scenes:
       hop: true
       ms: 600
       wait: true
+    - fx: tumble
+      on: lysytsia
     - move: lysytsia
       to: [110, 720]
       hop: true
       ms: 600
       wait: true
+    - move: zhuravel
+      to: [340, 720]
+      flip: false
+      ms: 500
+      wait: true
+    - fx: munch
+      on: zhuravel
     - narrator: "А журавель дзьобає та дзьобає — поки все й поїв."
     - fx: munch
       on: zhuravel
@@ -125,6 +144,7 @@ scenes:
   canon_end:
     - move: lysytsia
       to: [-300, 720]
+      flip: false
       ms: 2000
       wait: true
     - narrator: "З того часу й дружба лисиці з журавлем — урозтіч. Бо як хто кому, так і той йому!"
@@ -137,6 +157,10 @@ scenes:
       at: [220, 722]
     - fx: sparkle
       on: pyrih
+    - fx: munch
+      on: lysytsia
+    - fx: munch
+      on: zhuravel
     - narrator: "Спекли вони пиріг із яблуками — і їли разом, хто дзьобиком, хто лапкою. І стали знову добрими сусідами."
     - fx: munch
       on: zhuravel
@@ -151,6 +175,8 @@ scenes:
     - show: tarilka
       at: [130, 724]
     - zhuravel: "Їж, кумо, на здоров'я! Ось тобі тарілочка, а мені — глечик."
+    - fx: munch
+      on: lysytsia
     - narrator: "Наїлася лисиця, облизалася — та й засоромилася."
     - lysytsia: "Пробач мені, куме, що я тебе тоді кашею по тарілці пригощала. Ти мене провчив — і без хитрощів."
     - zhuravel: "Та вже пробачаю, кумо. Друзі ж!"

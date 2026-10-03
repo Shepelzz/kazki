@@ -66,6 +66,8 @@ scenes:
     - lysytsia: "Ой, як пахне! Маковий пиріжок!"
     - carry: pyrizhok
       by: lysytsia
+    - fx: munch
+      on: lysytsia
     - narrator: "Вхопила лисичка пиріжок — та й ходу. Мак із нього вибрала й з'їла, а всередину сміття напхала."
     - move: lysytsia
       to: [-300, 770]
@@ -104,10 +106,11 @@ scenes:
     - narrator: "Віддала лисичка пиріжок, взяла бичка за налигач — та й повела, та швиденько, щоб не наздогнали."
     - move: lysytsia
       to: [-300, 770]
+      flip: false
       ms: 2600
     - move: bychok
-      to: [-120, 770]
-      ms: 2600
+      to: [-350, 770]
+      ms: 2900
     - move: pastushok
       to: [980, 770]
       ms: 400
@@ -128,6 +131,10 @@ scenes:
       at: [780, 770]
     - fx: build
       on: sanky
+    - move: bychok
+      to: [1030, 770]
+      flip: true
+      ms: 1200
     - narrator: "Нарубала й саночки зробила. Запрягла бичка — та й поїхала."
     - move: lysytsia
       to: [780, 724]
@@ -151,8 +158,12 @@ scenes:
       flip: true
       ms: 600
       wait: true
+    - fx: rock
+      on: sanky
     - narrator: "Поклав одну лапку — санки тріск!"
     - vovk: "А я ще й другу..."
+    - fx: rock
+      on: sanky
     - narrator: "Поклав другу — санки трісь!"
     - vovk: "Ну, і третю — та й усе!"
     - narrator: "А тоді як сів увесь — так санки й розсипалися!"
@@ -167,8 +178,10 @@ scenes:
       word: "ТРІСЬ!"
     - fx: break
       on: sanky
+    - fx: sit
+      on: vovk
     - move: lysytsia
-      to: [960, 770]
+      to: [1200, 770]
       hop: true
       ms: 500
       wait: true
@@ -184,16 +197,24 @@ scenes:
       flip: true
       ms: 2200
       wait: true
+    - fx: munch
+      on: vovk
     - narrator: "Сидів вовк, сидів, та й зголоднів. Бичка з'їв, а шкурку горобцями напхав і на паличку поставив — ніби бичок так і стоїть."
     - move: vovk
       to: [-300, 770]
+      flip: false
       ms: 2200
       wait: true
     - show: lysytsia
       at: [1900, 770]
     - move: lysytsia
-      to: [1270, 770]
-      ms: 1800
+      to: [880, 770]
+      ms: 2200
+      wait: true
+    - move: lysytsia
+      to: [880, 770]
+      flip: true
+      ms: 1
       wait: true
     - lysytsia: "Ну, бичку, поїхали! Но-о!"
     - narrator: "Смикнула лисичка бичка за хвоста, а з нього — пурх! — горобці на всі боки."
@@ -204,13 +225,13 @@ scenes:
 
   road:
     - scene: winter-forest
-    - narrator: "Біжить лисичка дорогою, аж чує — їдуть чумаки з рибою. Лягла вона серед дороги, ніби мертва."
     - show: lysytsia
       at: [800, 770]
     - eyes: lysytsia
       state: closed
     - fx: lie
       on: lysytsia
+    - narrator: "Біжить лисичка дорогою, аж чує — їдуть чумаки з рибою. Лягла вона серед дороги, ніби мертва."
     - show: viz
       at: [1900, 770]
     - show: chumak
@@ -253,6 +274,8 @@ scenes:
     - narrator: "Їде чумак, пісню співає, а лисичка тихенько — рибку за рибкою — та й скидає з воза."
     - fx: throwfish
       on: viz
+    - fx: munch
+      on: lysytsia
     - narrator: "А як риби вже мало лишилося — зіскочила й сама. Позбирала рибку — та й наїлася досхочу."
     - eyes: lysytsia
       state: open
@@ -292,7 +315,7 @@ scenes:
       at: [860, 772]
     - show: vovk
       at: [780, 770]
-    - fx: lie
+    - fx: sit
       on: vovk
     - narrator: "Пішов вовк на річку, встромив хвоста в ополонку й сидить, приказує."
     - vovk: "Ловися, рибко, і мала, й велика! Ловися, рибко, і мала, й велика!"
@@ -324,6 +347,14 @@ scenes:
       hop: true
       ms: 1700
       wait: true
+    - fx: hit
+      on: did
+      who: [vovk]
+      word: "ГУП!"
+    - fx: hit
+      on: baba
+      who: [vovk]
+      word: "БАХ!"
     - vovk: "Ой! Хвіст примерз! Ой, рятуйте!"
     - narrator: "Збіглися люди — хто з ціпком, хто з рогачем. Смикнувся вовк раз, удруге — насилу вирвався та й чкурнув у ліс, тільки сніг закурів."
     - move: vovk
@@ -405,6 +436,7 @@ scenes:
     - narrator: "Та де там! Посидів вовк під хаткою, потупцяв — та й пішов ні з чим. А лисичка й досі в тій хатці живе — хитра, як і була."
     - move: vovk
       to: [-300, 770]
+      flip: false
       ms: 2600
       wait: true
     - ending: canon
@@ -440,6 +472,8 @@ scenes:
       by: vovk
     - show: lysytsia
       at: [1240, 770]
+    - fx: sit
+      on: vovk
     - narrator: "Сів вовк біля ополонки з вудочкою. Сидить, сидить... Аж — клюнуло!"
     - fx: sparkle
       on: lunka

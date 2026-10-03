@@ -38,6 +38,10 @@ scenes:
     - narrator: "Був собі чоловік, і був у нього кіт. Та такий уже старий, що й мишей не ловив. От чоловік узяв, вивіз його в ліс та й покинув."
     - roll: false
     - kit: "Мяу... Що ж мені тепер робити? Ліс великий, а я сам-самісінький."
+    - move: kit
+      to: [720, 770]
+      flip: true
+      ms: 2200
     - narrator: "Ходив кіт лісом, ходив, аж тут назустріч — лисичка-сестричка."
     - show: lysytsia
       at: [1800, 770]
@@ -82,6 +86,19 @@ scenes:
     - vovk: "Це хто такий вусатий?"
     - kit: "Я котик Мурчик! Мур-мур. А ви хто?"
     - zayets: "А ми — твої нові друзі!"
+    - move: zayets
+      to: [1120, 770]
+      hop: true
+      ms: 700
+    - move: kit
+      to: [900, 770]
+      flip: true
+      ms: 700
+      wait: true
+    - fx: tumble
+      on: zayets
+    - fx: belly
+      on: kit
     - narrator: "Грали звірята з котиком у квача, качалися в листі, а ввечері котик заспівав їм свою котячу пісеньку — муррр-мурр."
     - fx: hearts
       on: kit
@@ -99,6 +116,12 @@ scenes:
       to: 1
       ms: 600
     - lysytsia: "Ох, який пан! Будь же ти моїм чоловіком, пане Коцький! Житимемо разом у моїй хатці."
+    - move: lysytsia
+      to: [1900, 770]
+      flip: true
+      ms: 2200
+    - fx: sit
+      on: kit
     - narrator: "Так і стали вони жити. Лисичка ходить по здобич, а пан Коцький удома сидить."
     - next: hare_first
 
@@ -151,13 +174,49 @@ scenes:
           next: gift_malyna
 
   gift_med:
+    - show: med
+      at: [780, 772]
     - vedmid: "Понесу я барильце меду — солодкого-пресолодкого!"
+    - show: ryba
+      at: [560, 772]
+    - carry: ryba
+      by: vovk
+    - show: koshyk
+      at: [1060, 772]
+    - show: kapusta
+      at: [330, 772]
+      size: 0.8
+    - carry: kapusta
+      by: zayets
     - narrator: "Вовк узяв рибки, кабан — кошик яблук, а зайчик — капустину. І послали звірі зайчика до лисички."
+    - move: zayets
+      to: [-300, 770]
+      hop: true
+      ms: 1400
+      wait: true
     - next: hare_second_med
 
   gift_malyna:
+    - show: malyna
+      at: [780, 772]
     - vedmid: "Понесу я кошик малини — стиглої, запашної!"
+    - show: ryba
+      at: [560, 772]
+    - carry: ryba
+      by: vovk
+    - show: koshyk
+      at: [1060, 772]
+    - show: kapusta
+      at: [330, 772]
+      size: 0.8
+    - carry: kapusta
+      by: zayets
     - narrator: "Вовк узяв рибки, кабан — кошик яблук, а зайчик — капустину. І послали звірі зайчика до лисички."
+    - move: zayets
+      to: [-300, 770]
+      hop: true
+      ms: 1400
+      wait: true
     - next: hare_second_malyna
 
   hare_second_med:
@@ -236,16 +295,29 @@ scenes:
       size: 0.8
     - fx: sparkle
       on: koshyk
-    - narrator: "Розстелили звірі на галявині скатертину й поклали гостинці. А самі — щоб пан Коцький не побачив — поховалися: ведмідь виліз на дуба, вовк заліг під колодою, кабан зарився в кущі, а зайчик сховався під кущиком."
     - show: vedmid
       at: [780, 770]
+    - show: vovk
+      at: [760, 770]
+      flip: true
+    - show: kaban
+      at: [1250, 770]
+      flip: true
+    - show: zayets
+      at: [380, 770]
+      flip: true
     - move: vedmid
       to: [970, 485]
       hop: true
       ms: 1300
-    - show: vovk
-      at: [760, 770]
+    - move: kaban
+      to: [1480, 770]
       flip: true
+      ms: 1100
+    - move: zayets
+      to: [130, 770]
+      hop: true
+      ms: 1100
     - move: vovk
       to: [1110, 770]
       flip: true
@@ -258,22 +330,7 @@ scenes:
       wait: true
     - fx: lie
       on: vovk
-    - show: kaban
-      at: [1250, 770]
-      flip: true
-    - move: kaban
-      to: [1480, 770]
-      flip: true
-      ms: 1100
-    - show: zayets
-      at: [380, 770]
-      flip: true
-    - move: zayets
-      to: [130, 770]
-      hop: true
-      ms: 1100
-      wait: true
-    - narrator: "Аж ось іде лисичка, а за нею — пан Коцький, хвіст трубою!"
+    - narrator: "Розстелили звірі на галявині скатертину й поклали гостинці. А самі — щоб пан Коцький не побачив — поховалися: ведмідь виліз на дуба, вовк заліг під колодою, кабан зарився в кущі, а зайчик сховався під кущиком."
     - show: lysytsia
       at: [-250, 770]
       flip: true
@@ -288,7 +345,12 @@ scenes:
       to: [520, 770]
       flip: true
       ms: 2800
-      wait: true
+    - narrator: "Аж ось іде лисичка, а за нею — пан Коцький, хвіст трубою!"
+    - move: kit
+      to: [470, 770]
+      flip: true
+      hop: true
+      ms: 500
     - narrator: "Побачив кіт гостинці, наїжачився, вуса настовбурчив — та як кинеться на них!"
     - choice: "Що скаже пан Коцький?"
       options:
@@ -342,12 +404,12 @@ scenes:
     - hide: koshyk
     - hide: med
     - hide: malyna
-    - narrator: "А пан Коцький усе з'їв — і рибку, і яблука, і капусту, і ведмедів дарунок. Та й ліг на скатертину догори черевцем, качається, вурчить."
     - fx: belly
       on: kit
-    - narrator: "А кабан у кущах не втерпів — захотілося й йому на пана подивитися. Ворухнув він хвостиком — шурх-шурх!"
+    - narrator: "А пан Коцький усе з'їв — і рибку, і яблука, і капусту, і ведмедів дарунок. Та й ліг на скатертину догори черевцем, качається, вурчить."
     - fx: rustle
       on: bush
+    - narrator: "А кабан у кущах не втерпів — захотілося й йому на пана подивитися. Ворухнув він хвостиком — шурх-шурх!"
     - choice: "Що зробить пан Коцький?"
       options:
         - label: "Кинутися — це миша!"
@@ -365,8 +427,9 @@ scenes:
       hop: true
       ms: 900
       wait: true
-    - fx: bang
-      on: bush
+    - fx: hit
+      on: kit
+      who: [kaban]
       word: "МЯУ!"
     - kaban: "Ой-ой-ой! Рятуйте!"
     - move: kaban
@@ -390,6 +453,8 @@ scenes:
     - fx: bang
       on: vovk
       word: "ГУП!"
+    - fx: squash
+      on: vovk
     - fx: shake
       on: vedmid
     - narrator: "Ведмідь із переляку — гуп! — з дуба додолу, та прямо на вовка, що під колодою лежав. Ледь не розчавив сердешного!"
