@@ -131,9 +131,11 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil'];
+/** animals on four legs (lying down = flat on the belly) */
+const FOUR_LEGS = ['sirko', 'sobaka', 'koza'];
 const BACK = ['khatka', 'dub', 'skatertyna'];
 
 interface Particle {
@@ -571,6 +573,39 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       streamAndBridge(1360) +
       maple(260) +
       `<g>${verge(104, false)}${verge(105, false)}</g>`,
+    layers: [],
+  }),
+  zhnyva: () => {
+    // a wheat field at harvest: golden rows, sheaves already stood up here and there
+    let wheat = '';
+    for (let i = 0; i < 70; i++) {
+      const x = -200 + i * 30;
+      wheat += `<path d="M${x} ${GROUND - 30} q6 -60 0 -110" stroke="#d4a531" stroke-width="6" fill="none"/><ellipse cx="${x}" cy="${GROUND - 146}" rx="7" ry="16" fill="#e8bd45"/>`;
+    }
+    return {
+      still:
+        sky('#8ecdf2', '#fff3d6') +
+        sun(1380, 230) +
+        clouds(131) +
+        [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#e0c060', GROUND - 170, 50, 132)}</g>`).join('') +
+        `<rect x="-1600" y="${GROUND - 180}" width="4800" height="150" fill="#e8c24f"/>` +
+        wheat +
+        `<rect x="-1600" y="${GROUND - 40}" width="4800" height="6000" fill="#d9b85c"/>` +
+        `<path d="M-1600 ${GROUND - 14} L3200 ${GROUND - 14} L3200 ${GROUND + 26} L-1600 ${GROUND + 26} Z" fill="#c9a77a"/>` +
+        `<g>${Array.from({ length: 40 }, (_, i) => `<path d="M${(i * 83) % 1700 - 50} ${GROUND + 60 + ((i * 47) % 140)} l-8 -22 M${(i * 83) % 1700 - 50} ${GROUND + 60 + ((i * 47) % 140)} l8 -20" stroke="#b8963c" stroke-width="4"/>`).join('')}</g>`,
+      layers: [],
+    };
+  },
+  'hata-night': () => ({
+    still:
+      sky('#14204a', '#3d4f8a') +
+      `<circle cx="1320" cy="230" r="64" fill="#fff6c8"/><circle cx="1296" cy="214" r="12" fill="#e9dfa8"/><circle cx="1340" cy="252" r="8" fill="#e9dfa8"/>` +
+      Array.from({ length: 40 }, (_, i) => `<circle cx="${(i * 137) % 2400 - 400}" cy="${-300 + ((i * 89) % 700)}" r="${i % 3 ? 2.5 : 4}" fill="#fff"/>`).join('') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#2c4a3a', GROUND - 120, 60, 7)}</g>`).join('') +
+      ground('#2f5a2a', '#6b5a44') +
+      wattleFence(920, 1580).replace(/#8b5a2b/g, '#4e3420').replace(/#a87444/g, '#5c4028') +
+      hata(true) +
+      `<rect x="-1600" y="-1200" width="4800" height="8000" fill="#0a1030" opacity=".35"/>`,
     layers: [],
   }),
   polyana: () => ({
@@ -1199,6 +1234,14 @@ export class Stage {
         for (let i = 0; i < 8; i++) this.later(i * 0.22, () => this.tear(x + (i % 2 ? 14 : -10), y - 30));
         return this.wait(1900);
       }
+      case 'tumble':
+        // a twirl (dancing): one full turn on the spot
+        if (a) {
+          a.spin = 360;
+          a.spinSpeed = 540;
+          a.bounce = 1;
+        }
+        return this.wait(700);
       case 'belly':
         // lies down and rolls from side to side (gets up as soon as it moves)
         if (a) a.pose = 'roll';
@@ -1544,7 +1587,8 @@ export class Stage {
         const h = ANCHORS[c.id].hands!;
         // bobbing along with the carrier's steps
         const step = c.move && !c.move.hop ? Math.abs(Math.sin(c.phase * 9)) * 9 : 0;
-        a.x = c.x + h[0];
+        // held on the side the carrier faces
+        a.x = c.x + h[0] * (c.flip ? -1 : 1);
         a.y = c.y + h[1] - step;
       }
     }
@@ -1599,7 +1643,9 @@ export class Stage {
     // turning about the middle of the body (tumbling, or lying on its back)
     let spinAt = a.spin > 0 ? 360 - a.spin : 0;
     let pivotY = 0;
-    if (a.pose) {
+    // four-legged ones lie down on their belly: flattened to the ground, not turned over
+    const flat = a.pose === 'lie' && FOUR_LEGS.indexOf(a.id) >= 0;
+    if (a.pose && !flat) {
       // on its side, head towards where it faces, turning about a point near the feet
       spinAt = a.pose === 'roll' ? -90 + Math.sin(a.phase * 4) * 22 : -88;
       pivotY = -40;
@@ -1617,7 +1663,7 @@ export class Stage {
     setAttr(
       a.body,
       'transform',
-      `translate(0 ${(-lift).toFixed(1)}) rotate(${(lean + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${(2 - breathe).toFixed(4)} ${breathe.toFixed(4)})`,
+      `translate(0 ${(-lift).toFixed(1)}) rotate(${(lean + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${((2 - breathe) * (flat ? 1.08 : 1)).toFixed(4)} ${(breathe * (flat ? 0.62 : 1)).toFixed(4)})`,
     );
 
     // blink

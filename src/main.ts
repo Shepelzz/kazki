@@ -12,8 +12,9 @@ import kolobokRaw from '../stories/kolobok.yaml';
 import rukavychkaRaw from '../stories/rukavychka.yaml';
 import kozaRaw from '../stories/koza-dereza.yaml';
 import kotskyiRaw from '../stories/pan-kotskyi.yaml';
+import sirkoRaw from '../stories/sirko.yaml';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw)];
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw)];
 /** tales still being written: shown on the shelf as "soon" */
 const SOON = [
   { title: 'Котик і Півник', icon: '🐓' },
@@ -21,13 +22,12 @@ const SOON = [
   { title: 'Лисичка і Журавель', icon: '🐦' },
   { title: 'Котигорошко', icon: '💪' },
   { title: 'Івасик-Телесик', icon: '🛶' },
-  { title: 'Сірко', icon: '🐕' },
   { title: 'Кирило Кожум’яка', icon: '🐉' },
   { title: 'Лисичка-сестричка і вовк-панібрат', icon: '🐺' },
 ];
 
 /** backdrops with no road: subtitles at the bottom there */
-const HOME_SCENES = ['hata', 'hata-evening', 'hata-winter', 'pich', 'pich-evening'];
+const HOME_SCENES = ['hata', 'hata-evening', 'hata-winter', 'hata-night', 'pich', 'pich-evening'];
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -57,6 +57,7 @@ const COVER_VIEW: Record<string, string> = {
   rukavychka: '-150 -320 300 350',
   koza: '-130 -270 250 290',
   kit: '-110 -250 230 270',
+  sirko: '-140 -180 260 190',
 };
 
 function cover(story: Story) {
