@@ -131,12 +131,12 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil'];
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'koza'];
-const BACK = ['khatka', 'dub', 'skatertyna'];
+const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz'];
 
 interface Particle {
   el: SVGElement;
@@ -607,6 +607,21 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       hata(true) +
       `<rect x="-1600" y="-1200" width="4800" height="8000" fill="#0a1030" opacity=".35"/>`,
     layers: [],
+  }),
+  ozero: () => ({
+    // a frozen river by the village: the wolf fishes through the ice here
+    still:
+      sky('#a9cbe6', '#eef5fb') +
+      clouds(141).replace(/opacity=".92"/, 'opacity=".7"') +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${snowHills('#e6eff8', GROUND - 190, 50, 142)}</g>`).join('') +
+      // the village on the far bank
+      [180, 420, 1180, 1420].map((x, i) => `<g transform="translate(${x} ${GROUND - 360}) scale(0.32)">${hata(false, true).replace(/<g>/, '<g>')}</g>`.replace(/scale\(0.32\)/, `scale(${0.28 + (i % 2) * 0.05})`)).join('') +
+      snowFirRow(143, 6, GROUND - 120, 0.4) +
+      `<rect x="-1600" y="${GROUND - 70}" width="4800" height="6000" fill="#f3f8fd"/>` +
+      `<path d="M-1600 ${GROUND - 50} Q800 ${GROUND - 66} 3200 ${GROUND - 50} L3200 ${GROUND + 140} Q800 ${GROUND + 120} -1600 ${GROUND + 140} Z" fill="#d6ebf8"/>` +
+      Array.from({ length: 12 }, (_, i) => `<path d="M${i * 150 - 100} ${GROUND + (i % 3) * 30} l60 -8 l40 14" stroke="#b3d4ec" stroke-width="3" fill="none"/>`).join(''),
+    layers: [],
+    snow: true,
   }),
   polyana: () => ({
     still:
@@ -1234,6 +1249,29 @@ export class Stage {
         for (let i = 0; i < 8; i++) this.later(i * 0.22, () => this.tear(x + (i % 2 ? 14 : -10), y - 30));
         return this.wait(1900);
       }
+      case 'sparrows': {
+        // a flock of sparrows bursts out — and there's nothing left where they were
+        if (!a) return this.wait(300);
+        const [x, y] = [a.x, a.y - 110];
+        for (let i = 0; i < 16; i++) this.later(i * 0.04, () => this.sparrow(x, y));
+        this.hide(a.id);
+        return this.wait(1400);
+      }
+      case 'break': {
+        // smashed to pieces: chips fly, the broken pieces stay
+        if (!a) return this.wait(300);
+        const [x, y] = [a.x, a.y - 40];
+        for (let i = 0; i < 14; i++) this.wool(x, y, i % 2 ? '#b07e55' : '#6d4426');
+        this.hide(a.id);
+        this.show('lamani', [x, GROUND]);
+        return this.wait(700);
+      }
+      case 'throwfish': {
+        // fish flung off the sledge, one after another, into the snow behind
+        if (!a) return this.wait(300);
+        for (let i = 0; i < 7; i++) this.later(i * 0.3, () => this.flyingFish(a.x - 60 + i * 20, a.y - 110));
+        return this.wait(2400);
+      }
       case 'tumble':
         // a twirl (dancing): one full turn on the spot
         if (a) {
@@ -1409,6 +1447,26 @@ export class Stage {
       c.setAttribute('cx', String(x + vx * k));
       c.setAttribute('cy', String(y + vy * k + 700 * k * k));
       c.setAttribute('opacity', String(1 - k * k));
+    });
+  }
+
+  private sparrow(x: number, y: number) {
+    const b = svg(`<g><ellipse cx="0" cy="0" rx="14" ry="10" fill="#8d6e63" stroke="#4e342e" stroke-width="2"/><circle cx="-10" cy="-6" r="6" fill="#8d6e63" stroke="#4e342e" stroke-width="2"/><path d="M-16 -6 l-6 2 l6 2 z" fill="#fbc02d"/><path d="M0 -4 q10 -14 18 -4" fill="#a1887f" stroke="#4e342e" stroke-width="2"/></g>`);
+    const vx = (Math.random() - 0.5) * 900;
+    const vy = -300 - Math.random() * 400;
+    const flap = Math.random() * 6;
+    this.particle(b, 1.6, (p, k) => {
+      b.setAttribute('transform', `translate(${x + vx * k} ${y + vy * k}) scale(${vx < 0 ? 1 : -1} ${1 + Math.sin(k * 40 + flap) * 0.25})`);
+      b.setAttribute('opacity', String(k < 0.8 ? 1 : (1 - k) * 5));
+    });
+  }
+
+  private flyingFish(x: number, y: number) {
+    const f = svg(`<g><path d="M-30 0 Q-6 -20 20 0 Q-6 18 -30 0 Z" fill="#90a4ae" stroke="#5a3a22" stroke-width="3"/><path d="M18 0 L34 -12 L32 0 L34 12 Z" fill="#78909c" stroke="#5a3a22" stroke-width="3"/></g>`);
+    const vx = -260 - Math.random() * 200;
+    this.particle(f, 1.1, (p, k) => {
+      f.setAttribute('transform', `translate(${x + vx * k} ${y - 260 * k + 420 * k * k}) rotate(${k * 360})`);
+      f.setAttribute('opacity', String(k < 0.85 ? 1 : (1 - k) * 6));
     });
   }
 

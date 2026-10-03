@@ -13,8 +13,9 @@ import rukavychkaRaw from '../stories/rukavychka.yaml';
 import kozaRaw from '../stories/koza-dereza.yaml';
 import kotskyiRaw from '../stories/pan-kotskyi.yaml';
 import sirkoRaw from '../stories/sirko.yaml';
+import lysychkaRaw from '../stories/lysychka.yaml';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw)];
+const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw), parseStory('lysychka', lysychkaRaw)];
 /** tales still being written: shown on the shelf as "soon" */
 const SOON = [
   { title: 'Котик і Півник', icon: '🐓' },
@@ -23,7 +24,6 @@ const SOON = [
   { title: 'Котигорошко', icon: '💪' },
   { title: 'Івасик-Телесик', icon: '🛶' },
   { title: 'Кирило Кожум’яка', icon: '🐉' },
-  { title: 'Лисичка-сестричка і вовк-панібрат', icon: '🐺' },
 ];
 
 /** backdrops with no road: subtitles at the bottom there */
@@ -58,6 +58,7 @@ const COVER_VIEW: Record<string, string> = {
   koza: '-130 -270 250 290',
   kit: '-110 -250 230 270',
   sirko: '-140 -180 260 190',
+  lysytsia: '-120 -300 280 310',
 };
 
 function cover(story: Story) {

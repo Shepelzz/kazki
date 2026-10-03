@@ -1,0 +1,474 @@
+# Лисичка-сестричка і вовк-панібрат — казка з вибором.
+# Головна лінія — як у народній казці (kazky.org.ua); відгалуження — на виборах.
+# Кроки ті самі, що в інших казках, плюс ефекти:
+#   - fx: sparrows    з когось (бичка) випурхує зграя горобців — і його вже нема
+#   - fx: break       санки розлітаються на друзки (on: sanky)
+#   - fx: throwfish   рибу скидають із воза одну за одною (on: viz)
+#   - show: lysytsia  look: tisto — лисиця з тістом на голові
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Лисичка-сестричка і вовк-панібрат
+cover: lysytsia
+
+voices:
+  narrator:  { name: "", pitch: 1.1, rate: 1 }
+  lysytsia:  { name: "Лисичка", pitch: 1.18, rate: 0.9 }
+  vovk:      { name: "Вовк", pitch: 0.68, rate: 0.95 }
+  baba:      { name: "Баба", pitch: 1.0, rate: 0.95 }
+  pastushok: { name: "Пастушок", pitch: 1.45, rate: 1.1 }
+  chumak:    { name: "Чумак", pitch: 0.8, rate: 0.95 }
+
+endings:
+  canon:  { title: "Битий небитого везе", icon: "🦊" }
+  honest: { title: "Чесна лисичка", icon: "🐟" }
+  rod:    { title: "Вовк-рибалка", icon: "🎣" }
+  smart:  { title: "Вовк не дурень", icon: "🐺" }
+
+start: start
+
+scenes:
+  start:
+    - scene: pich
+    - show: baba
+      at: [700, 770]
+    - show: pyrizhok
+      at: [910, 600]
+    - narrator: "Привіт! Зараз буде казка про хитру-прехитру лисичку та простакуватого вовка. А ти вибиратимеш, що буде далі!"
+    - narrator: "Жили собі дід та баба. Напекла якось баба пиріжків із маком."
+    - baba: "Ох і смачні ж вийшли! Покладу на віконце — хай прохолонуть."
+    - move: baba
+      to: [910, 770]
+      ms: 900
+      wait: true
+    - carry: pyrizhok
+      by: baba
+    - move: baba
+      to: [1200, 770]
+      ms: 1700
+      wait: true
+    - put: pyrizhok
+      to: [1315, 522]
+      ms: 600
+    - next: steal
+
+  steal:
+    - scene: hata-winter
+    - show: pyrizhok
+      at: [620, 598]
+    - narrator: "А попід вікнами якраз проходила лисичка-сестричка. Носом — нюх-нюх..."
+    - show: lysytsia
+      at: [1800, 770]
+    - move: lysytsia
+      to: [700, 770]
+      ms: 2400
+      wait: true
+    - lysytsia: "Ой, як пахне! Маковий пиріжок!"
+    - carry: pyrizhok
+      by: lysytsia
+    - narrator: "Вхопила лисичка пиріжок — та й ходу. Мак із нього вибрала й з'їла, а всередину сміття напхала."
+    - move: lysytsia
+      to: [-300, 770]
+      ms: 2400
+      wait: true
+    - next: herd
+
+  herd:
+    - scene: winter-glade
+    - show: pastushok
+      at: [1080, 770]
+    - show: bychok
+      at: [1330, 770]
+    - narrator: "Біжить лисичка, аж бачить — хлопці-пастушки бичка пасуть."
+    - show: lysytsia
+      at: [-250, 770]
+      flip: true
+    - show: pyrizhok
+      at: [-250, 620]
+    - carry: pyrizhok
+      by: lysytsia
+    - move: lysytsia
+      to: [760, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - lysytsia: "Здорові були, хлопчики! Проміняйте мені бичка-третячка за маковий пиріжок!"
+    - pastushok: "Маковий пиріжок? Ану давай!"
+    - put: pyrizhok
+      to: [980, 770]
+      ms: 500
+    - move: bychok
+      to: [900, 770]
+      ms: 1100
+      wait: true
+    - narrator: "Віддала лисичка пиріжок, взяла бичка за налигач — та й повела, та швиденько, щоб не наздогнали."
+    - move: lysytsia
+      to: [-300, 770]
+      ms: 2600
+    - move: bychok
+      to: [-120, 770]
+      ms: 2600
+    - move: pastushok
+      to: [980, 770]
+      ms: 400
+      wait: true
+    - pastushok: "Ням... Тьху! Тьху! Та тут саме сміття!"
+    - narrator: "Та лисички вже й слід прохолов."
+    - next: sledge
+
+  sledge:
+    - scene: winter-glade
+    - show: bychok
+      at: [1430, 770]
+    - show: lysytsia
+      at: [1150, 770]
+    - narrator: "Прив'язала лисичка бичка до ялинки, взяла сокирку й рубає деревце та приказує:"
+    - lysytsia: "Рубайся, деревце, криве й праве! Криве й праве!"
+    - show: sanky
+      at: [780, 770]
+    - fx: build
+      on: sanky
+    - narrator: "Нарубала й саночки зробила. Запрягла бичка — та й поїхала."
+    - move: lysytsia
+      to: [780, 724]
+      hop: true
+      ms: 600
+      wait: true
+    - narrator: "Аж назустріч — вовк."
+    - show: vovk
+      at: [-250, 770]
+      flip: true
+    - move: vovk
+      to: [420, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - vovk: "Здорова, лисичко-сестричко! Підвези й мене!"
+    - lysytsia: "Куди ж я тебе візьму, вовче-панібрате? Ти мені санки поламаєш!"
+    - vovk: "Та я тільки одну лапку покладу!"
+    - move: vovk
+      to: [600, 770]
+      flip: true
+      ms: 600
+      wait: true
+    - narrator: "Поклав одну лапку — санки тріск!"
+    - vovk: "А я ще й другу..."
+    - narrator: "Поклав другу — санки трісь!"
+    - vovk: "Ну, і третю — та й усе!"
+    - narrator: "А тоді як сів увесь — так санки й розсипалися!"
+    - move: vovk
+      to: [720, 770]
+      flip: true
+      hop: true
+      ms: 500
+      wait: true
+    - fx: break
+      on: sanky
+    - move: lysytsia
+      to: [960, 770]
+      hop: true
+      ms: 500
+      wait: true
+    - lysytsia: "Ох ти ж, вовче-незграбо! Іди тепер рубай дерево на нові санки!"
+    - vovk: "Рубайся, деревце, криве й криве! Криве й криве!"
+    - show: drova
+      at: [520, 770]
+    - fx: sparkle
+      on: drova
+    - lysytsia: "Та що ж ти нарубав, вовче? Криве й криве! З такого санок не зробиш. Сиди вже тут, бичка стережи, а я сама піду дерева пошукаю."
+    - move: lysytsia
+      to: [1900, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - narrator: "Сидів вовк, сидів, та й зголоднів. Бичка з'їв, а шкурку горобцями напхав і на паличку поставив — ніби бичок так і стоїть."
+    - move: vovk
+      to: [-300, 770]
+      ms: 2200
+      wait: true
+    - show: lysytsia
+      at: [1900, 770]
+    - move: lysytsia
+      to: [1270, 770]
+      ms: 1800
+      wait: true
+    - lysytsia: "Ну, бичку, поїхали! Но-о!"
+    - narrator: "Смикнула лисичка бичка за хвоста, а з нього — пурх! — горобці на всі боки."
+    - fx: sparrows
+      on: bychok
+    - lysytsia: "Ах ти ж вовчище! Ну стривай, я тобі віддячу!"
+    - next: road
+
+  road:
+    - scene: winter-forest
+    - narrator: "Біжить лисичка дорогою, аж чує — їдуть чумаки з рибою. Лягла вона серед дороги, ніби мертва."
+    - show: lysytsia
+      at: [800, 770]
+    - eyes: lysytsia
+      state: closed
+    - fx: lie
+      on: lysytsia
+    - show: viz
+      at: [1900, 770]
+    - show: chumak
+      at: [2150, 770]
+    - move: viz
+      to: [1180, 770]
+      ms: 2600
+    - move: chumak
+      to: [1430, 770]
+      ms: 2600
+      wait: true
+    - chumak: "Ось і лисиця! Буде жінці комір на кожушок."
+    - narrator: "Узяв чумак лисичку та й кинув на віз, на рибу."
+    - move: lysytsia
+      to: [1180, 674]
+      flip: false
+      hop: true
+      ms: 700
+      wait: true
+    - fx: lie
+      on: lysytsia
+    - carry: lysytsia
+      by: viz
+    - choice: "Що зробить лисичка на возі?"
+      options:
+        - label: "Тихенько скидати рибу"
+          icon: "🐟"
+          next: throwfish
+        - label: "Попросити рибки чесно"
+          icon: "🙏"
+          next: honest
+
+  throwfish:
+    - move: viz
+      to: [-500, 770]
+      ms: 9000
+    - move: chumak
+      to: [-250, 770]
+      ms: 9000
+    - narrator: "Їде чумак, пісню співає, а лисичка тихенько — рибку за рибкою — та й скидає з воза."
+    - fx: throwfish
+      on: viz
+    - narrator: "А як риби вже мало лишилося — зіскочила й сама. Позбирала рибку — та й наїлася досхочу."
+    - eyes: lysytsia
+      state: open
+    - move: lysytsia
+      to: [600, 770]
+      hop: true
+      ms: 600
+      wait: true
+    - show: ryba
+      at: [700, 772]
+    - next: tailfish
+
+  tailfish:
+    - narrator: "Аж тут біжить вовк."
+    - show: vovk
+      at: [-250, 770]
+      flip: true
+    - move: vovk
+      to: [380, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - vovk: "Лисичко-сестричко, де це ти рибки взяла?"
+    - lysytsia: "Наловила, вовчику! Іди на річку, встроми хвоста в ополонку та й приказуй: «Ловися, рибко, і мала, й велика!»"
+    - choice: "Як ловитиме рибу вовк?"
+      options:
+        - label: "Хвостом в ополонці"
+          icon: "🧊"
+          next: icehole
+        - label: "Попросити вудочку"
+          icon: "🎣"
+          next: rod
+
+  icehole:
+    - scene: ozero
+    - show: lunka
+      at: [860, 772]
+    - show: vovk
+      at: [780, 770]
+    - fx: lie
+      on: vovk
+    - narrator: "Пішов вовк на річку, встромив хвоста в ополонку й сидить, приказує."
+    - vovk: "Ловися, рибко, і мала, й велика! Ловися, рибко, і мала, й велика!"
+    - show: lysytsia
+      at: [1350, 770]
+    - lysytsia: "Мерзни, мерзни, вовчий хвосте! Мерзни, мерзни, вовчий хвосте!"
+    - narrator: "А мороз тріщить, і хвіст у ополонці все дужче примерзає. Тоді лисичка — шусть у село."
+    - move: lysytsia
+      to: [1900, 770]
+      flip: true
+      ms: 1400
+      wait: true
+    - lysytsia: "Люди добрі! Ідіть бийте вовка — он він на річці сидить!"
+    - show: did
+      look: winter
+      at: [1900, 770]
+    - show: baba
+      at: [2050, 770]
+    - show: pastushok
+      at: [2200, 770]
+    - move: did
+      to: [1180, 770]
+      ms: 1600
+    - move: baba
+      to: [1360, 770]
+      ms: 1700
+    - move: pastushok
+      to: [1520, 770]
+      hop: true
+      ms: 1700
+      wait: true
+    - vovk: "Ой! Хвіст примерз! Ой, рятуйте!"
+    - narrator: "Збіглися люди — хто з ціпком, хто з рогачем. Смикнувся вовк раз, удруге — насилу вирвався та й чкурнув у ліс, тільки сніг закурів."
+    - move: vovk
+      to: [-400, 770]
+      ms: 1500
+      wait: true
+    - narrator: "А лисичка тим часом забігла до хати, де баба тісто місила, вмочила голову в діжу — та й навтьоки."
+    - next: ride
+
+  ride:
+    - scene: winter-forest
+    - show: lysytsia
+      look: tisto
+      at: [900, 770]
+      size: 0.75
+    - show: vovk
+      at: [-250, 770]
+      flip: true
+    - move: vovk
+      to: [560, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - vovk: "Ох, лисичко, мене так побили — ледве ноги несу!"
+    - lysytsia: "Ой, вовчику, а мене ще дужче — аж мізки вилазять! Неси мене, бо сама не дійду."
+    - narrator: "Пожалів вовк лисичку, посадив на себе та й несе. А лисичка їде та тихенько приказує:"
+    - move: vovk
+      to: [760, 770]
+      flip: true
+      ms: 700
+      wait: true
+    - carry: lysytsia
+      by: vovk
+    - roll: true
+    - lysytsia: "Битий небитого везе! Битий небитого везе!"
+    - vovk: "Що ти там кажеш, лисичко?"
+    - lysytsia: "Та кажу, вовчику: битий битого везе."
+    - choice: "Чи розчує вовк правду?"
+      options:
+        - label: "Не розчув"
+          icon: "🙉"
+          next: canon_end
+        - label: "Прислухатися"
+          icon: "👂"
+          next: smart
+
+  canon_end:
+    - lysytsia: "Битий небитого везе! Битий небитого везе!"
+    - narrator: "Так і доніс вовк лисичку аж до її хатки."
+    - roll: false
+    - scene: winter-glade
+    - show: khatynka
+      at: [1060, 770]
+    - show: vovk
+      at: [-250, 770]
+      flip: true
+    - show: lysytsia
+      look: tisto
+      at: [-250, 620]
+      size: 0.75
+    - carry: lysytsia
+      by: vovk
+    - move: vovk
+      to: [700, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - put: lysytsia
+      to: [880, 770]
+      ms: 500
+    - narrator: "Зіскочила лисичка з вовка — та в хатку, і двері зачинила."
+    - enter: lysytsia
+      into: khatynka
+    - lysytsia: "Битий небитого віз! Битий небитого віз!"
+    - vovk: "Ах ти ж хитрюща! Ну, стривай же!"
+    - narrator: "Та де там! Посидів вовк під хаткою, потупцяв — та й пішов ні з чим. А лисичка й досі в тій хатці живе — хитра, як і була."
+    - move: vovk
+      to: [-300, 770]
+      ms: 2600
+      wait: true
+    - ending: canon
+
+  smart:
+    - roll: false
+    - narrator: "А вовк прислухався, принюхався... Та й зупинився."
+    - vovk: "Стривай-но, лисичко! Та це ж не мізки — це тісто! Ах ти ж хитрунко!"
+    - put: lysytsia
+      to: [1260, 770]
+      ms: 700
+    - fx: tumble
+      on: lysytsia
+    - fx: lie
+      on: lysytsia
+    - narrator: "Скинув вовк лисичку просто в кучугуру — тільки хвіст стирчить!"
+    - lysytsia: "Ой-ой! Пробач, вовчику! Я більше не буду!"
+    - vovk: "Отож! Битий небитого віз — та більше не повезе!"
+    - narrator: "З того дня вовк уже не вірив кожному лисиччиному слову. А лисичка ще довго обтрушувала сніг із хвоста."
+    - ending: smart
+
+  rod:
+    - lysytsia: "Ой, вовчику... Хвостом рибу не ловлять. Ось тобі моя вудочка — сиди та чекай, поки клюне."
+    - scene: ozero
+    - show: lunka
+      at: [860, 772]
+    - show: vovk
+      at: [700, 770]
+      flip: true
+    - show: vudka
+      at: [740, 700]
+    - carry: vudka
+      by: vovk
+    - show: lysytsia
+      at: [1240, 770]
+    - narrator: "Сів вовк біля ополонки з вудочкою. Сидить, сидить... Аж — клюнуло!"
+    - fx: sparkle
+      on: lunka
+    - show: ryba
+      at: [880, 760]
+    - move: ryba
+      to: [1000, 772]
+      hop: true
+      ms: 700
+      wait: true
+    - vovk: "Ого, яка рибина! Лисичко, дивись — я впіймав!"
+    - lysytsia: "Молодець, вовчику! От бачиш — і без хитрощів можна."
+    - fx: hearts
+      on: vovk
+    - narrator: "Наловили вони рибки на юшку, зварили — та й повечеряли разом. А хитрувати лисичка того вечора й не схотіла."
+    - ending: rod
+
+  honest:
+    - eyes: lysytsia
+      state: open
+    - move: lysytsia
+      to: [1300, 770]
+      hop: true
+      ms: 600
+      wait: true
+    - lysytsia: "Дядечку чумаче, не кидайте мене в кожух! Дайте краще рибки — а я вам за це покажу дорогу через ліс, де вовки не ходять."
+    - chumak: "Ти диви — лисиця, та ще й балакуча! Ну гаразд, показуй дорогу."
+    - narrator: "Провела лисичка чумаків короткою стежкою через ліс, і жоден вовк їм не трапився."
+    - chumak: "Спасибі, руда! Ось тобі за чесну службу."
+    - show: ryba
+      at: [1180, 680]
+    - put: ryba
+      to: [1300, 772]
+      ms: 600
+    - fx: hearts
+      on: lysytsia
+    - narrator: "Отак лисичка вперше добула рибку чесно — і, кажуть, вона їй здалася найсмачнішою на світі."
+    - ending: honest

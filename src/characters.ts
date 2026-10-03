@@ -8,6 +8,7 @@
 //   data-part="ears"     the hare's ears, they twitch
 //   data-part="raw"      pale dough over the kolobok's crust, fades as he bakes
 
+import { bychok, drova, lunka, lysytsia_tisto, pastushok, pyrizhok, sanky, sanky_lamani, viz, vudka } from './puppets-lysychka';
 import { dytyna, halushky, nevista, sirko, snip, stil } from './puppets-sirko';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
@@ -268,15 +269,19 @@ const vedmid = () => `
   )}
 </g>`;
 
-const lysytsia = () => `
+let foxUid = 0;
+export const lysytsia = () => {
+  // a gradient id unique in the page: the shelf's covers and the stage can show a fox at once
+  const fur = `fox-fur-${++foxUid}`;
+  return `
 <defs>
-  <linearGradient id="fox-fur" x1="0" y1="0" x2="0" y2="1">
+  <linearGradient id="${fur}" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#f58a3a"/><stop offset="1" stop-color="#e2661f"/>
   </linearGradient>
 </defs>
 <g data-part="body">
   <!-- a big fluffy tail, curled up behind her -->
-  <path d="M26 -48 C96 -40 150 -84 146 -160 C143 -212 106 -238 82 -226 C116 -196 112 -132 70 -108 C50 -96 34 -92 20 -96 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M26 -48 C96 -40 150 -84 146 -160 C143 -212 106 -238 82 -226 C116 -196 112 -132 70 -108 C50 -96 34 -92 20 -96 Z" fill="url(#${fur})" ${stroke}/>
   <path d="M82 -226 C106 -238 143 -212 146 -160 C128 -170 104 -196 82 -226 Z" fill="#fffaf2" ${st(4)}/>
   <!-- legs in dark "socks" -->
   <path d="M-30 -64 L-32 -12 L-6 -12 L-6 -64 Z" fill="#4a2a1c" ${st(4)}/>
@@ -284,7 +289,7 @@ const lysytsia = () => `
   <ellipse cx="-22" cy="-9" rx="19" ry="10" fill="#4a2a1c" ${st(4)}/>
   <ellipse cx="22" cy="-9" rx="19" ry="10" fill="#4a2a1c" ${st(4)}/>
   <!-- pear-shaped body with a white chest -->
-  <path d="M-46 -60 C-56 -110 -40 -160 0 -166 C40 -160 56 -110 46 -60 C30 -42 -30 -42 -46 -60 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M-46 -60 C-56 -110 -40 -160 0 -166 C40 -160 56 -110 46 -60 C30 -42 -30 -42 -46 -60 Z" fill="url(#${fur})" ${stroke}/>
   <path d="M-26 -150 C-34 -110 -26 -70 0 -58 C26 -70 34 -110 26 -150 C14 -140 -14 -140 -26 -150 Z" fill="#fffaf2"/>
   <!-- paws folded politely in front -->
   <path d="M-34 -132 C-50 -112 -40 -94 -18 -96" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
@@ -294,14 +299,14 @@ const lysytsia = () => `
   <ellipse cx="-12" cy="-96" rx="12" ry="9" fill="#4a2a1c" ${st(3)}/>
   <ellipse cx="12" cy="-96" rx="12" ry="9" fill="#4a2a1c" ${st(3)}/>
   <!-- ears: dark tips, pink inside -->
-  <path d="M-46 -232 L-40 -298 L-6 -250 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M-46 -232 L-40 -298 L-6 -250 Z" fill="url(#${fur})" ${stroke}/>
   <path d="M-40 -244 L-37 -278 L-18 -252 Z" fill="#f6b3a6"/>
   <path d="M-42 -284 L-40 -298 L-30 -284 Z" fill="#3a2418"/>
-  <path d="M10 -250 L42 -296 L46 -230 Z" fill="url(#fox-fur)" ${stroke}/>
+  <path d="M10 -250 L42 -296 L46 -230 Z" fill="url(#${fur})" ${stroke}/>
   <path d="M18 -250 L38 -280 L40 -244 Z" fill="#f6b3a6"/>
   <path d="M34 -284 L42 -296 L43 -282 Z" fill="#3a2418"/>
   <!-- head: round, with white cheek fluff and a short snout to the left -->
-  <ellipse cx="-4" cy="-212" rx="54" ry="48" fill="url(#fox-fur)" ${stroke}/>
+  <ellipse cx="-4" cy="-212" rx="54" ry="48" fill="url(#${fur})" ${stroke}/>
   <path d="M-58 -206 C-54 -176 -36 -164 -14 -166 L-4 -176 L6 -164 C26 -164 44 -176 50 -200 C34 -186 14 -182 -4 -188 C-24 -184 -44 -190 -58 -206 Z" fill="#fffaf2" ${st(4)}/>
   <path d="M-40 -212 C-62 -210 -84 -200 -92 -192 C-86 -180 -62 -176 -40 -182 Z" fill="#fffaf2" ${st(4)}/>
   <ellipse cx="-92" cy="-193" rx="9" ry="7" fill="#2b1a10"/>
@@ -324,6 +329,7 @@ const lysytsia = () => `
   <ellipse cx="-50" cy="-200" rx="9" ry="5" fill="#f0786a" opacity=".45"/>
   <ellipse cx="22" cy="-202" rx="9" ry="5" fill="#f0786a" opacity=".45"/>
 </g>`;
+};
 
 const bush = () => `
 <g data-part="body">
@@ -372,6 +378,17 @@ export const PUPPETS: Record<string, () => string> = {
   snip,
   snip2: snip,
   halushky,
+  pyrizhok,
+  pastushok,
+  bychok,
+  sanky,
+  lamani: sanky_lamani,
+  drova,
+  viz,
+  lunka,
+  vudka,
+  lysytsia_tisto,
+  chumak: did_winter,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -392,7 +409,7 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   zayets: { mouth: [-44, -126], top: -280, hands: [-34, -66] },
   vovk: { mouth: [-60, -236], top: -350, hands: [-84, -196] },
   vedmid: { mouth: [-20, -272], top: -390 },
-  lysytsia: { mouth: [-70, -180], top: -300 },
+  lysytsia: { mouth: [-70, -180], top: -300, hands: [-92, -150] },
   bush: { mouth: [0, -80], top: -156 },
   sobaka: { mouth: [-80, -90], top: -150 },
   myshka: { mouth: [-40, -74], top: -136, hands: [0, -126] },
@@ -423,4 +440,14 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   snip: { mouth: [0, -100], top: -220 },
   snip2: { mouth: [0, -100], top: -220 },
   halushky: { mouth: [0, -30], top: -60 },
+  pyrizhok: { mouth: [0, -24], top: -50 },
+  pastushok: { mouth: [0, -222], top: -306 },
+  bychok: { mouth: [-88, -104], top: -192 },
+  sanky: { mouth: [0, -40], top: -110 },
+  lamani: { mouth: [0, -20], top: -50 },
+  drova: { mouth: [0, -30], top: -80 },
+  viz: { mouth: [0, -80], top: -160, hands: [30, -96] },
+  lunka: { mouth: [0, -6], top: -26 },
+  vudka: { mouth: [96, -24], top: -200 },
+  chumak: { mouth: [0, -268], top: -400, hands: [0, -120] },
 };
