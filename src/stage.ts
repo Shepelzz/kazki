@@ -131,7 +131,7 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky'];
 /** animals on four legs (lying down = flat on the belly) */
@@ -1198,6 +1198,8 @@ export class Stage {
 
   /** who is inside what: animal → the mitten / snow house */
   private inside: Record<string, string> = {};
+  /** the size someone had when they went in (they come out the same size) */
+  private sizeWhenIn: Record<string, number> = {};
 
   /**
    * The puppet goes into the mitten (or the snow house): hops to its door, shrinks into it and is
@@ -1225,6 +1227,7 @@ export class Stage {
               a.scale = 1 - p;
               if (p < 1) this.later(0, step);
               else {
+                this.sizeWhenIn[id] = a.size;
                 this.hide(id);
                 this.inside[id] = into;
                 if (into === 'rukavychka') c.size += 0.075;
@@ -1275,7 +1278,7 @@ export class Stage {
         if (!p) return;
         const x = spots[i % spots.length];
         p.flip = x < cx;
-        this.grow(p, 1, 0.3);
+        this.grow(p, this.sizeWhenIn[id] || 1, 0.3);
         if (tumble) {
           p.spin = 360;
           p.spinSpeed = 450;
@@ -1436,7 +1439,7 @@ export class Stage {
             const p = this.comeOut(id);
             if (!p) return;
             const right = i % 2 === 1;
-            this.grow(p, 1, 0.25);
+            this.grow(p, this.sizeWhenIn[id] || 1, 0.25);
             void this.moveTo(id, [right ? cx + 1500 : cx - 1500, GROUND], 1300 + Math.random() * 500, { hop: true, flip: right });
           }),
         );

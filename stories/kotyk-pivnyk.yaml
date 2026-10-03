@@ -1,0 +1,327 @@
+# Котик і Півник — казка з вибором. Головна лінія — як у народній казці; відгалуження — на виборах.
+# Кроки ті самі, що в інших казках. Лисенята — lysenia1, lysenia2 (лисиця, менша: size).
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Котик і Півник
+cover: pivnyk
+
+voices:
+  narrator: { name: "", pitch: 1.1, rate: 1 }
+  kit:      { name: "Котик", pitch: 1.15, rate: 1 }
+  pivnyk:   { name: "Півник", pitch: 1.4, rate: 1.1 }
+  lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
+
+endings:
+  canon:    { title: "Котик-братик", icon: "🐱" }
+  obedient: { title: "Слухняний півник", icon: "🐓" }
+  clever:   { title: "Хитрий півник", icon: "🎶" }
+  polite:   { title: "Лисиця в гостях", icon: "🍲" }
+
+start: start
+
+scenes:
+  start:
+    - scene: polyana
+    - show: khatynka
+      at: [760, 770]
+    - show: kit
+      at: [1080, 770]
+    - show: pivnyk
+      at: [960, 770]
+      flip: true
+    - narrator: "Привіт! Сьогодні — казка про котика й півника. А ти вибиратимеш, що буде далі!"
+    - narrator: "Жили собі котик і півник у маленькій хатці. Котик ходив у ліс по дрова, а півник хату порядкував."
+    - kit: "Піду я, півнику, по дрова. А ти сиди в хатці, нікому дверей не відчиняй і у віконце не виглядай. Бо прийде лисиця — та й понесе тебе!"
+    - pivnyk: "Добре, котику-братику!"
+    - enter: pivnyk
+      into: khatynka
+    - move: kit
+      to: [1950, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - narrator: "Пішов котик. Аж тут — шусть! — прибігла лисичка, сіла під віконцем та й співає:"
+    - show: lysytsia
+      at: [-250, 770]
+      flip: true
+    - move: lysytsia
+      to: [520, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - lysytsia: "Півнику, півнику, золотий гребінчику! Виглянь у віконце — дам тобі горошку!"
+    - choice: "Чи вигляне півник?"
+      options:
+        - label: "Виглянути"
+          icon: "👀"
+          next: grab1
+        - label: "Не виглядати"
+          icon: "🙅"
+          next: obedient
+
+  obedient:
+    - pivnyk: "Ні, лисичко! Котик казав — не виглядати!"
+    - lysytsia: "Півнику, півнику, золотий гребінчику! Виглянь — дам тобі пшінця й медку!"
+    - pivnyk: "Не вигляну! Ні за горошок, ні за медок!"
+    - narrator: "Співала лисичка, співала — аж охрипла. А тут і котик із дровами вертається."
+    - show: kit
+      at: [1900, 770]
+    - show: vyazanka
+      at: [1850, 700]
+    - carry: vyazanka
+      by: kit
+    - move: kit
+      to: [1100, 770]
+      ms: 2200
+      wait: true
+    - kit: "А ти що тут робиш, руда? Гей, геть звідси!"
+    - move: lysytsia
+      to: [-300, 770]
+      ms: 1400
+      wait: true
+    - fx: popout
+      on: khatynka
+      who: [pivnyk]
+    - pivnyk: "Котику, а я не виглядав! Ні разу!"
+    - kit: "От молодець, братику! Тепер нас ніяка лисиця не перехитрить."
+    - fx: hearts
+      on: pivnyk
+    - ending: obedient
+
+  grab1:
+    - narrator: "Виглянув півник у віконце, а лисиця — хап його! — та й понесла."
+    - fx: popout
+      on: khatynka
+      who: [pivnyk]
+    - move: lysytsia
+      to: [620, 770]
+      ms: 500
+      wait: true
+    - carry: pivnyk
+      by: lysytsia
+    - pivnyk: "Котику-братику, рятуй мене! Несе мене лиса за темні ліси, за високі гори, за бистрі води!"
+    - move: lysytsia
+      to: [-300, 770]
+      ms: 2200
+      wait: true
+    - next: chase1
+
+  chase1:
+    - scene: forest
+    - show: lysytsia
+      at: [900, 770]
+      flip: true
+    - show: pivnyk
+      at: [900, 620]
+    - carry: pivnyk
+      by: lysytsia
+    - roll: true
+    - narrator: "Почув котик, кинув дрова — та й навздогін!"
+    - show: kit
+      at: [-250, 770]
+      flip: true
+    - move: kit
+      to: [700, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - roll: false
+    - kit: "Ану, руда, віддавай мого братика!"
+    - put: pivnyk
+      to: [760, 770]
+      ms: 500
+    - move: lysytsia
+      to: [1900, 770]
+      flip: true
+      ms: 1400
+    - narrator: "Злякалася лисиця, кинула півника — та й у кущі. А котик приніс півника додому."
+    - kit: "Я ж тобі казав: не виглядай у віконце!"
+    - pivnyk: "Більше не буду, котику!"
+    - narrator: "Та лисичка прийшла й удруге. Знову заспівала, знову півник виглянув — і знову котик його відбив. А втретє котик пішов по дрова далеко-далеко, аж за гору."
+    - next: grab3
+
+  grab3:
+    - scene: polyana
+    - show: khatynka
+      at: [760, 770]
+    - show: lysytsia
+      at: [520, 770]
+      flip: true
+    - lysytsia: "Півнику, півнику, золотий гребінчику! Виглянь у віконце — дам тобі пшінця й медку, ще й горошку на додачу!"
+    - fx: popout
+      on: khatynka
+      who: [pivnyk]
+    - move: lysytsia
+      to: [620, 770]
+      ms: 500
+      wait: true
+    - carry: pivnyk
+      by: lysytsia
+    - narrator: "Не втерпів півник, виглянув — а лисиця його й ухопила."
+    - pivnyk: "Котику-братику, рятуй мене! Несе мене лиса за темні ліси, за високі гори!"
+    - narrator: "Та котик далеко — не чує."
+    - choice: "Що зробить півник?"
+      options:
+        - label: "Кликати котика"
+          icon: "📣"
+          next: carried
+        - label: "Перехитрити лисицю"
+          icon: "🎶"
+          next: clever
+
+  clever:
+    - pivnyk: "Лисичко-сестричко, а як гарно ти співаєш! Заспівай-но ще разочок, голосніше — хочу послухати!"
+    - lysytsia: "Ой, справді гарно? Ну, слухай: ла-ла-ла-а-а!"
+    - narrator: "Розспівалася лисичка, лапи розставила — а півник пурх! — і вирвався!"
+    - move: pivnyk
+      to: [900, 560]
+      hop: true
+      ms: 600
+      wait: true
+    - move: pivnyk
+      to: [760, 770]
+      hop: true
+      ms: 600
+      wait: true
+    - enter: pivnyk
+      into: khatynka
+    - lysytsia: "Ох! Перехитрив мене півень!"
+    - narrator: "Та й побігла лисиця ні з чим. А як котик вернувся, півник йому все розповів."
+    - show: kit
+      at: [1900, 770]
+    - move: kit
+      to: [1120, 770]
+      ms: 2200
+      wait: true
+    - fx: popout
+      on: khatynka
+      who: [pivnyk]
+    - kit: "Ото хитрий у мене братик! Ну, тепер ми обидва розумні."
+    - fx: hearts
+      on: pivnyk
+    - ending: clever
+
+  carried:
+    - move: lysytsia
+      to: [-300, 770]
+      ms: 2000
+      wait: true
+    - narrator: "Віднесла лисиця півника до своєї нори. А котик вернувся додому — аж півника нема."
+    - show: kit
+      at: [1900, 770]
+    - move: kit
+      to: [1120, 770]
+      ms: 2200
+      wait: true
+    - kit: "Ой, біда! Лисиця знову мого братика вкрала! Ну стривай же, руда!"
+    - narrator: "Узяв котик гусельки й торбинку — та й пішов до лисиччиної нори."
+    - next: nora
+
+  nora:
+    - scene: forest
+    - show: lokh
+      at: [1160, 770]
+    - show: torba
+      at: [880, 770]
+    - show: kit
+      at: [-250, 770]
+      flip: true
+    - show: husli
+      at: [-200, 700]
+    - carry: husli
+      by: kit
+    - move: kit
+      to: [640, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - choice: "Як котик визволить півника?"
+      options:
+        - label: "Заграти на гуслях"
+          icon: "🎵"
+          next: gusli
+        - label: "Попросити по-доброму"
+          icon: "🍲"
+          next: polite
+
+  gusli:
+    - kit: "Тринь-брень, гусельки, золоті струноньки! Чи вдома лисичка з своїми діточками?"
+      sing: true
+    - narrator: "А лисиця в норі й каже старшій дочці: піди-но подивися, хто це там так гарно грає."
+    - fx: popout
+      on: lokh
+      who: [lysenia1]
+    - resize: lysenia1
+      to: 0.55
+      ms: 300
+    - move: lysenia1
+      to: [920, 770]
+      ms: 900
+      wait: true
+    - narrator: "Тільки виглянула лисичка-дочка — котик її в торбинку!"
+    - enter: lysenia1
+      into: torba
+    - kit: "Тринь-брень, гусельки, золоті струноньки! Чи вдома лисичка з своїми діточками?"
+      sing: true
+    - fx: popout
+      on: lokh
+      who: [lysenia2]
+    - resize: lysenia2
+      to: 0.55
+      ms: 300
+    - move: lysenia2
+      to: [920, 770]
+      ms: 900
+      wait: true
+    - enter: lysenia2
+      into: torba
+    - narrator: "Друга — та й туди ж. А тоді вийшла й сама лисиця."
+    - fx: popout
+      on: lokh
+      who: [lysytsia]
+    - lysytsia: "Хто це тут так гарно грає? А де мої доньки?"
+    - kit: "Твої доньки в моїй торбинці! Віддавай мого братика-півника — тоді й доньок віддам!"
+    - lysytsia: "Ой, лишенько! Бери, бери свого півника!"
+    - fx: popout
+      on: lokh
+      who: [pivnyk]
+    - fx: popout
+      on: torba
+      who: [lysenia1, lysenia2]
+    - narrator: "Випустив котик лисенят — вони до мами, та й шусть у нору. А котик з півником пішли додому."
+    - move: lysenia1
+      to: [1160, 770]
+      ms: 900
+    - move: lysenia2
+      to: [1160, 770]
+      ms: 1000
+    - move: lysytsia
+      to: [1160, 770]
+      ms: 1100
+      wait: true
+    - hide: lysenia1
+    - hide: lysenia2
+    - hide: lysytsia
+    - pivnyk: "Котику-братику, дякую! Більше ніколи у віконце не вигляну!"
+    - fx: hearts
+      on: kit
+    - narrator: "І з того часу жили котик і півник дружно, а лисиця обходила їхню хатку десятою дорогою."
+    - ending: canon
+
+  polite:
+    - kit: "Лисичко-сестричко! Віддай мені, будь ласка, мого братика-півника. Він мені найдорожчий на світі."
+    - narrator: "Тихо стало в норі... А тоді визирнула лисиця — сумна, аж вуха опустила."
+    - fx: popout
+      on: lokh
+      who: [lysytsia]
+    - lysytsia: "Ох... Та я ж не зі зла — голодна була, а дітки пищать. Бери вже свого півника."
+    - fx: popout
+      on: lokh
+      who: [pivnyk]
+    - kit: "Дякую, лисичко! А приходь завтра з дітками до нас обідати — пшоняної каші на всіх вистачить."
+    - lysytsia: "Справді? До вас? Ой, дякую!"
+    - fx: hearts
+      on: lysytsia
+    - narrator: "Назавтра прийшла лисиця з лисенятами в гості — та й більше вже півника не крала. Бо хто ж краде в того, хто тебе обідом частує?"
+    - ending: polite
