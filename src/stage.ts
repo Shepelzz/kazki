@@ -131,12 +131,12 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil'];
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'koza'];
-const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz'];
+const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska'];
 
 interface Particle {
   el: SVGElement;
@@ -575,6 +575,40 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       `<g>${verge(104, false)}${verge(105, false)}</g>`,
     layers: [],
   }),
+  bereh: () => ({
+    // a river bank: the mother calls from the bank on the left, the boat floats on the water
+    still:
+      sky('#7cc4f2', '#e0f4ff') +
+      sun(1380, 230) +
+      clouds(151) +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#a5d6a7', GROUND - 170, 60, 152)}${treeRow(153, false)}</g>`).join('') +
+      `<rect x="-1600" y="${GROUND - 50}" width="4800" height="6000" fill="#4aa3df"/>` +
+      Array.from({ length: 24 }, (_, i) => `<path d="M${(i * 131) % 2400 - 400} ${GROUND - 10 + ((i * 37) % 180)} q22 -10 44 0" stroke="#d6f0ff" stroke-width="5" fill="none" stroke-linecap="round"/>`).join('') +
+      `<path d="M-1600 ${GROUND - 50} L420 ${GROUND - 50} Q500 ${GROUND - 20} 470 ${GROUND + 40} L380 2000 L-1600 2000 Z" fill="#7cb342"/>` +
+      `<path d="M300 ${GROUND - 50} L430 ${GROUND - 50} Q490 ${GROUND - 26} 470 ${GROUND + 20}" fill="none" stroke="#c9a77a" stroke-width="18"/>` +
+      `<g transform="translate(0 -40)">${verge(154, false)}</g>`.replace(/translate\(0 -40\)/, 'translate(-1150 -40)') +
+      Array.from({ length: 6 }, (_, i) => `<g transform="translate(${420 + i * 18} ${GROUND - 30})"><path d="M0 0 V-90" stroke="#5d8f3a" stroke-width="5"/><rect x="-5" y="-118" width="10" height="30" rx="5" fill="#7a4a24"/></g>`).join(''),
+    layers: [],
+  }),
+  kuznya: () => ({
+    still: `
+      <rect x="-1600" y="-1200" width="4800" height="${GROUND + 1160}" fill="#4e3a2e"/>
+      <rect x="-1600" y="${GROUND - 40}" width="4800" height="6000" fill="#3b2b22"/>
+      ${Array.from({ length: 30 }, (_, i) => `<rect x="${-200 + (i % 10) * 200}" y="${80 + Math.floor(i / 10) * 140}" width="180" height="120" fill="none" stroke="#5d463a" stroke-width="5"/>`).join('')}
+      <!-- the forge -->
+      <path d="M140 ${GROUND - 40} L140 420 L560 420 L560 ${GROUND - 40} Z" fill="#6d5546" stroke="#3b2b22" stroke-width="6"/>
+      <path d="M220 420 L280 -100 L420 -100 L480 420 Z" fill="#5d463a" stroke="#3b2b22" stroke-width="6"/>
+      <ellipse data-glow="1" cx="350" cy="560" rx="170" ry="70" fill="#ff7043" opacity=".5"/>
+      <g transform="translate(350 600)">
+        <path data-flame="1" d="M-90 0 Q-100 -70 -60 -100 Q-50 -60 -30 -50 Q-40 -110 0 -140 Q0 -80 30 -70 Q30 -110 60 -120 Q90 -60 80 0 Z" fill="#ff7a1a"/>
+        <path data-flame="1" d="M-50 0 Q-60 -40 -30 -70 Q-20 -40 0 -36 Q-6 -80 20 -100 Q24 -50 46 -40 Q60 -20 40 0 Z" fill="#ffd23f"/>
+      </g>
+      <rect x="120" y="600" width="460" height="30" rx="6" fill="#3b2b22"/>
+      <path d="M1300 300 l40 60 M1340 300 l-40 60 M1420 280 v120 M1400 300 h40" stroke="#90a4ae" stroke-width="10" stroke-linecap="round"/>
+      <ellipse cx="350" cy="640" rx="700" ry="400" fill="#ffab40" opacity=".08"/>`,
+    layers: [],
+  }),
+  'pich-zmiya': () => ({ still: interior(false) + `<rect x="-1600" y="-1200" width="4800" height="8000" fill="#1b3a1b" opacity=".4"/>`, layers: [] }),
   zhnyva: () => {
     // a wheat field at harvest: golden rows, sheaves already stood up here and there
     let wheat = '';
@@ -1272,6 +1306,10 @@ export class Stage {
         for (let i = 0; i < 7; i++) this.later(i * 0.3, () => this.flyingFish(a.x - 60 + i * 20, a.y - 110));
         return this.wait(2400);
       }
+      case 'rock':
+        // rocked (the cradle), shaken (the maple the snake gnaws)
+        if (a) a.wobble = 1;
+        return this.wait(900);
       case 'tumble':
         // a twirl (dancing): one full turn on the spot
         if (a) {
