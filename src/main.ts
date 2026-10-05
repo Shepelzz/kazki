@@ -324,19 +324,21 @@ function setPaused(on: boolean) {
 
 $('btn-pause').addEventListener('click', () => setPaused(!stage.paused));
 
-// DEBUG=TRUE builds: to the previous / next line
-if (__DEBUG__) {
-  $('btn-back').hidden = false;
-  $('btn-next').hidden = false;
-  $('btn-back').addEventListener('click', () => {
-    setPaused(false);
-    teller?.back();
-  });
-  $('btn-next').addEventListener('click', () => {
-    setPaused(false);
-    teller?.forward();
-  });
+// to the previous / next line: in a tale she has already heard to an ending (any one), and in
+// DEBUG=TRUE builds in every tale
+function showSkip(story: Story) {
+  const on = __DEBUG__ || found(story).length > 0;
+  $('btn-back').hidden = !on;
+  $('btn-next').hidden = !on;
 }
+$('btn-back').addEventListener('click', () => {
+  setPaused(false);
+  teller?.back();
+});
+$('btn-next').addEventListener('click', () => {
+  setPaused(false);
+  teller?.forward();
+});
 $('paused').addEventListener('click', () => {
   unlockAudio();
   setPaused(false);
@@ -351,6 +353,7 @@ async function openTale(story: Story, from?: string) {
   setPaused(false);
   teller?.stop();
   current = story;
+  showSkip(story);
   $('ending').hidden = true;
   $('btn-pause').hidden = false;
   show('play');
