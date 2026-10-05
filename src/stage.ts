@@ -124,7 +124,7 @@ interface Actor {
   /** a thing, not a creature: doesn't walk or blink */
   prop: boolean;
   /** lying down: 'lie' — flat (the wolf behind the log), 'roll' — rolling side to side (the cat, full of presents) */
-  pose: '' | 'lie' | 'roll' | 'sit';
+  pose: '' | 'lie' | 'roll' | 'sit' | 'back';
   /** asleep: eyes shut, the head nods, "z-z-z" floats up (wakes when it moves or opens its eyes) */
   asleep: boolean;
   zIn: number;
@@ -137,20 +137,24 @@ interface Actor {
   ox: number;
   /** eating (seconds left): bends down and chews */
   munch: number;
+  /** pulling (seconds left): leans back and forth, heaving at the one in front */
+  tug: number;
   /** tumbling head over heels: degrees still to turn, and how fast */
   spin: number;
   spinSpeed: number;
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka'];
+/** one heave-ho of pulling (seconds) */
+const PULL = 1.8;
 /** a blow: the lunge and the being thrown back (seconds) */
 const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
-const FOUR_LEGS = ['sirko', 'sobaka', 'koza', 'zmiy'];
+const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
 const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
 
 interface Particle {
@@ -855,6 +859,21 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       `<g>${verge(11, false)}</g>`,
     layers: [],
   }),
+  horod: () => ({
+    // the garden by the house: the hata, sunflowers, rows of dug soil (the turnip grows here)
+    still:
+      sky('#7cc4f2', '#d6f0ff') +
+      sun(1380, 230) +
+      clouds(13) +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#9ccc65', GROUND - 120, 60, 7)}</g>`).join('') +
+      ground('#7cb342', '#c9a77a') +
+      wattleFence(920, 1580) +
+      sunflower(1500, 300) +
+      hata() +
+      [0, 1, 2].map((r) => `<path d="M${640 - r * 40} ${GROUND + 34 + r * 46} Q1150 ${GROUND + 14 + r * 46} ${1680 + r * 40} ${GROUND + 34 + r * 46}" stroke="#6d4426" stroke-width="22" fill="none" stroke-linecap="round"/>` +
+        Array.from({ length: 9 }, (_, i) => `<path d="M${720 + i * 110 - r * 20} ${GROUND + 26 + r * 46} q-10 -26 -24 -30 M${720 + i * 110 - r * 20} ${GROUND + 26 + r * 46} q10 -28 24 -30" stroke="#4caf50" stroke-width="6" fill="none" stroke-linecap="round"/>`).join('')).join(''),
+    layers: [],
+  }),
   road: () => ({
     still: sky('#7cc4f2', '#d6f0ff') + sun(1380, 230) + clouds(5),
     layers: [
@@ -1181,6 +1200,7 @@ export class Stage {
       knockDx: 0,
       ox: 0,
       munch: 0,
+      tug: 0,
       spin: 0,
       spinSpeed: 0,
       parts: {
@@ -1523,6 +1543,29 @@ export class Stage {
           this.shake = 0.4;
         });
         return this.wait(HIT * 1000 + 250);
+      }
+      case 'pull': {
+        // they pull (who, one holding the next), at it (on): heave-ho, twice — it doesn't give
+        const pullers = who.map((id) => this.actors.get(id)).filter((t): t is Actor => !!t);
+        for (const p of pullers) p.tug = PULL;
+        if (a) a.wobble = 1;
+        this.later(PULL / 2, () => {
+          if (a) a.wobble = 1;
+        });
+        return this.wait(PULL * 1000 + 100);
+      }
+      case 'fallback': {
+        // (the turnip gave way) they all fall over backwards in a heap: stars, dust, a bump
+        const all = [a, ...who.map((id) => this.actors.get(id))].filter((t): t is Actor => !!t);
+        for (const t of all) {
+          t.pose = 'back';
+          t.bounce = 1;
+          const [x, y] = this.anchor(t, 'top');
+          for (let i = 0; i < 5; i++) this.star(x, y + 40, (i / 5) * Math.PI * 2);
+          this.dustAt(t.x, GROUND);
+        }
+        this.shake = 0.4;
+        return this.wait(900);
       }
       case 'sit':
         // sits down (on the ground, a bench): until it moves or stands up
@@ -2019,6 +2062,13 @@ export class Stage {
       const out = p < 0.4 ? Math.sin((p / 0.4) * Math.PI * 0.5) : Math.cos(((p - 0.4) / 0.6) * Math.PI * 0.5);
       blow += (holder.flip ? 1 : -1) * (a.flip ? -1 : 1) * 75 * out;
     }
+    if (a.tug > 0) {
+      // heaving back (away from where it faces), twice
+      a.tug = Math.max(0, a.tug - dt);
+      const h = Math.abs(Math.sin((1 - a.tug / PULL) * Math.PI * 2));
+      a.ox += (a.flip ? -1 : 1) * 26 * h;
+      blow += 14 * h;
+    }
     if (a.knock > 0) {
       a.knock = Math.max(0, a.knock - dt);
       const p = 1 - a.knock / KNOCK;
@@ -2084,7 +2134,7 @@ export class Stage {
       if (a.asleep) lean += 5 + Math.sin(a.phase * 1.4) * 4;
     } else if (a.pose && !flat) {
       // on its side, head towards where it faces, turning about a point near the feet
-      spinAt = a.pose === 'roll' ? -90 + Math.sin(a.phase * 4) * 22 : -88;
+      spinAt = a.pose === 'roll' ? -90 + Math.sin(a.phase * 4) * 22 : a.pose === 'back' ? 84 : -88;
       pivotY = -40;
     }
     const pivot = a.pose && !sit ? pivotY : (ANCHORS[a.id] ? ANCHORS[a.id].top : -100) / 2;

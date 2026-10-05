@@ -17,6 +17,7 @@ import { bulava, dity, holub, knyaz, knyazivna, kozhi, kyrylo, kyrylo_konopli, z
 import { chovnyk, gusenia, gusy, koval, kovadlo, kolyska, lopata, olenka, pyrohy, telesyk, yavir, zmiyuchka } from './puppets-telesyk';
 import { bychok, drova, lunka, lysytsia_tisto, pastushok, pyrizhok, sanky, sanky_lamani, viz, vudka } from './puppets-lysychka';
 import { dytyna, halushky, nevista, sirko, snip, stil } from './puppets-sirko';
+import { hriadka, ripka } from './puppets-ripka';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
@@ -453,6 +454,11 @@ export const PUPPETS: Record<string, () => string> = {
   skarb2: skarb,
   bochka,
   tsarivna: knyazivna,
+  ripka,
+  hriadka,
+  vnuchka: nevista,
+  zhuchka: sobaka,
+  kishka: kit,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -570,4 +576,10 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   skarb2: { mouth: [0, -60], top: -115 },
   bochka: { mouth: [0, -60], top: -120 },
   tsarivna: { mouth: [0, -258], top: -360 },
+  ripka: { mouth: [0, -110], top: -430 },
+  hriadka: { mouth: [0, -30], top: -60 },
+  vnuchka: { mouth: [0, -258], top: -330 },
+  zhuchka: { mouth: [-80, -90], top: -150 },
+  kishka: { mouth: [0, -142], top: -232, hands: [-46, -60] },
+
 };

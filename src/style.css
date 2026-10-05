@@ -202,6 +202,10 @@ button.book:active {
   height: 88%;
 }
 
+.book-art-ripka {
+  background: linear-gradient(#9fd8f7, #e0f4ff 70%, #7a5232 70%);
+}
+
 .book-art-lysychka-zhuravel {
   background: linear-gradient(#9fd8f7, #e0f4ff 70%, #4aa3df 70%);
 }
