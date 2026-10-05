@@ -85,14 +85,22 @@ function renderShelf() {
     art.className = 'book-art book-art-' + story.id;
     art.appendChild(cover(story));
     const title = document.createElement('div');
-    title.className = 'book-title';
+    // a long name gets smaller letters: two lines at most, like the short ones
+    title.className = story.title.length > 18 ? 'book-title long' : 'book-title';
     title.textContent = story.title;
     const got = found(story);
+    const keys = Object.keys(story.endings);
     const stars = document.createElement('div');
     stars.className = 'book-endings';
-    stars.textContent = Object.keys(story.endings)
-      .map((k) => (got.indexOf(k) >= 0 ? story.endings[k].icon : '•'))
-      .join(' ');
+    for (const k of keys) {
+      const pip = document.createElement('span');
+      const has = got.indexOf(k) >= 0;
+      pip.className = has ? 'pip got' : 'pip';
+      if (has) pip.textContent = story.endings[k].icon;
+      stars.appendChild(pip);
+    }
+    if (got.length >= keys.length) card.className += ' complete';
+    card.setAttribute('aria-label', `${story.title}: знайдено ${got.length} з ${keys.length} кінцівок`);
     card.append(art, title, stars);
     card.addEventListener('click', () => openTale(story));
     shelf.appendChild(card);
@@ -100,7 +108,7 @@ function renderShelf() {
   for (const s of SOON) {
     const card = document.createElement('div');
     card.className = 'book soon';
-    card.innerHTML = `<div class="book-art"><span class="soon-icon">${s.icon}</span></div><div class="book-title">${s.title}</div><div class="book-endings">скоро</div>`;
+    card.innerHTML = `<div class="book-art"><span class="soon-icon">${s.icon}</span></div><div class="book-title">${s.title}</div>`;
     shelf.appendChild(card);
   }
 }
