@@ -25,6 +25,10 @@ export class Teller {
   fast = false;
   private run = 0;
   private abortChoice: (() => void) | null = null;
+  /** a scene begins (the skip-forward button is offered only in scenes heard before) */
+  onScene: ((name: string) => void) | null = null;
+  /** the scenes told on the way to the ending (all of them, also the ones jumped back over) */
+  readonly played = new Set<string>();
 
   constructor(
     private story: Story,
@@ -41,6 +45,8 @@ export class Teller {
       for (;;) {
         try {
           this.preloadAround(scene);
+          this.played.add(scene);
+          this.onScene?.(scene);
           const next = await this.playScene(scene, run, skipTo);
           skipTo = -1;
           if (next.ending) return next.ending;

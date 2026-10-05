@@ -324,12 +324,32 @@ function setPaused(on: boolean) {
 
 $('btn-pause').addEventListener('click', () => setPaused(!stage.paused));
 
-// to the previous / next line: in a tale she has already heard to an ending (any one), and in
-// DEBUG=TRUE builds in every tale
-function showSkip(story: Story) {
-  const on = __DEBUG__ || found(story).length > 0;
-  $('btn-back').hidden = !on;
-  $('btn-next').hidden = !on;
+// ---------- scenes heard to an ending: they may be skipped through next time ----------
+function heardScenes(story: Story): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(`kazky:heard:${story.id}`) || '[]');
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberHeard(story: Story, scenes: Iterable<string>) {
+  const all = heardScenes(story);
+  for (const s of scenes) if (all.indexOf(s) < 0) all.push(s);
+  try {
+    localStorage.setItem(`kazky:heard:${story.id}`, JSON.stringify(all));
+  } catch {
+    // private mode: nothing kept
+  }
+}
+
+// to the previous line: in a tale she has already heard to an ending (any one); to the next line:
+// only in a scene she has heard on a way to an ending — a new branch is listened to, not skipped.
+// DEBUG=TRUE builds: both, everywhere.
+function showSkip(story: Story, scene?: string) {
+  $('btn-back').hidden = !(__DEBUG__ || found(story).length > 0);
+  $('btn-next').hidden = !(__DEBUG__ || (!!scene && heardScenes(story).indexOf(scene) >= 0));
 }
 $('btn-back').addEventListener('click', () => {
   setPaused(false);
@@ -359,8 +379,10 @@ async function openTale(story: Story, from?: string) {
   show('play');
   const t = new Teller(story, stage, ui);
   t.fast = fastSpeed > 0;
+  t.onScene = (scene) => showSkip(story, scene);
   teller = t;
   const ending = await t.tell(from);
+  if (ending) rememberHeard(story, t.played);
   if (ending && teller === t) await showEnding(story, ending);
 }
 
@@ -436,7 +458,10 @@ show('library');
   /** how a line would be split into subtitle pages */
   pages: (text: string) => paginate(text),
   forget() {
-    for (const s of STORIES) localStorage.removeItem(`kazky:endings:${s.id}`);
+    for (const s of STORIES) {
+      localStorage.removeItem(`kazky:endings:${s.id}`);
+      localStorage.removeItem(`kazky:heard:${s.id}`);
+    }
     renderShelf();
   },
 };
