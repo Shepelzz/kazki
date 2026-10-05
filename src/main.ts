@@ -7,7 +7,7 @@ import { makePuppet, el } from './characters';
 import { Teller, type TellerUi } from './engine';
 import { pauseSpeech, resumeSpeech, say, speechProgress, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
 import { Stage } from './stage';
-import { COMMON, endingPhrase, parseStory, type Story } from './story';
+import { aboutPhrase, COMMON, endingPhrase, parseStory, type Story } from './story';
 import kolobokRaw from '../stories/kolobok.yaml';
 import rukavychkaRaw from '../stories/rukavychka.yaml';
 import kozaRaw from '../stories/koza-dereza.yaml';
@@ -92,17 +92,11 @@ function renderShelf() {
     const keys = Object.keys(story.endings);
     const stars = document.createElement('div');
     stars.className = 'book-endings';
-    for (const k of keys) {
-      const pip = document.createElement('span');
-      const has = got.indexOf(k) >= 0;
-      pip.className = has ? 'pip got' : 'pip';
-      if (has) pip.textContent = story.endings[k].icon;
-      stars.appendChild(pip);
-    }
+    fillPips(stars, story);
     if (got.length >= keys.length) card.className += ' complete';
     card.setAttribute('aria-label', `${story.title}: знайдено ${got.length} з ${keys.length} кінцівок`);
     card.append(art, title, stars);
-    card.addEventListener('click', () => openTale(story));
+    card.addEventListener('click', () => openCard(story, card));
     shelf.appendChild(card);
   }
   for (const s of SOON) {
@@ -112,6 +106,72 @@ function renderShelf() {
     shelf.appendChild(card);
   }
 }
+
+/** a round slot per ending: the found ones show their picture */
+function fillPips(box: HTMLElement, story: Story) {
+  box.innerHTML = '';
+  const got = found(story);
+  for (const k of Object.keys(story.endings)) {
+    const pip = document.createElement('span');
+    const has = got.indexOf(k) >= 0;
+    pip.className = has ? 'pip got' : 'pip';
+    if (has) pip.textContent = story.endings[k].icon;
+    box.appendChild(pip);
+  }
+}
+
+// ---------- a tale's card: the picture, what it is about (said aloud), play ----------
+let carded: Story | null = null;
+/** the shelf card it was opened from: focus goes back there */
+let cardFrom: HTMLElement | null = null;
+
+function openCard(story: Story, from: HTMLElement) {
+  unlockAudio();
+  carded = story;
+  cardFrom = from;
+  const art = $('tc-art');
+  art.className = 'book-art tc-art book-art-' + story.id;
+  art.innerHTML = '';
+  art.appendChild(cover(story));
+  $('tc-title').textContent = story.title;
+  $('tc-about').textContent = story.about;
+  fillPips($('tc-endings'), story);
+  const box = $('tale-card');
+  box.classList.remove('told');
+  box.hidden = false;
+  // focus inside the dialog (for the keyboard), without a ring on the button for a tap
+  $('tale-card').querySelector<HTMLElement>('.tale-card-box')!.focus();
+  const told = story;
+  void say(story.voices.narrator, aboutPhrase(story)).then(() => {
+    // told: the play button calls a little
+    if (carded === told) box.classList.add('told');
+  });
+}
+
+function closeCard() {
+  if (!carded) return;
+  carded = null;
+  stopSpeech();
+  $('tale-card').hidden = true;
+  cardFrom?.focus();
+}
+
+$('tc-close').addEventListener('click', closeCard);
+// a tap outside the card closes it
+$('tale-card').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeCard();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeCard();
+});
+$('tc-play').addEventListener('click', () => {
+  const story = carded;
+  if (!story) return;
+  carded = null;
+  stopSpeech();
+  $('tale-card').hidden = true;
+  void openTale(story);
+});
 
 // ---------- subtitles of long lines: in pages, turned as the voice goes on ----------
 

@@ -5,6 +5,7 @@
 
 title: Солом'яний бичок
 cover: solombychok
+about: "Зробив дід бичка з соломи й засмолив йому бочок. А до того бочка почали прилипати звірі!"
 
 voices:
   narrator:    { name: "", pitch: 1.1, rate: 1 }

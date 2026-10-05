@@ -21,6 +21,19 @@
         <p>Обери казку — і вирішуй, що буде далі!</p>
       </header>
       <div class="shelf" id="shelf"></div>
+      <!-- a tale's card: opened from the shelf, the narrator tells what it is about -->
+      <div id="tale-card" class="tale-card" hidden>
+        <div class="tale-card-box" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="tc-title">
+          <button id="tc-close" class="tc-close" aria-label="Закрити">✕</button>
+          <div id="tc-art" class="book-art tc-art"></div>
+          <div class="tc-text">
+            <h2 id="tc-title"></h2>
+            <p id="tc-about"></p>
+            <div id="tc-endings" class="book-endings"></div>
+            <button id="tc-play" class="tc-play">▶&#xFE0E; Слухати казку</button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <section id="play" class="screen play" hidden>

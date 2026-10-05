@@ -39,6 +39,10 @@ export interface Story {
   id: string;
   title: string;
   cover: string;
+  /** what it is about, in a sentence or two: shown and said on the tale's card */
+  about: string;
+  /** the title as said aloud, when written differently ("Частина 2") */
+  sayTitle?: string;
   voices: Record<string, Voice>;
   endings: Record<string, Ending>;
   start: string;
@@ -77,7 +81,7 @@ export function parseStory(id: string, raw: Raw): Story {
       return fail(name, i, `unknown step ${JSON.stringify(s)}`);
     });
   }
-  const story: Story = { id, title: raw.title, cover: raw.cover, voices, endings: raw.endings, start: raw.start, scenes };
+  const story: Story = { id, title: raw.title, cover: raw.cover, about: raw.about || '', sayTitle: raw.sayTitle, voices, endings: raw.endings, start: raw.start, scenes };
   // every link must lead somewhere: a typo would strand the child mid-tale
   for (const [name, steps] of Object.entries(scenes))
     steps.forEach((s, i) => {
@@ -114,8 +118,11 @@ export function spokenPhrases(story: Story): Phrase[] {
     }
   for (const e of Object.values(story.endings)) out.push({ who: 'narrator', text: endingPhrase(e) });
   for (const t of Object.values(COMMON)) out.push({ who: 'narrator', text: t });
+  if (story.about) out.push({ who: 'narrator', text: aboutPhrase(story) });
   return out;
 }
 
 export const optionPhrase = (o: ChoiceOption) => `${o.label.replace(/[!.]+$/, '')}?`;
 export const endingPhrase = (e: Ending) => `Кінцівка «${e.title}».`;
+/** said when the tale's card opens: its name, then what it is about */
+export const aboutPhrase = (s: Story) => `${s.sayTitle || s.title}. ${s.about}`;

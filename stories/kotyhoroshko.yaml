@@ -8,6 +8,7 @@
 
 title: Котигорошко
 cover: kotyhoroshko
+about: "З горошинки народився богатир Котигорошко — і пішов визволяти сестру й братів від змія."
 
 voices:
   narrator:     { name: "", pitch: 1.1, rate: 1 }

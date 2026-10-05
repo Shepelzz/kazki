@@ -5,9 +5,17 @@
       "voice": "2HWb7sZSrZqPB8HOI0KI",
       "chars": 16
     },
+    "19415244": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 12
+    },
     "26647834": {
       "voice": "XB0fDUnXU5powFXDhCwa",
       "chars": 4
+    },
+    "31193337": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 15
     },
     "35410227": {
       "voice": "JBFqnCBsd6RMkjVDRZzb",
@@ -4228,7 +4236,51 @@
     "162cf1d0": {
       "voice": "2HWb7sZSrZqPB8HOI0KI",
       "chars": 20
+    },
+    "1c43a2bf": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "1170a5da": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "c1669ea8": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 15
+    },
+    "b97f34a4": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 12
+    },
+    "b77df193": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "5cc87bef": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "2867b113": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "d207705f": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "8466f590": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "cd757b9c": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "d324b545": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 12
     }
   },
-  "charsSpent": 7438
+  "charsSpent": 7606
 }
