@@ -35,13 +35,13 @@ about: "Спекла баба круглого рум'яного колобка,
 voices:
   # pitch — висота голосу (1 = звичайна), rate — швидкість
   narrator: { name: "", pitch: 1.1, rate: 1 }
-  did:      { name: "Дід", pitch: 0.72, rate: 0.9 }
-  baba:     { name: "Баба", pitch: 1.0, rate: 0.95 }
-  kolobok:  { name: "Колобок", pitch: 1.55, rate: 1.05 }
-  zayets:   { name: "Зайчик", pitch: 1.4, rate: 1.15 }
-  vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95 }
-  vedmid:   { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
-  lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
+  did:      { name: "Дід", pitch: 0.72, rate: 0.9, hello: "Здоровенькі були! Я дідусь. Хочеш, разом ріпку потягнемо?" }
+  baba:     { name: "Баба", pitch: 1.0, rate: 0.95, hello: "Привіт, серденько! Я бабуся. Зараз колобка спечу!" }
+  kolobok:  { name: "Колобок", pitch: 1.55, rate: 1.05, hello: "Я колобок, рум'яний бок! Покотилися гратися?" }
+  zayets:   { name: "Зайчик", pitch: 1.4, rate: 1.15, hello: "Я зайчик-побігайчик! Хто швидше — ти чи я?" }
+  vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95, hello: "Я вовк — сірий бік. Та не бійся, сьогодні я добрий!" }
+  vedmid:   { name: "Ведмідь", pitch: 0.55, rate: 0.85, hello: "Я ведмідь-клишоногий! А медку не маєш?" }
+  lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9, hello: "Я лисичка-сестричка. Ой, яка ж я гарна!" }
 
 endings:
   singer:   { title: "Колобок-співак", icon: "🎶" }

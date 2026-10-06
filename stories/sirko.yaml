@@ -9,11 +9,11 @@ about: "Прогнали хазяї старого пса Сірка з двор
 
 voices:
   narrator: { name: "", pitch: 1.1, rate: 1 }
-  sirko:    { name: "Сірко", pitch: 0.85, rate: 0.95 }
+  sirko:    { name: "Сірко", pitch: 0.85, rate: 0.95, hello: "Гав! Я Сірко, вірний песик." }
   did:      { name: "Хазяїн", pitch: 0.72, rate: 0.9 }
   baba:     { name: "Хазяйка", pitch: 1.0, rate: 0.95 }
   vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95 }
-  nevista:  { name: "Молода", pitch: 1.2, rate: 1 }
+  nevista:  { name: "Молода", pitch: 1.2, rate: 1, hello: "Я молода! У мене сьогодні весілля!" }
   lysytsia: { name: "Лисиця", pitch: 1.18, rate: 0.9 }
 
 endings:

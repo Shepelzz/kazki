@@ -12,13 +12,13 @@ voices:
   narrator:  { name: "", pitch: 1.1, rate: 1 }
   did:       { name: "Дід", pitch: 0.72, rate: 0.9 }
   baba:      { name: "Баба", pitch: 1.0, rate: 0.95 }
-  telesyk:   { name: "Телесик", pitch: 1.45, rate: 1.05 }
-  zmiyuchka: { name: "Зміючка", pitch: 0.6, rate: 0.9 }
+  telesyk:   { name: "Телесик", pitch: 1.45, rate: 1.05, hello: "Я Івасик-Телесик! Ловитимемо рибку?" }
+  zmiyuchka: { name: "Зміючка", pitch: 0.6, rate: 0.9, hello: "Ш-ш-ш... Я зміючка. А де Телесик?" }
   zmiya2:    { name: "Зміючка", pitch: 1.0, rate: 0.95 }
-  koval:     { name: "Коваль", pitch: 0.65, rate: 0.9 }
-  olenka:    { name: "Оленка", pitch: 1.3, rate: 1 }
+  koval:     { name: "Коваль", pitch: 0.65, rate: 0.9, hello: "Я коваль! Дзень-дзень — кую-кую!" }
+  olenka:    { name: "Оленка", pitch: 1.3, rate: 1, hello: "Я Оленка, зміючкина донька. Хі-хі!" }
   gusy:      { name: "Гуси", pitch: 1.25, rate: 1.05 }
-  gusenia:   { name: "Гусеня", pitch: 1.6, rate: 1.05 }
+  gusenia:   { name: "Гусеня", pitch: 1.6, rate: 1.05, hello: "Ґел-ґел! Я гусеня!" }
 
 endings:
   canon:  { title: "Бубликів в'язочка", icon: "🥯" }

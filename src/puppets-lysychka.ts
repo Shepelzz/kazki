@@ -18,6 +18,7 @@ export const pastushok = () => `
   <path d="M-30 -96 L-32 -10 L-6 -10 L-6 -96 Z" fill="#4e6a8a" ${st(4)}/>
   <path d="M6 -96 L6 -10 L32 -10 L30 -96 Z" fill="#4e6a8a" ${st(4)}/>
   <path d="M-38 0 q0 -14 8 -16 h24 v16 z M38 0 q0 -14 -8 -16 h-24 v16 z" fill="#3b2416" ${st(4)}/>
+  <g data-dress="legs"></g>
   <path d="M-46 -200 Q-58 -140 -54 -90 L54 -90 Q58 -140 46 -200 Q0 -214 -46 -200 Z" fill="#b5835a" ${stroke}/>
   <path d="M-54 -100 Q0 -86 54 -100 L54 -86 Q0 -72 -54 -86 Z" fill="#f4efe6" ${st(3)}/>
   <rect x="-54" y="-142" width="108" height="12" rx="4" fill="#c62828" ${st(3)}/>
@@ -26,14 +27,17 @@ export const pastushok = () => `
   <path d="M-46 -194 Q-70 -160 -64 -128" fill="none" stroke="${INK}" stroke-width="26" stroke-linecap="round"/>
   <path d="M-46 -194 Q-70 -160 -64 -128" fill="none" stroke="#b5835a" stroke-width="17" stroke-linecap="round"/>
   <circle cx="-64" cy="-124" r="11" fill="#f2c4a0" ${st(3)}/>
+  <g data-dress="torso"></g>
   <ellipse cx="0" cy="-240" rx="36" ry="38" fill="#f2c4a0" ${stroke}/>
   ${eyes(0, -246, 26, 5)}
   ${closedEyes(0, -246, 26, 5)}
   <ellipse cx="-18" cy="-228" rx="7" ry="5" fill="#f0786a" opacity=".7"/><ellipse cx="18" cy="-228" rx="7" ry="5" fill="#f0786a" opacity=".7"/>
   <path d="M-6 -236 q6 6 12 0" fill="#e8a383"/>
   ${mouth(`<path d="M-10 -222 q10 8 20 0" fill="none" ${st(3)}/>`, `<path d="M-10 -224 q10 16 20 0 z" fill="#7a2a1a" ${st(3)}/>`)}
+<g data-part="hat">
   <path d="M-40 -256 Q-40 -304 0 -306 Q40 -304 40 -256 Z" fill="#5d4037" ${stroke}/>
   <rect x="-44" y="-268" width="88" height="18" rx="9" fill="#e8dcc8" ${st(3)}/>
+  </g>
 </g>`;
 
 /** the little bull (bychok-tretiachok) */

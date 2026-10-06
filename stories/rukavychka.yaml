@@ -19,13 +19,13 @@ about: "Загубив дід у лісі рукавичку, а звірята 
 voices:
   narrator: { name: "", pitch: 1.1, rate: 1 }
   did:      { name: "Дід", pitch: 0.72, rate: 0.9 }
-  sobaka:   { name: "Собачка", pitch: 1.2, rate: 1.1 }
+  sobaka:   { name: "Собачка", pitch: 1.2, rate: 1.1, hello: "Гав! Я собачка-гавкунчик!" }
   myshka:   { name: "Мишка", pitch: 1.75, rate: 1.1 }
-  zhabka:   { name: "Жабка", pitch: 1.25, rate: 1 }
+  zhabka:   { name: "Жабка", pitch: 1.25, rate: 1, hello: "Ква-ква! Я жабка-скрекотушка!" }
   zayets:   { name: "Зайчик", pitch: 1.4, rate: 1.15 }
   lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
   vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95 }
-  kaban:    { name: "Кабан", pitch: 0.7, rate: 0.95 }
+  kaban:    { name: "Кабан", pitch: 0.7, rate: 0.95, hello: "Хрю! Я кабан-іклан. Я дуже сильний!" }
   vedmid:   { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
 
 endings:

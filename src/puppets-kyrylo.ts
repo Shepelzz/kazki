@@ -3,7 +3,6 @@
 // hides, the club. Same conventions as characters.ts.
 
 import { INK, closedEyes, eyes, mouth, st, stitch, stroke } from './characters';
-import { nevista } from './puppets-sirko';
 
 /** a big, strong tanner in a leather apron */
 export const kyrylo = (wrapped = false) => {
@@ -16,6 +15,7 @@ export const kyrylo = (wrapped = false) => {
   <path d="M-46 -130 L-50 -12 L-12 -12 L-10 -130 Z" fill="#3e4a59" ${st(4)}/>
   <path d="M10 -130 L12 -12 L50 -12 L46 -130 Z" fill="#3e4a59" ${st(4)}/>
   <path d="M-60 0 q2 -18 14 -18 h34 v18 z M60 0 q-2 -18 -14 -18 h-34 v18 z" fill="#3b2416" ${st(4)}/>
+  <g data-dress="legs"></g>
   <path d="M-84 -290 Q-104 -200 -92 -120 L92 -120 Q104 -200 84 -290 Q0 -314 -84 -290 Z" fill="${shirt}" ${stroke}/>
   ${wrapped ? '' : stitch(-7, -288, 14, 70, true)}
   ${wrapped ? '' : '<path d="M-56 -252 L-66 -70 L66 -70 L56 -252 Z" fill="#8b5a2b" stroke="#5a3a22" stroke-width="4"/>'}
@@ -26,6 +26,7 @@ export const kyrylo = (wrapped = false) => {
   <path d="M82 -282 Q126 -230 116 -160" fill="none" stroke="${INK}" stroke-width="46" stroke-linecap="round"/>
   <path d="M82 -282 Q126 -230 116 -160" fill="none" stroke="${shirt}" stroke-width="35" stroke-linecap="round"/>
   <circle cx="-116" cy="-148" r="19" fill="#e0b090" ${st(4)}/><circle cx="116" cy="-148" r="19" fill="#e0b090" ${st(4)}/>
+  <g data-dress="torso"></g>
   <ellipse cx="0" cy="-344" rx="50" ry="52" fill="#e0b090" ${stroke}/>
   <path d="M-50 -350 Q-50 -404 0 -404 Q50 -404 50 -350 Q40 -378 0 -380 Q-40 -378 -50 -350 Z" fill="#4e342e" ${st(4)}/>
   <path d="M-30 -312 Q-40 -280 0 -276 Q40 -280 30 -312 Q16 -298 0 -300 Q-16 -298 -30 -312 Z" fill="#4e342e" ${st(4)}/>
@@ -44,8 +45,10 @@ export const kyrylo_konopli = () => kyrylo(true);
 export const zmiy = () => `
 <g data-part="body">
   <!-- tail -->
+  <g transform="translate(-10 -36)">
   <path d="M120 -60 Q260 -40 280 -140 Q290 -180 320 -170 Q300 -120 300 -90 Q280 -10 140 -20 Z" fill="#43a047" ${stroke}/>
   <path d="M310 -176 l26 -10 l-6 24 z" fill="#c62828" ${st(3)}/>
+  </g>
   <!-- wings -->
   <g data-part="ears" data-cx="40" data-cy="-220">
     <path d="M40 -220 Q120 -420 260 -400 Q200 -340 230 -300 Q170 -300 170 -250 Q110 -260 100 -200 Z" fill="#66bb6a" ${stroke}/>
@@ -62,7 +65,7 @@ export const zmiy = () => `
   <path d="M-80 -170 Q-150 -240 -150 -330" fill="none" stroke="${INK}" stroke-width="64" stroke-linecap="round"/>
   <path d="M-80 -170 Q-150 -240 -150 -330" fill="none" stroke="#4caf50" stroke-width="52" stroke-linecap="round"/>
   <path d="M-110 -350 Q-140 -410 -200 -400 Q-260 -390 -270 -350 Q-270 -310 -230 -300 Q-160 -290 -110 -310 Z" fill="#4caf50" ${stroke}/>
-  <path d="M-130 -396 l-10 -40 l26 26 z M-170 -404 l-16 -40 l30 28 z" fill="#ffca28" ${st(4)}/>
+  <path d="M-158 -398 l-10 -40 l26 26 z M-198 -402 l-16 -40 l30 28 z" fill="#ffca28" ${st(4)}/>
   <circle cx="-262" cy="-352" r="6" fill="#2b1a10"/>
   <g data-part="eyes" data-cx="-190" data-cy="-370">
     <ellipse cx="-190" cy="-370" rx="16" ry="14" fill="#fff59d" ${st(3)}/><ellipse cx="-192" cy="-370" rx="4" ry="11" fill="#2b1a10"/>
@@ -93,6 +96,7 @@ export const knyaz = () => `
   <path d="M-40 -110 L-42 -12 L-8 -12 L-6 -110 Z" fill="#283593" ${st(4)}/>
   <path d="M6 -110 L8 -12 L42 -12 L40 -110 Z" fill="#283593" ${st(4)}/>
   <path d="M-54 0 q2 -18 14 -18 h30 v18 z M54 0 q-2 -18 -14 -18 h-30 v18 z" fill="#b71c1c" ${st(4)}/>
+  <g data-dress="legs"></g>
   <path d="M-70 -262 Q-92 -170 -84 -60 L84 -60 Q92 -170 70 -262 Q0 -282 -70 -262 Z" fill="#b71c1c" ${stroke}/>
   <path d="M-84 -70 H84 M0 -262 V-64" stroke="#f5c542" stroke-width="10"/>
   <path d="M-70 -262 Q0 -232 70 -262 Q56 -236 0 -228 Q-56 -236 -70 -262 Z" fill="#f4efe6" ${st(4)}/>
@@ -101,25 +105,20 @@ export const knyaz = () => `
   <path d="M66 -256 Q104 -210 96 -150" fill="none" stroke="${INK}" stroke-width="36" stroke-linecap="round"/>
   <path d="M66 -256 Q104 -210 96 -150" fill="none" stroke="#b71c1c" stroke-width="26" stroke-linecap="round"/>
   <circle cx="-96" cy="-140" r="15" fill="#f2c4a0" ${st(4)}/><circle cx="96" cy="-140" r="15" fill="#f2c4a0" ${st(4)}/>
+  <g data-dress="torso"></g>
   <ellipse cx="0" cy="-310" rx="44" ry="48" fill="#f2c4a0" ${stroke}/>
-  <path d="M-42 -300 Q-50 -232 0 -212 Q50 -232 42 -300 Q30 -272 0 -272 Q-30 -272 -42 -300 Z" fill="#9e9e9e" ${stroke}/>
+  <g data-part="beard"><path d="M-42 -300 Q-50 -232 0 -212 Q50 -232 42 -300 Q30 -272 0 -272 Q-30 -272 -42 -300 Z" fill="#9e9e9e" ${stroke}/></g>
   ${mouth('', '<ellipse cx="0" cy="-266" rx="10" ry="8" fill="#7a2a1a"/>')}
-  <path d="M-30 -276 Q-14 -290 0 -278 Q14 -290 30 -276 Q16 -266 0 -272 Q-16 -266 -30 -276 Z" fill="#bdbdbd" ${st(3)}/>
+  <g data-part="beard"><path d="M-30 -276 Q-14 -290 0 -278 Q14 -290 30 -276 Q16 -266 0 -272 Q-16 -266 -30 -276 Z" fill="#bdbdbd" ${st(3)}/></g>
   ${eyes(0, -318, 32, 6)}
   ${closedEyes(0, -318, 32, 6)}
   <ellipse cx="0" cy="-294" rx="9" ry="8" fill="#e8a383"/>
+<g data-part="hat">
   <path d="M-46 -346 Q-46 -396 0 -398 Q46 -396 46 -346 Z" fill="#b71c1c" ${stroke}/>
   <rect x="-52" y="-356" width="104" height="22" rx="11" fill="#f4efe6" ${st(4)}/>
   <circle cx="0" cy="-376" r="8" fill="#f5c542" ${st(2)}/>
+  </g>
 </g>`;
-
-/** the princess: the bride's drawing with a small golden crown instead of the wreath */
-export const knyazivna = () =>
-  nevista().replace(
-    /<\/g>\s*$/,
-    `<path d="M-30 -318 L-30 -346 L-15 -330 L0 -352 L15 -330 L30 -346 L30 -318 Z" fill="#f5c542" ${st(3)}/>
-     <circle cx="0" cy="-338" r="4" fill="#e53935"/></g>`,
-  );
 
 /** two small children holding hands */
 export const dity = () => {

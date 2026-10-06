@@ -17,7 +17,7 @@ voices:
   lysytsia:  { name: "Лисичка", pitch: 1.18, rate: 0.9 }
   vovk:      { name: "Вовк", pitch: 0.68, rate: 0.95 }
   baba:      { name: "Баба", pitch: 1.0, rate: 0.95 }
-  pastushok: { name: "Пастушок", pitch: 1.45, rate: 1.1 }
+  pastushok: { name: "Пастушок", pitch: 1.45, rate: 1.1, hello: "Я пастушок! Пасу бичка на лузі." }
   chumak:    { name: "Чумак", pitch: 0.8, rate: 0.95 }
 
 endings:

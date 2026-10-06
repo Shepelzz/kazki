@@ -479,6 +479,447 @@ button.book:active {
   }
 }
 
+/* ---------- the purse, the heroes ---------- */
+
+.coin {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  margin-right: 0.2em;
+}
+
+.head-pills {
+  margin-top: 16px;
+}
+
+.purse,
+.pill {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 5px;
+  padding: 8px 16px 9px;
+  border-radius: 999px;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.purse {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffe08a;
+  box-shadow: inset 0 0 0 2px rgba(255, 211, 107, 0.35);
+}
+
+.pill {
+  background: #ffd36b;
+  color: #4a2e1c;
+  box-shadow: 0 4px 0 #c9962e;
+}
+
+.pill:active {
+  -webkit-transform: translateY(3px);
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #c9962e;
+}
+
+.pill-icon {
+  margin-right: 6px;
+}
+
+.heroes-head {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 0 18px;
+}
+
+.heroes-title {
+  -webkit-box-flex: 1;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.heroes-title h1 {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--linen);
+}
+
+.heroes-count {
+  font-size: 15px;
+  font-weight: 800;
+  color: rgba(255, 247, 230, 0.7);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-gap: 14px;
+  gap: 14px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero-tile {
+  display: block;
+  width: 100%;
+  padding: 6px 6px 10px;
+  border-radius: 20px;
+  background: var(--linen);
+  color: var(--ink);
+  box-shadow: 0 8px 18px rgba(10, 12, 40, 0.4);
+}
+
+.hero-art {
+  position: relative;
+  height: 0;
+  padding-bottom: 100%;
+  border-radius: 15px;
+  background: linear-gradient(#bfe6fb, #e9f6ff 72%, #a5d27a 72%);
+  overflow: hidden;
+}
+
+.hero-art .hero-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-name {
+  margin-top: 7px;
+  font-size: 16px;
+  line-height: 1.15;
+  font-weight: 900;
+  min-height: 37px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+}
+
+/* not met yet: a shadow */
+.hero-tile.unmet {
+  background: rgba(255, 247, 230, 0.16);
+  color: var(--linen);
+  box-shadow: none;
+}
+
+.hero-tile.unmet .hero-art {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-tile.unmet .hero-svg {
+  -webkit-filter: brightness(0);
+  filter: brightness(0);
+  opacity: 0.35;
+}
+
+.hero-tile.unmet .hero-name {
+  font-size: 26px;
+}
+
+.shake {
+  -webkit-animation: shake 0.4s;
+  animation: shake 0.4s;
+}
+@-webkit-keyframes shake {
+  25% {
+    -webkit-transform: translateX(-6px);
+  }
+  75% {
+    -webkit-transform: translateX(6px);
+  }
+}
+@keyframes shake {
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+/* one hero: the picture left, the wardrobe right */
+.hero-card .hero-box {
+  max-width: 900px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: stretch;
+  align-items: stretch;
+  text-align: left;
+  padding: 14px;
+}
+
+.hero-view {
+  -webkit-box-flex: 0;
+  flex: 0 0 44%;
+  min-height: 300px;
+  border-radius: 22px;
+  background: linear-gradient(#bfe6fb, #e9f6ff 74%, #a5d27a 74%);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.hero-view .hero-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-side {
+  -webkit-box-flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 4px 4px 0 18px;
+}
+
+.hero-top {
+  padding-right: 56px;
+}
+
+.hero-top h2 {
+  display: inline;
+  font-size: 30px;
+  font-weight: 900;
+  margin: 0 10px 0 0;
+}
+
+.purse.small {
+  margin: 0;
+  padding: 4px 12px 5px;
+  font-size: 17px;
+  background: #fff1c4;
+  color: #8a5a00;
+  box-shadow: inset 0 0 0 2px #f2cf6b;
+}
+
+/* a hero with nothing to wear yet: just the picture and the name */
+.hero-card.no-items .dress-toggle,
+.hero-card.no-items .slot-tabs,
+.hero-card.no-items .items {
+  display: none;
+}
+
+/* the checkbox: clothes on / off, as a big switch */
+.dress-toggle {
+  display: inline-block;
+  margin: 12px 0 10px;
+  font-size: 19px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.dress-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 62px;
+  height: 36px;
+  margin-right: 10px;
+  border-radius: 18px;
+  background: #cbbd9f;
+  -webkit-transition: background 0.2s;
+  transition: background 0.2s;
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  -webkit-transition: -webkit-transform 0.2s;
+  transition: transform 0.2s;
+}
+
+.dress-toggle input:checked + .switch {
+  background: #3fa34d;
+}
+
+.dress-toggle input:checked + .switch::after {
+  -webkit-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.dress-toggle input:focus-visible + .switch {
+  outline: 4px solid #1e88e5;
+  outline-offset: 2px;
+}
+
+.slot-tabs {
+  white-space: nowrap;
+}
+
+.slot-tab {
+  display: inline-block;
+  width: 62px;
+  height: 52px;
+  margin: 0 6px 8px 0;
+  border-radius: 14px;
+  background: #efe3c8;
+  padding: 4px;
+}
+
+.slot-tab.on {
+  background: #ffd36b;
+  box-shadow: inset 0 -3px 0 #c9962e;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  grid-gap: 10px;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.item {
+  position: relative;
+  height: 84px;
+  padding: 8px 8px 22px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: inset 0 0 0 2px #eadfc6;
+}
+
+.item.owned {
+  padding-bottom: 8px;
+}
+
+.item.on {
+  background: #fff1c4;
+  box-shadow: inset 0 0 0 4px #f2b632;
+}
+
+.price {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  font-size: 14px;
+  font-weight: 900;
+  color: #8a5a00;
+}
+
+.tc-play.buy {
+  margin-top: 14px;
+  padding: 14px 16px;
+  font-size: 22px;
+}
+
+.tc-play.buy.short {
+  background: #b8ab8f;
+  box-shadow: 0 6px 0 #8f8369;
+}
+
+/* the coins for an ending, on its card */
+.reward {
+  font-size: 30px;
+  font-weight: 900;
+  color: #b07800;
+  margin: 2px 0 12px;
+}
+
+.reward.pop {
+  -webkit-animation: pop-in 0.5s 0.3s both;
+  animation: pop-in 0.5s 0.3s both;
+}
+
+@media (max-width: 640px) {
+  .heroes-title h1 {
+    font-size: 28px;
+  }
+  .hero-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-gap: 10px;
+    gap: 10px;
+  }
+  .hero-name {
+    font-size: 14px;
+    min-height: 32px;
+  }
+  .purse,
+  .pill {
+    font-size: 16px;
+    padding: 7px 13px 8px;
+  }
+  /* one hero: the picture on top, the wardrobe under it */
+  .hero-card .hero-box {
+    display: block;
+    padding: 10px;
+  }
+  .hero-view {
+    height: 36vh;
+    min-height: 0;
+  }
+  .hero-side {
+    padding: 10px 2px 0;
+  }
+  .hero-top h2 {
+    font-size: 24px;
+  }
+  .items {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  }
+  .item {
+    height: 70px;
+  }
+  .slot-tab {
+    width: 54px;
+    height: 46px;
+  }
+}
+
+@media (max-height: 520px) {
+  .head-pills {
+    margin-top: 8px;
+  }
+  .heroes-head {
+    padding: 8px 0 10px;
+  }
+  .heroes-title h1 {
+    font-size: 26px;
+  }
+  .hero-view {
+    min-height: 0;
+  }
+  .hero-side {
+    overflow-y: auto;
+  }
+  .items {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  }
+  .item {
+    height: 64px;
+  }
+}
+
 /* ---------- the tale ---------- */
 
 .play {

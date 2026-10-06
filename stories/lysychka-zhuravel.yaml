@@ -10,7 +10,7 @@ about: "Лисичка пригостила журавля кашею на та�
 voices:
   narrator: { name: "", pitch: 1.1, rate: 1 }
   lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
-  zhuravel: { name: "Журавель", pitch: 0.85, rate: 0.95 }
+  zhuravel: { name: "Журавель", pitch: 0.85, rate: 0.95, hello: "Я журавель-довгоніг! Кашки хочеш?" }
 
 endings:
   canon:   { title: "Як ти мені, так і я тобі", icon: "🏺" }

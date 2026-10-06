@@ -17,6 +17,8 @@ export interface Voice {
   pitch: number;
   /** 1 = normal speed */
   rate: number;
+  /** a hero says hello with it on the heroes' page (set in the hero's home tale only) */
+  hello?: string;
 }
 
 /** The same words said by another voice (or with another pitch) are another recording. */

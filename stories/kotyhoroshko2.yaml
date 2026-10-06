@@ -17,12 +17,12 @@ sayTitle: "Котигорошко. Частина друга"
 voices:
   narrator:     { name: "", pitch: 1.1, rate: 1 }
   kotyhoroshko: { name: "Котигорошко", pitch: 0.95, rate: 1 }
-  vernyhora:    { name: "Вернигора", pitch: 0.6, rate: 0.9 }
-  vernydub:     { name: "Вернидуб", pitch: 0.7, rate: 0.95 }
-  krutyvus:     { name: "Крутивус", pitch: 0.8, rate: 1 }
-  muzhychok:    { name: "Мужичок-з-нігтик", pitch: 1.5, rate: 1.1 }
+  vernyhora:    { name: "Вернигора", pitch: 0.6, rate: 0.9, hello: "Я Вернигора! Гори перевертаю!" }
+  vernydub:     { name: "Вернидуб", pitch: 0.7, rate: 0.95, hello: "Я Вернидуб! Дуби з корінням рву!" }
+  krutyvus:     { name: "Крутивус", pitch: 0.8, rate: 1, hello: "Я Крутивус! Покручу вусом — і річка повернеться!" }
+  muzhychok:    { name: "Мужичок-з-нігтик", pitch: 1.5, rate: 1.1, hello: "Сам із нігтик, а борода — з лікоть!" }
   tsarivna:     { name: "Царівна", pitch: 1.2, rate: 1 }
-  hryfon:       { name: "Грифон", pitch: 0.6, rate: 0.9 }
+  hryfon:       { name: "Грифон", pitch: 0.6, rate: 0.9, hello: "Я грифон! Полетімо високо-високо?" }
 
 endings:
   canon: { title: "Котигорошкове весілля", icon: "👑" }

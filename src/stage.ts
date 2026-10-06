@@ -985,6 +985,8 @@ export class Stage {
   paused = false;
   /** debug skipping: everything runs this many times faster until the next line */
   rush = 1;
+  /** a puppet came on stage (the heroes' page meets it and dresses it) */
+  onShow: ((actor: string, g: SVGGElement) => void) | null = null;
 
   constructor(host: HTMLElement) {
     this.svg = el('svg', { viewBox: `0 ${VIEW_TOP} ${W} ${VIEW_H}`, preserveAspectRatio: 'xMidYMin meet', class: 'stage' });
@@ -997,11 +999,11 @@ export class Stage {
     host.appendChild(this.svg);
     this.frame();
     window.addEventListener('resize', () => this.frame());
-    // a tap on a puppet makes it jump for joy
+    // a tap on a puppet: it giggles, jumps, sneezes or spins (a thing just wobbles)
     this.svg.addEventListener('click', (e) => {
       const g = (e.target as Element).closest('[data-actor]');
       const a = g && this.actors.get(g.getAttribute('data-actor')!);
-      if (a && !a.move && a.bounce <= 0) a.bounce = 1;
+      if (a) this.poke(a);
     });
     const frame = (now: number) => {
       requestAnimationFrame(frame);
@@ -1221,6 +1223,7 @@ export class Stage {
     // the snow house, the oak, the tablecloth: behind everyone
     if (BACK.indexOf(id) >= 0) this.actorsLayer.insertBefore(g, this.actorsLayer.firstChild);
     this.actors.set(id, a);
+    this.onShow?.(id, g);
     this.setEyes(id, eyesOpen);
     if (raw && a.parts.raw) a.parts.raw.setAttribute('opacity', '1');
     this.place(a);
@@ -1876,6 +1879,53 @@ export class Stage {
     this.particle(h, 2, (p, k) => {
       h.setAttribute('transform', `translate(${x + Math.sin(k * 6 + sway) * 20} ${y - k * 200}) scale(${1 + k})`);
       h.setAttribute('opacity', String(1 - k));
+    });
+  }
+
+  /** the last reaction to a tap, so the next one is a different one */
+  private lastPoke = -1;
+
+  private poke(a: Actor) {
+    if (a.prop) {
+      a.wobble = 1;
+      return;
+    }
+    // busy (walking, carried, in a blow, lying down): just a little hop of the words
+    const busy = !!a.move || !!a.carriedBy || a.jab > 0 || a.knock > 0 || a.tug > 0 || a.spin > 0;
+    let r = Math.floor(Math.random() * 4);
+    if (r === this.lastPoke) r = (r + 1) % 4;
+    this.lastPoke = r;
+    const [x, y] = this.anchor(a, 'top');
+    if (r === 0 || busy || a.pose) {
+      // giggles
+      a.wobble = 1;
+      this.word(x, y, 'хі-хі!', '#e91e63');
+    } else if (r === 1) {
+      // jumps for joy
+      a.bounce = 1;
+      this.word(x, y, 'гоп!', '#1e88e5');
+    } else if (r === 2) {
+      // sneezes: a jerk back, a puff
+      a.knock = KNOCK * 0.6;
+      a.knockDx = (a.flip ? -1 : 1) * 30;
+      const [mx, my] = this.anchor(a, 'mouth');
+      this.word(mx, my - 40, 'апчхи!', '#43a047');
+      for (let i = 0; i < 6; i++) this.dustAt(mx + (a.flip ? 1 : -1) * (20 + i * 14), my + (Math.random() - 0.5) * 30);
+    } else {
+      // spins round
+      a.spin = 360;
+      a.spinSpeed = 720;
+      a.bounce = 1;
+      this.word(x, y, 'ух!', '#fb8c00');
+    }
+  }
+
+  /** a little word floating up (a tap's reaction) */
+  private word(x: number, y: number, text: string, color: string) {
+    const t = el('text', { 'font-size': 64, fill: color, 'font-weight': 900, 'text-anchor': 'middle', stroke: '#fff', 'stroke-width': 8, 'paint-order': 'stroke', 'font-family': 'Nunito, sans-serif' }, [text]);
+    this.particle(t, 1.2, (p, k) => {
+      t.setAttribute('transform', `translate(${x} ${y - 20 - k * 110}) scale(${Math.min(1, k * 6)})`);
+      t.setAttribute('opacity', String(k < 0.7 ? 1 : (1 - k) / 0.3));
     });
   }
 

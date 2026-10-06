@@ -8,6 +8,9 @@ import { Teller, type TellerUi } from './engine';
 import { pauseSpeech, resumeSpeech, say, speechProgress, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
 import { Stage } from './stage';
 import { aboutPhrase, COMMON, endingPhrase, parseStory, type Story } from './story';
+import { progress } from './progress';
+import { COIN, heroesOf, initHeroes, outfitOf, renderHeroes, sayHeroesIntro, wireHeroes } from './heroes-page';
+import { dress } from './wardrobe';
 import kolobokRaw from '../stories/kolobok.yaml';
 import rukavychkaRaw from '../stories/rukavychka.yaml';
 import kozaRaw from '../stories/koza-dereza.yaml';
@@ -33,23 +36,9 @@ const HOME_SCENES = ['hata', 'hata-evening', 'hata-winter', 'hata-night', 'pich'
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
-// ---------- endings found, per tale (only this browser remembers them) ----------
+// ---------- endings found, per tale (kept by progress.ts) ----------
 function found(story: Story): string[] {
-  try {
-    const v = JSON.parse(localStorage.getItem(`kazky:endings:${story.id}`) || '[]');
-    return Array.isArray(v) ? v.filter((e) => e in story.endings) : [];
-  } catch {
-    return [];
-  }
-}
-function remember(story: Story, ending: string) {
-  const all = found(story);
-  if (all.indexOf(ending) < 0) all.push(ending);
-  try {
-    localStorage.setItem(`kazky:endings:${story.id}`, JSON.stringify(all));
-  } catch {
-    // private mode: forgotten next time, that's all
-  }
+  return progress.endings(story.id).filter((e) => e in story.endings);
 }
 
 // ---------- the shelf ----------
@@ -308,10 +297,54 @@ const ui: TellerUi = {
   },
 };
 
-function show(screen: 'library' | 'play') {
+function show(screen: 'library' | 'play' | 'heroes') {
   $('library').hidden = screen !== 'library';
   $('play').hidden = screen !== 'play';
+  $('heroes').hidden = screen !== 'heroes';
 }
+
+// ---------- the purse and the heroes ----------
+function drawPurses() {
+  for (const id of ['purse', 'heroes-purse']) $(id).innerHTML = `${COIN}<b>${progress.coins()}</b>`;
+}
+progress.onChange(drawPurses);
+// DEBUG=TRUE builds: the purse topped up to 100 000 on every start, to try the whole wardrobe
+if (__DEBUG__ && progress.coins() < 100000) progress.addCoins(100000 - progress.coins());
+initHeroes(STORIES);
+wireHeroes();
+const heroIds = heroesOf(STORIES).map((h) => h.id);
+// saves from before the heroes' page: who was met isn't known, so it's worked out from the tales
+// heard — the heroes of the scenes heard (or of the whole tale, if only its endings were kept)
+for (const story of STORIES) {
+  if (!found(story).length) continue;
+  const heard = progress.heard(story.id);
+  for (const [name, steps] of Object.entries(story.scenes)) {
+    if (heard.length && heard.indexOf(name) < 0) continue;
+    for (const st of steps) if (st.kind === 'show' && heroIds.indexOf(st.actor) >= 0) progress.meet(st.actor);
+  }
+}
+// a hero met in a tale goes on the heroes' shelves; a dressed one wears its things there too
+stage.onShow = (actor, g) => {
+  if (heroIds.indexOf(actor) < 0) return;
+  progress.meet(actor);
+  dress(g, actor, outfitOf(actor));
+};
+let heroesIntroSaid = false;
+$('btn-heroes').addEventListener('click', () => {
+  unlockAudio();
+  stopSpeech();
+  show('heroes');
+  renderHeroes();
+  if (!heroesIntroSaid) {
+    heroesIntroSaid = true;
+    sayHeroesIntro(STORIES[0].voices.narrator);
+  }
+});
+$('heroes-back').addEventListener('click', () => {
+  stopSpeech();
+  renderShelf();
+  show('library');
+});
 
 // ---------- the pause ----------
 function setPaused(on: boolean) {
@@ -324,32 +357,12 @@ function setPaused(on: boolean) {
 
 $('btn-pause').addEventListener('click', () => setPaused(!stage.paused));
 
-// ---------- scenes heard to an ending: they may be skipped through next time ----------
-function heardScenes(story: Story): string[] {
-  try {
-    const v = JSON.parse(localStorage.getItem(`kazky:heard:${story.id}`) || '[]');
-    return Array.isArray(v) ? v : [];
-  } catch {
-    return [];
-  }
-}
-
-function rememberHeard(story: Story, scenes: Iterable<string>) {
-  const all = heardScenes(story);
-  for (const s of scenes) if (all.indexOf(s) < 0) all.push(s);
-  try {
-    localStorage.setItem(`kazky:heard:${story.id}`, JSON.stringify(all));
-  } catch {
-    // private mode: nothing kept
-  }
-}
-
 // to the previous line: in a tale she has already heard to an ending (any one); to the next line:
 // only in a scene she has heard on a way to an ending — a new branch is listened to, not skipped.
 // DEBUG=TRUE builds: both, everywhere.
 function showSkip(story: Story, scene?: string) {
   $('btn-back').hidden = !(__DEBUG__ || found(story).length > 0);
-  $('btn-next').hidden = !(__DEBUG__ || (!!scene && heardScenes(story).indexOf(scene) >= 0));
+  $('btn-next').hidden = !(__DEBUG__ || (!!scene && progress.heard(story.id).indexOf(scene) >= 0));
 }
 $('btn-back').addEventListener('click', () => {
   setPaused(false);
@@ -382,14 +395,21 @@ async function openTale(story: Story, from?: string) {
   t.onScene = (scene) => showSkip(story, scene);
   teller = t;
   const ending = await t.tell(from);
-  if (ending) rememberHeard(story, t.played);
+  if (ending) progress.rememberHeard(story.id, t.played);
   if (ending && teller === t) await showEnding(story, ending);
 }
 
 async function showEnding(story: Story, ending: string) {
   const before = found(story);
-  remember(story, ending);
+  const coins = progress.reachEnding(story.id, ending, Object.keys(story.endings));
   const got = found(story);
+  // the coins for it fly in on the card
+  const reward = $('ending-reward');
+  reward.innerHTML = `+${coins} ${COIN}`;
+  reward.hidden = false;
+  reward.classList.remove('pop');
+  void reward.offsetWidth;
+  reward.classList.add('pop');
   const e = story.endings[ending];
   $('ending-icon').textContent = e.icon;
   $('ending-title').textContent = e.title;
@@ -430,6 +450,7 @@ $('btn-sound').addEventListener('click', () => {
 });
 
 renderShelf();
+drawPurses();
 show('library');
 
 // ---------- debugging ----------
@@ -458,10 +479,11 @@ show('library');
   /** how a line would be split into subtitle pages */
   pages: (text: string) => paginate(text),
   forget() {
-    for (const s of STORIES) {
-      localStorage.removeItem(`kazky:endings:${s.id}`);
-      localStorage.removeItem(`kazky:heard:${s.id}`);
-    }
+    progress.forget();
     renderShelf();
+  },
+  /** coins to try the shop with */
+  coins(n = 100) {
+    progress.addCoins(n);
   },
 };

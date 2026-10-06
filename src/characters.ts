@@ -13,10 +13,10 @@ import { hlechyk, pyrih, tarilka, zhuravel } from './puppets-zhuravel';
 import { husli, pivnyk, torba, vyazanka } from './puppets-pivnyk';
 import { kurka, kuzhil, lokh, ovechka, solombychok } from './puppets-bychok';
 import { braty, horoshyna, kamin, kotyhoroshko, motuzky, zalizo, zemlia } from './puppets-kotyhoroshko';
-import { bulava, dity, holub, knyaz, knyazivna, kozhi, kyrylo, kyrylo_konopli, zmiy } from './puppets-kyrylo';
+import { bulava, dity, holub, knyaz, kozhi, kyrylo, kyrylo_konopli, zmiy } from './puppets-kyrylo';
 import { chovnyk, gusenia, gusy, koval, kovadlo, kolyska, lopata, olenka, pyrohy, telesyk, yavir, zmiyuchka } from './puppets-telesyk';
 import { bychok, drova, lunka, lysytsia_tisto, pastushok, pyrizhok, sanky, sanky_lamani, viz, vudka } from './puppets-lysychka';
-import { dytyna, halushky, nevista, sirko, snip, stil } from './puppets-sirko';
+import { dytyna, halushky, knyazivna, nevista, sirko, snip, stil, vnuchka } from './puppets-sirko';
 import { hriadka, ripka } from './puppets-ripka';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
@@ -86,6 +86,7 @@ const did = () => `
   <path d="M4 -120 L6 -12 L40 -12 L38 -120 Z" fill="#2f4a6b" ${stroke}/>
   <path d="M-52 0 q2 -18 14 -18 h30 v18 z" fill="#3b2416" ${stroke}/>
   <path d="M52 0 q-2 -18 -14 -18 h-30 v18 z" fill="#3b2416" ${stroke}/>
+  <g data-dress="legs"></g>
   <!-- long shirt with a belt -->
   <path d="M-62 -255 Q-80 -180 -74 -112 L74 -112 Q80 -180 62 -255 Q0 -275 -62 -255 Z" fill="#fbf7ee" ${stroke}/>
   ${stitch(-70, -128, 140)}
@@ -98,6 +99,7 @@ const did = () => `
   <path d="M-60 -250 Q-98 -200 -92 -140" fill="none" stroke="#fbf7ee" stroke-width="24" stroke-linecap="round"/>
   <path d="M60 -250 Q98 -200 92 -140" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round"/>
   <path d="M60 -250 Q98 -200 92 -140" fill="none" stroke="#fbf7ee" stroke-width="24" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <circle cx="-92" cy="-130" r="14" fill="#f2c4a0" ${st(4)}/>
   <circle cx="92" cy="-130" r="14" fill="#f2c4a0" ${st(4)}/>
   <!-- head -->
@@ -105,12 +107,12 @@ const did = () => `
   <circle cx="-44" cy="-305" r="10" fill="#f2c4a0" ${st(4)}/>
   <circle cx="44" cy="-305" r="10" fill="#f2c4a0" ${st(4)}/>
   <!-- beard -->
-  <path d="M-42 -300 Q-50 -230 0 -205 Q50 -230 42 -300 Q30 -272 0 -272 Q-30 -272 -42 -300 Z" fill="#f4f1ea" ${stroke}/>
+  <path data-part="beard" d="M-42 -300 Q-50 -230 0 -205 Q50 -230 42 -300 Q30 -272 0 -272 Q-30 -272 -42 -300 Z" fill="#f4f1ea" ${stroke}/>
   ${mouth(
     '',
     '<ellipse cx="0" cy="-266" rx="10" ry="8" fill="#7a2a1a"/>',
   )}
-  <path d="M-30 -276 Q-14 -290 0 -278 Q14 -290 30 -276 Q16 -266 0 -272 Q-16 -266 -30 -276 Z" fill="#fff" ${st(3)}/>
+  <path data-part="beard" d="M-30 -276 Q-14 -290 0 -278 Q14 -290 30 -276 Q16 -266 0 -272 Q-16 -266 -30 -276 Z" fill="#fff" ${st(3)}/>
   <ellipse cx="0" cy="-292" rx="9" ry="8" fill="#e8a383"/>
   ${eyes(0, -318, 32, 6)}
   ${closedEyes(0, -318, 32, 6)}
@@ -118,9 +120,11 @@ const did = () => `
   <ellipse cx="-24" cy="-298" rx="8" ry="5" fill="#f19a8e" opacity=".6"/>
   <ellipse cx="24" cy="-298" rx="8" ry="5" fill="#f19a8e" opacity=".6"/>
   <!-- straw hat (bryl) -->
+<g data-part="hat">
   <ellipse cx="0" cy="-345" rx="80" ry="16" fill="#e9c46a" ${stroke}/>
   <path d="M-42 -347 Q-40 -392 0 -394 Q40 -392 42 -347 Z" fill="#f2d27a" ${stroke}/>
   <path d="M-42 -356 Q0 -364 42 -356" fill="none" stroke="#b71c1c" stroke-width="8"/>
+  </g>
 </g>`;
 
 const baba = () => `
@@ -133,6 +137,7 @@ const baba = () => `
   <!-- apron -->
   <path d="M-36 -160 L-46 -30 L46 -30 L36 -160 Z" fill="#fbf7ee" ${st(4)}/>
   ${stitch(-42, -58, 84)}
+  <g data-dress="legs"></g>
   <!-- blouse -->
   <path d="M-54 -238 Q-66 -200 -58 -165 L58 -165 Q66 -200 54 -238 Q0 -256 -54 -238 Z" fill="#fbf7ee" ${stroke}/>
   ${stitch(-7, -236, 14, 60, true)}
@@ -144,6 +149,7 @@ const baba = () => `
   <path d="M52 -232 Q86 -190 40 -170" fill="none" stroke="#fbf7ee" stroke-width="22" stroke-linecap="round"/>
   ${stitch(-80, -200, 28)}
   ${stitch(52, -200, 28)}
+  <g data-dress="torso"></g>
   <circle cx="-30" cy="-172" r="13" fill="#f2c4a0" ${st(4)}/>
   <circle cx="30" cy="-172" r="13" fill="#f2c4a0" ${st(4)}/>
   <!-- head in a red headscarf tied under the chin -->
@@ -183,6 +189,8 @@ const kolobok = () => {
     <circle cx="-14" cy="-90" r="3" fill="#fff3c4"/><circle cx="36" cy="-56" r="3" fill="#fff3c4"/><circle cx="-40" cy="-56" r="3" fill="#fff3c4"/><circle cx="8" cy="-8" r="2.5" fill="#fff3c4"/>
   </g>
   <circle data-part="raw" cx="0" cy="-50" r="47.5" fill="#f5e7c6" opacity="0"/>
+  <g data-dress="torso"></g>
+  <g data-dress="legs"></g>
   <g data-part="face">
     ${eyes(6, -62, 34, 7, true)}
     ${closedEyes(6, -62, 34, 7)}
@@ -203,8 +211,10 @@ const zayets = () => `
   <ellipse cx="-6" cy="-60" rx="26" ry="38" fill="#f1ede6"/>
   <ellipse cx="-34" cy="-8" rx="30" ry="11" fill="#b9b4ad" ${st(4)}/>
   <ellipse cx="16" cy="-8" rx="26" ry="10" fill="#b9b4ad" ${st(4)}/>
+  <g data-dress="legs"></g>
   <path d="M-32 -104 q-20 26 -8 40" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
   <path d="M-32 -104 q-20 26 -8 40" fill="none" stroke="#b9b4ad" stroke-width="13" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <g data-part="ears" data-cx="-6" data-cy="-176">
     <path d="M-24 -170 Q-46 -260 -26 -280 Q-6 -262 -10 -172 Z" fill="#b9b4ad" ${stroke}/>
     <path d="M-23 -182 Q-36 -248 -26 -262 Q-15 -248 -16 -184 Z" fill="#f4b8b0"/>
@@ -232,11 +242,13 @@ const vovk = () => `
   <path d="M8 -90 L10 -10 L40 -10 L36 -90 Z" fill="#6c757d" ${stroke}/>
   <ellipse cx="-26" cy="-8" rx="22" ry="10" fill="#5a636b" ${st(4)}/>
   <ellipse cx="26" cy="-8" rx="22" ry="10" fill="#5a636b" ${st(4)}/>
+  <g data-dress="legs"></g>
   <!-- body -->
   <ellipse cx="2" cy="-150" rx="58" ry="80" fill="#7d8790" ${stroke}/>
   <path d="M-30 -205 Q-40 -130 -10 -90 Q20 -130 6 -205 Z" fill="#d6d9dc"/>
   <path d="M-46 -190 Q-80 -150 -64 -110" fill="none" stroke="${INK}" stroke-width="28" stroke-linecap="round"/>
   <path d="M-46 -190 Q-80 -150 -64 -110" fill="none" stroke="#7d8790" stroke-width="18" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <!-- head with a long snout to the left -->
   <path d="M-10 -300 L-2 -350 L20 -308 Z" fill="#6c757d" ${stroke}/>
   <path d="M28 -300 L50 -342 L52 -296 Z" fill="#6c757d" ${stroke}/>
@@ -258,10 +270,12 @@ const vedmid = () => `
   <ellipse cx="40" cy="-24" rx="40" ry="26" fill="#6d4426" ${stroke}/>
   <ellipse cx="0" cy="-150" rx="96" ry="120" fill="#7b4b2a" ${stroke}/>
   <ellipse cx="-6" cy="-128" rx="56" ry="76" fill="#b07c52"/>
+  <g data-dress="legs"></g>
   <path d="M-86 -220 Q-130 -170 -110 -110" fill="none" stroke="${INK}" stroke-width="46" stroke-linecap="round"/>
   <path d="M-86 -220 Q-130 -170 -110 -110" fill="none" stroke="#7b4b2a" stroke-width="35" stroke-linecap="round"/>
   <path d="M86 -220 Q130 -170 110 -110" fill="none" stroke="${INK}" stroke-width="46" stroke-linecap="round"/>
   <path d="M86 -220 Q130 -170 110 -110" fill="none" stroke="#7b4b2a" stroke-width="35" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <circle cx="-48" cy="-360" r="24" fill="#7b4b2a" ${stroke}/>
   <circle cx="-48" cy="-360" r="11" fill="#b07c52"/>
   <circle cx="46" cy="-364" r="24" fill="#7b4b2a" ${stroke}/>
@@ -296,9 +310,11 @@ export const lysytsia = () => {
   <path d="M8 -64 L8 -12 L34 -12 L32 -64 Z" fill="#4a2a1c" ${st(4)}/>
   <ellipse cx="-22" cy="-9" rx="19" ry="10" fill="#4a2a1c" ${st(4)}/>
   <ellipse cx="22" cy="-9" rx="19" ry="10" fill="#4a2a1c" ${st(4)}/>
+  <g data-dress="legs"></g>
   <!-- pear-shaped body with a white chest -->
   <path d="M-46 -60 C-56 -110 -40 -160 0 -166 C40 -160 56 -110 46 -60 C30 -42 -30 -42 -46 -60 Z" fill="url(#${fur})" ${stroke}/>
   <path d="M-26 -150 C-34 -110 -26 -70 0 -58 C26 -70 34 -110 26 -150 C14 -140 -14 -140 -26 -150 Z" fill="#fffaf2"/>
+  <g data-dress="torso"></g>
   <!-- paws folded politely in front -->
   <path d="M-34 -132 C-50 -112 -40 -94 -18 -96" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
   <path d="M-34 -132 C-50 -112 -40 -94 -18 -96" fill="none" stroke="#ef7d2f" stroke-width="13" stroke-linecap="round"/>
@@ -456,9 +472,11 @@ export const PUPPETS: Record<string, () => string> = {
   tsarivna: knyazivna,
   ripka,
   hriadka,
-  vnuchka: nevista,
-  zhuchka: sobaka,
-  kishka: kit,
+  vnuchka,
+  // Zhuchka is black with a white chest (the little dog of the mitten is brown)
+  zhuchka: () => sobaka().replace(/#c08a52/g, '#3a3a3e').replace(/#a8743f/g, '#2a2a2e').replace(/#7a4e28/g, '#1c1c1f').replace(/#c62828/g, '#1e88e5'),
+  // the cat of Ripka: ginger and white (the tomcat Kotskyi is grey)
+  kishka: () => kit().replace(/#9e9e9e/g, '#f0a04b').replace(/#616161/g, '#c46a1c').replace(/#bdbdbd/g, '#f6c48a'),
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */

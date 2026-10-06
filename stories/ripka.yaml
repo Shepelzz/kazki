@@ -12,10 +12,10 @@ voices:
   narrator: { name: "", pitch: 1.1, rate: 1 }
   did:      { name: "Дід", pitch: 0.72, rate: 0.9 }
   baba:     { name: "Баба", pitch: 1.0, rate: 0.95 }
-  vnuchka:  { name: "Онучка", pitch: 1.35, rate: 1.05 }
-  zhuchka:  { name: "Жучка", pitch: 1.1, rate: 1.1 }
-  kishka:   { name: "Кішка", pitch: 1.25, rate: 0.95 }
-  myshka:   { name: "Мишка", pitch: 1.7, rate: 1.15 }
+  vnuchka:  { name: "Онучка", pitch: 1.35, rate: 1.05, hello: "Привіт! Я онучка. Давай дружити!" }
+  zhuchka:  { name: "Жучка", pitch: 1.1, rate: 1.1, hello: "Гав-гав! Я Жучка. Пограємося?" }
+  kishka:   { name: "Кішка", pitch: 1.25, rate: 0.95, hello: "Мур-мур! Я кішка. Погладь мене!" }
+  myshka:   { name: "Мишка", pitch: 1.7, rate: 1.15, hello: "Пі-пі! Я мишка-шкряботушка!" }
   vedmid:   { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
 
 endings:

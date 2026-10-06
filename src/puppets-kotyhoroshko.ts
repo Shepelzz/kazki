@@ -13,6 +13,7 @@ export const kotyhoroshko = () => {
   <path d="M-40 -110 L-44 -12 L-10 -12 L-8 -110 Z" fill="#2e5e3e" ${st(4)}/>
   <path d="M8 -110 L10 -12 L44 -12 L40 -110 Z" fill="#2e5e3e" ${st(4)}/>
   <path d="M-54 0 q2 -18 14 -18 h32 v18 z M54 0 q-2 -18 -14 -18 h-32 v18 z" fill="#b71c1c" ${st(4)}/>
+  <g data-dress="legs"></g>
   <path d="M-72 -270 Q-90 -190 -80 -104 L80 -104 Q90 -190 72 -270 Q0 -290 -72 -270 Z" fill="#fbf7ee" ${stroke}/>
   ${peas}
   <rect x="-82" y="-124" width="164" height="16" rx="6" fill="#2e7d32" ${st(4)}/>
@@ -20,6 +21,7 @@ export const kotyhoroshko = () => {
   <path d="M-70 -264 Q-112 -214 -104 -150" fill="none" stroke="#fbf7ee" stroke-width="31" stroke-linecap="round"/>
   <path d="M70 -264 Q112 -214 104 -150" fill="none" stroke="${INK}" stroke-width="42" stroke-linecap="round"/>
   <path d="M70 -264 Q112 -214 104 -150" fill="none" stroke="#fbf7ee" stroke-width="31" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <circle cx="-104" cy="-138" r="17" fill="#f2c4a0" ${st(4)}/><circle cx="104" cy="-138" r="17" fill="#f2c4a0" ${st(4)}/>
   <ellipse cx="0" cy="-322" rx="46" ry="48" fill="#f2c4a0" ${stroke}/>
   <path d="M-46 -330 Q-48 -380 0 -382 Q48 -380 46 -330 Q34 -352 16 -346 Q2 -360 -14 -346 Q-32 -356 -46 -330 Z" fill="#a1662f" ${st(4)}/>

@@ -7,6 +7,7 @@ export const pivnyk = () => `
 <g data-part="body">
   <path d="M-10 0 v-34 M14 0 v-34" stroke="#ff9800" stroke-width="7"/>
   <path d="M-22 0 h20 M2 0 h22" stroke="#ff9800" stroke-width="6" stroke-linecap="round"/>
+  <g data-dress="legs"></g>
   <!-- tail feathers -->
   <g data-part="tail" data-cx="40" data-cy="-80">
     <path d="M36 -70 Q90 -150 70 -190 Q60 -130 30 -100 Z" fill="#2e7d32" ${st(3)}/>
@@ -15,6 +16,7 @@ export const pivnyk = () => `
   </g>
   <ellipse cx="0" cy="-74" rx="50" ry="40" fill="#e65100" ${stroke}/>
   <path d="M-30 -70 Q0 -40 30 -66 Q10 -90 -30 -70 Z" fill="#ffb74d" ${st(3)}/>
+  <g data-dress="torso"></g>
   <!-- neck and head to the left -->
   <path d="M-30 -96 Q-40 -140 -34 -160" stroke="#ef6c00" stroke-width="34" fill="none" stroke-linecap="round"/>
   <circle cx="-38" cy="-168" r="24" fill="#f57c00" ${stroke}/>

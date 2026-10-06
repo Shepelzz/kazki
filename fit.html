@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Примірка (dev)</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 14px/1.3 system-ui, sans-serif; background: #ece6d8; color: #3b2a1c; height: 100vh; display: flex; }
+      #heroes { width: 170px; overflow-y: auto; background: #f7f2e6; border-right: 1px solid #d6cbb2; }
+      #heroes button { display: block; width: 100%; text-align: left; padding: 7px 12px; border: 0; background: none; font: inherit; cursor: pointer; }
+      #heroes button.on { background: #ffd36b; font-weight: 700; }
+      #heroes button .n { float: right; color: #a08a62; font-size: 12px; }
+      main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 12px; min-width: 0; }
+      #view { width: min(70vh, 100%); aspect-ratio: 1; background: linear-gradient(#bfe6fb, #e9f6ff 74%, #a5d27a 74%); border-radius: 16px; touch-action: none; }
+      #view svg { width: 100%; height: 100%; display: block; }
+      #view [data-item] { cursor: grab; }
+      #view [data-item].sel { outline: 3px dashed #e53935; }
+      .bar { margin-top: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+      .bar button { font: inherit; padding: 8px 14px; border-radius: 10px; border: 1px solid #cdbf9f; background: #fff; cursor: pointer; }
+      .bar button:disabled { opacity: 0.4; }
+      #msg { color: #6b5a3e; min-width: 260px; text-align: center; }
+      aside { width: 250px; overflow-y: auto; background: #f7f2e6; border-left: 1px solid #d6cbb2; padding: 10px; }
+      aside h3 { margin: 12px 0 6px; font-size: 13px; color: #8a7350; }
+      .items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .items button { aspect-ratio: 1; padding: 4px; border-radius: 10px; border: 2px solid #e6dcc4; background: #fff; cursor: pointer; position: relative; }
+      .items button.on { border-color: #f2b632; background: #fff1c4; }
+      .items button.fixed::after { content: '✋'; position: absolute; right: 2px; top: 0; font-size: 11px; }
+      .items svg { width: 100%; height: 100%; }
+      .hint { font-size: 12px; color: #8a7350; margin-top: 14px; }
+      .bar select { font: inherit; padding: 8px 10px; border-radius: 10px; border: 1px solid #cdbf9f; background: #fff; }
+      #remove { color: #c62828; }
+      .items button.gone { opacity: 0.35; border-style: dashed; }
+      .items button.gone::before { content: '↩'; position: absolute; left: 3px; top: 0; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <!-- Dev only (npm run dev; not built, not on Render): put each thing in its place on each hero by
+         hand. Drag a worn thing; − / + size it; the place is saved into src/fit-overrides.json. -->
+    <nav id="heroes"></nav>
+    <main>
+      <div id="view"></div>
+      <div class="bar">
+        <button id="smaller">− менше</button>
+        <button id="bigger">+ більше</button>
+        <button id="reset">↺ як було</button>
+        <button id="all">👀 усе разом</button>
+        <select id="move" title="Перенести в іншу категорію"></select>
+        <button id="remove">🗑 прибрати</button>
+        <span id="msg">Обери річ праворуч і перетягни її на місце</span>
+      </div>
+    </main>
+    <aside>
+      <div id="slots"></div>
+      <div class="hint">✋ — місце виставлене вручну. Прибрані речі бліді: натисни — повернеться. Збереження йде у src/fit-overrides.json (лише на дев-сервері).</div>
+    </aside>
+    <script type="module">
+      import { el, makePuppet } from '/src/characters.ts';
+      import { allItemsFor, dress, DRAWN_SLOT, EDITS, FITTED_HEROES, itemById, itemsFor, OVERRIDES, SLOTS } from '/src/wardrobe.ts';
+
+      const $ = (id) => document.getElementById(id);
+      const heroes = FITTED_HEROES.filter((h) => allItemsFor(h).length);
+      const gone = (id) => EDITS.removed.indexOf(id) >= 0;
+
+      // taken away / given back / moved to another slot: saved into src/wardrobe-edits.json
+      const edit = (item, action, slot) =>
+        fetch('/__wardrobe', { method: 'POST', body: JSON.stringify({ item, action, slot }) }).then((r) => {
+          if (!r.ok) return ($('msg').textContent = 'Не збереглося (це лише на дев-сервері)');
+          EDITS.removed = EDITS.removed.filter((i) => i !== item);
+          if (action === 'remove') EDITS.removed.push(item);
+          if (action === 'slot' || action === 'unslot') {
+            const it = itemById(item);
+            for (const k of Object.keys(worn)) if (worn[k] === item) delete worn[k];
+            it.slot = slot;
+            if (action === 'slot') EDITS.slot[item] = slot;
+            else delete EDITS.slot[item];
+            worn[slot] = item;
+          }
+          if (action !== 'restore') for (const h of Object.keys(OVERRIDES)) delete OVERRIDES[h][item];
+          if (action === 'remove') {
+            for (const k of Object.keys(worn)) if (worn[k] === item) delete worn[k];
+            sel = null;
+          }
+          const name = itemById(item).name;
+          $('msg').textContent = action === 'remove' ? `Прибрано: ${name}` : action === 'restore' ? `Повернуто: ${name}` : `Перенесено: ${name}`;
+          drawList();
+          drawItems();
+          draw();
+        });
+      let hero = new URLSearchParams(location.search).get('hero') || heroes[0];
+      /** slot → the thing worn there */
+      let worn = {};
+      let sel = null;
+      let showAll = false;
+
+      const save = (item, place) =>
+        fetch('/__fit', { method: 'POST', body: JSON.stringify({ hero, item, place }) }).then((r) => {
+          $('msg').textContent = r.ok ? `Збережено: ${item}` : 'Не збереглося (це лише на дев-сервері)';
+          const h = OVERRIDES[hero] || (OVERRIDES[hero] = {});
+          if (place) h[item] = place;
+          else delete h[item];
+          drawList();
+          drawItems();
+        });
+
+      function drawList() {
+        $('heroes').innerHTML = '';
+        for (const h of heroes) {
+          const b = document.createElement('button');
+          const n = Object.keys(OVERRIDES[h] || {}).length;
+          b.innerHTML = `${h}${n ? `<span class="n">✋${n}</span>` : ''}`;
+          b.className = h === hero ? 'on' : '';
+          b.onclick = () => {
+            hero = h;
+            worn = {};
+            sel = null;
+            history.replaceState(null, '', `?hero=${h}`);
+            drawList();
+            drawItems();
+            draw();
+          };
+          $('heroes').appendChild(b);
+        }
+      }
+
+      function drawItems() {
+        $('slots').innerHTML = '';
+        const box = { head: '-95 -150 190 190', face: '-95 -60 190 120', mouth: '-80 -40 160 180', neck: '-95 -50 190 180', torso: '-120 -300 240 260', legs: '-80 -140 160 150', feet: '-80 -60 160 70' };
+        for (const s of SLOTS) {
+          const list = allItemsFor(hero).filter((i) => i.slot === s.slot);
+          if (!list.length) continue;
+          const h = document.createElement('h3');
+          h.textContent = s.name;
+          $('slots').appendChild(h);
+          const grid = document.createElement('div');
+          grid.className = 'items';
+          for (const it of list) {
+            const b = document.createElement('button');
+            b.title = it.name;
+            b.className = (worn[it.slot] === it.id ? 'on' : '') + (OVERRIDES[hero] && OVERRIDES[hero][it.id] ? ' fixed' : '') + (gone(it.id) ? ' gone' : '');
+            b.innerHTML = `<svg viewBox="${box[it.slot]}">${it.draw()}</svg>`;
+            b.onclick = () => {
+              // a thing taken away: a tap gives it back
+              if (gone(it.id)) return edit(it.id, 'restore');
+              showAll = false;
+              worn[it.slot] = worn[it.slot] === it.id ? undefined : it.id;
+              sel = worn[it.slot] ? it.id : null;
+              drawItems();
+              draw();
+            };
+            grid.appendChild(b);
+          }
+          $('slots').appendChild(grid);
+        }
+        // each small picture framed on its own drawing
+        for (const t of $('slots').querySelectorAll('svg')) {
+          const b = t.getBBox();
+          if (!b.width) continue;
+          const side = Math.max(b.width, b.height) * 1.1;
+          t.setAttribute('viewBox', `${b.x + b.width / 2 - side / 2} ${b.y + b.height / 2 - side / 2} ${side} ${side}`);
+        }
+      }
+
+      let frame = null;
+      function draw() {
+        const items = showAll
+          ? SLOTS.map((s) => itemsFor(hero).find((i) => i.slot === s.slot)).filter(Boolean)
+          : itemsFor(hero).filter((i) => worn[i.slot] === i.id);
+        if (sel && gone(sel)) sel = null;
+        $('view').innerHTML = '';
+        const s = el('svg');
+        $('view').appendChild(s);
+        const g = makePuppet(hero);
+        s.appendChild(g);
+        // framed once per hero on the bare puppet, so the picture doesn't jump while dragging
+        if (!frame || frame.hero !== hero) {
+          const b = g.getBBox();
+          const side = Math.max(b.width, b.height) * 1.25;
+          frame = { hero, box: `${b.x + b.width / 2 - side / 2} ${b.y + b.height + side * 0.05 - side} ${side} ${side}` };
+        }
+        s.setAttribute('viewBox', frame.box);
+        dress(g, hero, items);
+        for (const n of s.querySelectorAll('[data-item]')) {
+          if (n.getAttribute('data-item') === sel) n.classList.add('sel');
+          n.addEventListener('pointerdown', (e) => startDrag(e, n, s));
+        }
+        syncTools();
+      }
+
+      const placeOfNode = (n) => ({ dx: +n.dataset.dx, dy: +n.dataset.dy, k: +n.dataset.k });
+      function apply(n, p) {
+        const u = +n.dataset.u;
+        n.dataset.dx = p.dx;
+        n.dataset.dy = p.dy;
+        n.dataset.k = p.k;
+        n.setAttribute('transform', `translate(${+n.dataset.ax + p.dx * u} ${+n.dataset.ay + p.dy * u}) scale(${+n.dataset.unit * p.k})`);
+      }
+
+      function startDrag(e, n, s) {
+        e.preventDefault();
+        sel = n.dataset.item;
+        for (const m of s.querySelectorAll('[data-item]')) m.classList.toggle('sel', m === n);
+        syncTools();
+        // pointer → the puppet's own numbers
+        const ctm = n.parentNode.getScreenCTM().inverse();
+        const pt = (ev) => new DOMPoint(ev.clientX, ev.clientY).matrixTransform(ctm);
+        const from = pt(e);
+        const p0 = placeOfNode(n);
+        const u = +n.dataset.u;
+        const move = (ev) => {
+          const q = pt(ev);
+          apply(n, { ...p0, dx: p0.dx + (q.x - from.x) / u, dy: p0.dy + (q.y - from.y) / u });
+        };
+        const up = () => {
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          save(sel, placeOfNode(n));
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+      }
+
+      /** the tools for the selected thing: size, back to auto, move, take away */
+      function syncTools() {
+        const on = !!sel;
+        for (const id of ['smaller', 'bigger', 'reset', 'remove', 'move']) $(id).disabled = !on;
+        const m = $('move');
+        m.innerHTML = '';
+        const it = sel && itemById(sel);
+        const head = document.createElement('option');
+        head.textContent = it ? `Перенести «${it.name}» у…` : 'Перенести у…';
+        head.value = '';
+        m.appendChild(head);
+        for (const s of SLOTS) {
+          const o = document.createElement('option');
+          o.value = s.slot;
+          o.textContent = s.name + (it && it.slot === s.slot ? ' (зараз)' : '');
+          o.disabled = !!it && it.slot === s.slot;
+          m.appendChild(o);
+        }
+      }
+      $('move').onchange = (e) => {
+        const slot = e.target.value;
+        if (sel && slot) edit(sel, slot === DRAWN_SLOT[sel] ? 'unslot' : 'slot', slot);
+      };
+      $('remove').onclick = () => {
+        if (sel && confirm(`Прибрати «${itemById(sel).name}» з гардеробу? (Повернути можна, натиснувши на нього праворуч.)`)) edit(sel, 'remove');
+      };
+
+      const selected = () => document.querySelector(`#view [data-item="${sel}"]`);
+      const resize = (f) => {
+        const n = selected();
+        if (!n) return;
+        const p = placeOfNode(n);
+        apply(n, { ...p, k: Math.max(0.2, p.k * f) });
+        save(sel, placeOfNode(n));
+      };
+      $('smaller').onclick = () => resize(1 / 1.08);
+      $('bigger').onclick = () => resize(1.08);
+      $('reset').onclick = () => sel && save(sel, null).then(draw);
+      $('all').onclick = () => {
+        showAll = !showAll;
+        sel = null;
+        draw();
+      };
+      window.addEventListener('wheel', (e) => {
+        if (!sel || !e.target.closest('#view')) return;
+        e.preventDefault();
+        resize(e.deltaY < 0 ? 1.04 : 1 / 1.04);
+      }, { passive: false });
+
+      drawList();
+      drawItems();
+      draw();
+    </script>
+  </body>
+</html>

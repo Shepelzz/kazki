@@ -11,16 +11,18 @@ export const koza = () => `
   <path d="M26 -70 L28 -8 L42 -8 L42 -70 Z" fill="#e6e1d6" ${st(4)}/>
   <path d="M50 -70 L54 -8 L68 -8 L66 -70 Z" fill="#f4f1ea" ${st(4)}/>
   <path d="M-50 0 h18 v-10 h-18 z M-24 0 h18 v-10 h-18 z M26 0 h18 v-10 h-18 z M52 0 h18 v-10 h-18 z" fill="#3a2a22"/>
+  <g data-dress="legs"></g>
   <!-- body and a little tail -->
   <path d="M78 -112 q20 -14 16 -36 q-12 14 -22 18 z" fill="#f4f1ea" ${st(4)}/>
   <ellipse cx="12" cy="-100" rx="74" ry="42" fill="#f4f1ea" ${stroke}/>
   <path d="M-10 -136 q20 -10 40 0 M20 -132 q16 -8 32 2" stroke="#d8d1c4" stroke-width="4" fill="none"/>
+  <g data-dress="torso"></g>
   <!-- head on its neck: tips down to munch grass -->
   <g data-part="head" data-cx="-38" data-cy="-118">
     <path d="M-40 -130 Q-58 -160 -66 -184 L-44 -194 Q-30 -160 -20 -128 Z" fill="#f4f1ea" ${stroke}/>
-    <!-- bell on a red ribbon -->
+    <g data-part="collar"><!-- bell on a red ribbon -->
     <path d="M-60 -160 Q-44 -150 -30 -156" stroke="#c62828" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M-52 -154 q-8 0 -9 12 q9 5 18 0 q-1 -12 -9 -12 z" fill="#f5c542" ${st(3)}/>
+    <path d="M-52 -154 q-8 0 -9 12 q9 5 18 0 q-1 -12 -9 -12 z" fill="#f5c542" ${st(3)}/></g>
     <!-- horns -->
     <path d="M-62 -214 Q-50 -252 -24 -252 Q-44 -240 -50 -212 Z" fill="#a1887f" ${st(4)}/>
     <path d="M-44 -212 Q-26 -246 0 -240 Q-22 -232 -32 -206 Z" fill="#8d6e63" ${st(4)}/>
@@ -62,6 +64,8 @@ export const yizhachok = () => {
   <ellipse cx="-20" cy="-6" rx="14" ry="7" fill="#5d4037"/><ellipse cx="30" cy="-6" rx="14" ry="7" fill="#5d4037"/>
   ${spikes}
   <path d="M-58 -30 Q-56 -86 6 -88 Q68 -86 70 -30 Q66 -6 6 -6 Q-54 -6 -58 -30 Z" fill="#8d6e63" ${stroke}/>
+  <g data-dress="legs"></g>
+  <g data-dress="torso"></g>
   <!-- face: light, with a pointy nose to the left -->
   <path d="M-30 -66 Q-4 -66 -6 -36 Q-8 -12 -40 -14 Q-64 -18 -80 -32 Q-84 -40 -76 -46 Q-56 -66 -30 -66 Z" fill="#f2d7b6" ${stroke}/>
   <circle cx="-82" cy="-38" r="7" fill="#2b1a10"/>
@@ -87,6 +91,8 @@ export const rak = () => `
   <!-- body -->
   <ellipse cx="0" cy="-56" rx="56" ry="42" fill="#e05a3a" ${stroke}/>
   <path d="M-36 -64 q36 -14 72 0 M-40 -46 q40 -12 80 0" stroke="#b83b22" stroke-width="4" fill="none"/>
+  <g data-dress="legs"></g>
+  <g data-dress="torso"></g>
   <!-- big claws, raised -->
   <g data-part="claws">
     <path d="M-50 -76 Q-84 -110 -86 -140" fill="none" stroke="${INK}" stroke-width="16" stroke-linecap="round"/>

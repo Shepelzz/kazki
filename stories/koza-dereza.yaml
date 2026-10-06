@@ -14,11 +14,11 @@ voices:
   narrator:  { name: "", pitch: 1.1, rate: 1 }
   did:       { name: "Дід", pitch: 0.72, rate: 0.9 }
   baba:      { name: "Баба", pitch: 1.0, rate: 0.95 }
-  koza:      { name: "Коза", pitch: 1.3, rate: 1.05 }
+  koza:      { name: "Коза", pitch: 1.3, rate: 1.05, hello: "Ме-е-е! Я коза-дереза. Не бійся, я вже не брешу!" }
   zayets:    { name: "Зайчик", pitch: 1.4, rate: 1.15 }
   vovk:      { name: "Вовк", pitch: 0.68, rate: 0.95 }
-  yizhachok: { name: "Їжачок", pitch: 1.5, rate: 1.05 }
-  rak:       { name: "Рак", pitch: 0.9, rate: 0.95 }
+  yizhachok: { name: "Їжачок", pitch: 1.5, rate: 1.05, hello: "Пф-пф! Я їжачок. Обережно, колючий!" }
+  rak:       { name: "Рак", pitch: 0.9, rate: 0.95, hello: "Я рак-неборак! Щип-щип!" }
 
 endings:
   sorry:    { title: "Чесна козочка", icon: "🙏" }

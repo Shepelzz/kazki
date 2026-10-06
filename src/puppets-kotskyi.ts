@@ -18,6 +18,8 @@ export const kit = () => `
   <path d="M-46 -12 Q-58 -90 -24 -126 Q0 -140 24 -126 Q58 -90 46 -12 Q0 4 -46 -12 Z" fill="#9e9e9e" ${stroke}/>
   <path d="M-22 -110 Q-30 -60 -14 -20 Q0 -12 14 -20 Q30 -60 22 -110 Q0 -120 -22 -110 Z" fill="#eeeeee"/>
   <path d="M-40 -80 l14 4 M-44 -56 l14 2 M40 -80 l-14 4 M44 -56 l-14 2" stroke="#616161" stroke-width="6" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
+  <g data-dress="legs"></g>
   <!-- front paws -->
   <ellipse cx="-16" cy="-14" rx="12" ry="9" fill="#eeeeee" ${st(3)}/>
   <ellipse cx="12" cy="-14" rx="12" ry="9" fill="#eeeeee" ${st(3)}/>

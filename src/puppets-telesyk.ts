@@ -10,6 +10,7 @@ export const telesyk = () => `
   <path d="M-22 -70 L-24 -8 L-4 -8 L-4 -70 Z" fill="#fbf7ee" ${st(4)}/>
   <path d="M4 -70 L4 -8 L24 -8 L22 -70 Z" fill="#fbf7ee" ${st(4)}/>
   <ellipse cx="-14" cy="-6" rx="13" ry="7" fill="#f2c4a0" ${st(3)}/><ellipse cx="14" cy="-6" rx="13" ry="7" fill="#f2c4a0" ${st(3)}/>
+  <g data-dress="legs"></g>
   <path d="M-38 -150 Q-48 -110 -40 -66 L40 -66 Q48 -110 38 -150 Q0 -162 -38 -150 Z" fill="#fbf7ee" ${stroke}/>
   ${stitch(-5, -150, 10, 50, true)}
   <rect x="-42" y="-80" width="84" height="12" rx="4" fill="#c62828" ${st(3)}/>
@@ -19,6 +20,7 @@ export const telesyk = () => `
   <path d="M36 -146 Q60 -116 50 -90" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
   <path d="M36 -146 Q60 -116 50 -90" fill="none" stroke="#fbf7ee" stroke-width="14" stroke-linecap="round"/>
   <circle cx="50" cy="-86" r="10" fill="#f2c4a0" ${st(3)}/>
+  <g data-dress="torso"></g>
   <ellipse cx="0" cy="-186" rx="34" ry="36" fill="#f2c4a0" ${stroke}/>
   <!-- straw-blond fringe -->
   <path d="M-34 -192 Q-34 -230 0 -230 Q34 -230 34 -192 Q24 -206 12 -200 Q2 -212 -10 -200 Q-22 -210 -34 -192 Z" fill="#f2c94c" ${st(4)}/>
@@ -53,9 +55,11 @@ export const zmiyuchka = () => `
   <path d="M120 -10 Q180 -20 170 -60 Q150 -40 110 -40 Z" fill="#558b2f" ${stroke}/>
   <ellipse cx="20" cy="-34" rx="120" ry="38" fill="#689f38" ${stroke}/>
   <ellipse cx="0" cy="-86" rx="92" ry="34" fill="#7cb342" ${stroke}/>
+  <g data-dress="legs"></g>
   <path d="M-30 -110 Q-56 -200 -30 -260" fill="none" stroke="${INK}" stroke-width="62" stroke-linecap="round"/>
   <path d="M-30 -110 Q-56 -200 -30 -260" fill="none" stroke="#7cb342" stroke-width="50" stroke-linecap="round"/>
   <path d="M-40 -130 Q-58 -196 -38 -246" fill="none" stroke="#dcedc8" stroke-width="18" stroke-dasharray="14 10" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <!-- head in a black headscarf with red roses -->
   <ellipse cx="-44" cy="-300" rx="64" ry="54" fill="#7cb342" ${stroke}/>
   <path d="M-108 -300 Q-112 -370 -44 -374 Q24 -370 20 -300 Q8 -340 -44 -342 Q-96 -340 -108 -300 Z" fill="#212121" ${st(4)}/>
@@ -76,8 +80,10 @@ export const zmiyuchka = () => `
 export const olenka = () => `
 <g data-part="body">
   <ellipse cx="10" cy="-26" rx="80" ry="26" fill="#8bc34a" ${stroke}/>
+  <g data-dress="legs"></g>
   <path d="M-10 -40 Q-30 -120 -14 -170" fill="none" stroke="${INK}" stroke-width="44" stroke-linecap="round"/>
   <path d="M-10 -40 Q-30 -120 -14 -170" fill="none" stroke="#9ccc65" stroke-width="34" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <ellipse cx="-20" cy="-204" rx="46" ry="42" fill="#9ccc65" ${stroke}/>
   <path d="M-58 -214 Q-74 -170 -64 -140 M18 -214 Q32 -170 24 -140" stroke="#33691e" stroke-width="12" stroke-linecap="round" fill="none"/>
   <path d="M-64 -222 Q-60 -252 -20 -252 Q20 -252 24 -222 Q4 -236 -20 -236 Q-44 -236 -64 -222 Z" fill="#33691e" ${st(4)}/>
@@ -98,6 +104,9 @@ export const koval = () => `
   <path d="M-52 0 q2 -16 12 -16 h30 v16 z M52 0 q-2 -16 -12 -16 h-30 v16 z" fill="#212121" ${st(4)}/>
   <path d="M-66 -260 Q-84 -180 -76 -114 L76 -114 Q84 -180 66 -260 Q0 -280 -66 -260 Z" fill="#cfd8dc" ${stroke}/>
   <path d="M-46 -230 L-56 -60 L56 -60 L46 -230 Z" fill="#6d4426" ${st(4)}/>
+  <!-- the trousers go on under the apron's hem, over it (so they show) -->
+  <g data-dress="legs"></g>
+  <g data-dress="torso"></g>
   <path d="M-64 -250 Q-100 -210 -94 -160" fill="none" stroke="${INK}" stroke-width="36" stroke-linecap="round"/>
   <path d="M-64 -250 Q-100 -210 -94 -160" fill="none" stroke="#cfd8dc" stroke-width="26" stroke-linecap="round"/>
   <circle cx="-94" cy="-150" r="15" fill="#e0b090" ${st(4)}/>
@@ -111,7 +120,7 @@ export const koval = () => `
   </g>
   <ellipse cx="0" cy="-310" rx="44" ry="46" fill="#e0b090" ${stroke}/>
   <path d="M-44 -310 Q-44 -360 0 -360 Q44 -360 44 -310 Q30 -330 0 -330 Q-30 -330 -44 -310 Z" fill="#3e2723" ${st(4)}/>
-  <path d="M-38 -290 Q-40 -240 0 -232 Q40 -240 38 -290 Q24 -270 0 -272 Q-24 -270 -38 -290 Z" fill="#3e2723" ${st(4)}/>
+  <g data-part="beard"><path d="M-38 -290 Q-40 -240 0 -232 Q40 -240 38 -290 Q24 -270 0 -272 Q-24 -270 -38 -290 Z" fill="#3e2723" ${st(4)}/></g>
   ${eyes(0, -314, 30, 6)}
   ${closedEyes(0, -314, 30, 6)}
   <ellipse cx="0" cy="-296" rx="9" ry="8" fill="#d48c6a"/>
@@ -170,12 +179,14 @@ export const gusenia = () => `
   <ellipse cx="0" cy="-40" rx="56" ry="30" fill="#fff59d" ${stroke}/>
   <path d="M-46 -50 Q-70 -70 -66 -100" stroke="${INK}" stroke-width="16" fill="none" stroke-linecap="round"/>
   <path d="M-46 -50 Q-70 -70 -66 -100" stroke="#fff59d" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <circle cx="-66" cy="-108" r="18" fill="#fff59d" ${stroke}/>
   <path d="M-82 -108 l-18 5 l18 6 z" fill="#ff9800" ${st(2)}/>
   ${eyes(-70, -112, 0, 4)}
   ${closedEyes(-70, -112, 0, 4)}
   <g data-part="ears" data-cx="0" data-cy="-50"><path d="M-10 -50 Q20 -110 60 -96 Q36 -60 24 -36 Z" fill="#fff176" ${st(3)}/></g>
   <path d="M-16 -12 v12 M10 -12 v12" stroke="#ff9800" stroke-width="6"/>
+  <g data-dress="legs"></g>
 </g>`;
 
 export const pyrohy = () => `

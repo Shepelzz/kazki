@@ -54,11 +54,13 @@ export const sobaka = () => `
   <rect x="-18" y="-50" width="16" height="50" rx="7" fill="#c08a52" ${st(4)}/>
   <rect x="14" y="-50" width="16" height="50" rx="7" fill="#a8743f" ${st(4)}/>
   <rect x="34" y="-50" width="16" height="50" rx="7" fill="#c08a52" ${st(4)}/>
+  <g data-dress="legs"></g>
   <ellipse cx="2" cy="-68" rx="58" ry="32" fill="#c08a52" ${stroke}/>
   <ellipse cx="-12" cy="-60" rx="26" ry="18" fill="#f6ead8"/>
+  <g data-dress="torso"></g>
   <!-- red collar -->
-  <path d="M-44 -88 Q-30 -70 -12 -82" stroke="#c62828" stroke-width="9" fill="none" stroke-linecap="round"/>
-  <circle cx="-26" cy="-74" r="5" fill="#f5c542"/>
+  <g data-part="collar"><path d="M-44 -88 Q-30 -70 -12 -82" stroke="#c62828" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <circle cx="-26" cy="-74" r="5" fill="#f5c542"/></g>
   <!-- head -->
   <ellipse cx="-46" cy="-112" rx="34" ry="30" fill="#c08a52" ${stroke}/>
   <path d="M-62 -110 Q-96 -108 -98 -94 Q-90 -82 -66 -88 Z" fill="#f6ead8" ${st(4)}/>
@@ -80,6 +82,8 @@ export const myshka = () => `
   <ellipse cx="14" cy="-6" rx="14" ry="7" fill="#f3a6a6" ${st(3)}/>
   <path d="M-30 -10 Q-38 -60 0 -70 Q38 -60 30 -10 Q0 0 -30 -10 Z" fill="#a7a7ad" ${stroke}/>
   <ellipse cx="-4" cy="-30" rx="16" ry="20" fill="#e8e6ea"/>
+  <g data-dress="legs"></g>
+  <g data-dress="torso"></g>
   <ellipse cx="-22" cy="-46" rx="7" ry="5" fill="#f3a6a6" ${st(3)}/>
   <!-- big round ears -->
   <circle cx="-30" cy="-112" r="20" fill="#a7a7ad" ${stroke}/>
@@ -97,9 +101,9 @@ export const myshka = () => `
     `<ellipse cx="-40" cy="-72" rx="6" ry="5" fill="#8a2a1a" ${st(2)}/>`,
   )}
   <!-- a red headscarf with white dots, knotted under the chin -->
-  <path d="M-36 -110 Q-8 -138 22 -108 Q10 -118 -8 -118 Q-26 -118 -36 -110 Z" fill="#d32f2f" ${st(3)}/>
-  <circle cx="-14" cy="-122" r="2.5" fill="#fff"/><circle cx="4" cy="-120" r="2.5" fill="#fff"/>
-  <path d="M10 -70 l10 6 l-4 10 z" fill="#d32f2f" ${st(2)}/>
+<g data-part="hat"><path d="M-36 -110 Q-8 -138 22 -108 Q10 -118 -8 -118 Q-26 -118 -36 -110 Z" fill="#d32f2f" ${st(3)}/>
+  <circle cx="-14" cy="-122" r="2.5" fill="#fff"/><circle cx="4" cy="-120" r="2.5" fill="#fff"/></g>
+<g data-part="collar"><path d="M10 -70 l10 6 l-4 10 z" fill="#d32f2f" ${st(2)}/></g>
 </g>`;
 
 export const zhabka = () => `
@@ -108,10 +112,12 @@ export const zhabka = () => `
   <ellipse cx="30" cy="-8" rx="24" ry="9" fill="#5fae4a" ${st(4)}/>
   <ellipse cx="0" cy="-34" rx="46" ry="32" fill="#6cc24a" ${stroke}/>
   <ellipse cx="0" cy="-26" rx="28" ry="18" fill="#d9f2b8"/>
+  <g data-dress="legs"></g>
+  <g data-dress="torso"></g>
   <!-- woolly scarf: a frog in winter -->
-  <path d="M-38 -52 Q0 -36 38 -52 L38 -40 Q0 -24 -38 -40 Z" fill="#f5c542" ${st(3)}/>
+  <g data-part="collar"><path d="M-38 -52 Q0 -36 38 -52 L38 -40 Q0 -24 -38 -40 Z" fill="#f5c542" ${st(3)}/>
   <path d="M22 -40 l8 26 l12 -4 l-8 -24 z" fill="#f5c542" ${st(3)}/>
-  <path d="M-30 -48 v8 M-16 -44 v8 M0 -42 v8 M16 -44 v8" stroke="#e08a1e" stroke-width="3"/>
+  <path d="M-30 -48 v8 M-16 -44 v8 M0 -42 v8 M16 -44 v8" stroke="#e08a1e" stroke-width="3"/></g>
   <!-- eyes on top of the head -->
   <circle cx="-22" cy="-70" r="17" fill="#6cc24a" ${stroke}/>
   <circle cx="20" cy="-70" r="17" fill="#6cc24a" ${stroke}/>
@@ -133,12 +139,14 @@ export const kaban = () => `
   <rect x="-48" y="-60" width="26" height="60" rx="8" fill="#4e342e" ${st(4)}/>
   <rect x="22" y="-60" width="26" height="60" rx="8" fill="#4e342e" ${st(4)}/>
   <path d="M-46 -2 h22 M24 -2 h22" stroke="#2b1a10" stroke-width="8" stroke-linecap="round"/>
+  <g data-dress="legs"></g>
   <ellipse cx="2" cy="-130" rx="80" ry="88" fill="#6d4c41" ${stroke}/>
   <!-- bristles along the back -->
   <path d="M-20 -214 l6 -20 l6 18 l8 -22 l6 22 l8 -20 l6 22 l8 -16 l4 18" fill="none" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
   <ellipse cx="-8" cy="-112" rx="44" ry="56" fill="#8d6e63"/>
   <path d="M-70 -170 Q-104 -130 -86 -96" fill="none" stroke="${INK}" stroke-width="30" stroke-linecap="round"/>
   <path d="M-70 -170 Q-104 -130 -86 -96" fill="none" stroke="#6d4c41" stroke-width="20" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <!-- head -->
   <path d="M-20 -258 L-6 -296 L14 -258 Z" fill="#6d4c41" ${stroke}/>
   <path d="M26 -254 L48 -288 L56 -248 Z" fill="#6d4c41" ${stroke}/>

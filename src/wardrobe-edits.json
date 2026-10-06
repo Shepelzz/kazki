@@ -1,0 +1,40 @@
+{
+  "removed": [
+    "did_ripka",
+    "gusenia_kachechka",
+    "kishka_klubok",
+    "knyaz_lozhka",
+    "knyaz_tort",
+    "knyaz_zhabo",
+    "kolobok_bublyky",
+    "kolobok_harmoshka",
+    "kolobok_maslo",
+    "koval_kovadla",
+    "koval_kovadlo",
+    "koval_tsviakhy",
+    "kyrylo_varenyk",
+    "lysytsia_piria",
+    "muzhychok_svichka",
+    "myshka_morozyvo",
+    "myshka_naperstok",
+    "myshka_syrok",
+    "olenka_cherevychky",
+    "pastushok_ovechka",
+    "pivnyk_budylnyk",
+    "telesyk_kolo",
+    "zayets_kapusta",
+    "zhabka_mukha",
+    "zhuravel_hlechyk"
+  ],
+  "slot": {
+    "baba_kastrulia": "neck",
+    "baba_pyrizhok": "neck",
+    "kaban_kachan": "neck",
+    "kishka_klubok": "mouth",
+    "koza_kapusta": "mouth",
+    "kyrylo_hyria": "neck",
+    "myshka_syr": "neck",
+    "zayets_morkva": "neck",
+    "zhuchka_kapets": "head"
+  }
+}

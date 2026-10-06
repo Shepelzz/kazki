@@ -19,6 +19,10 @@
         <div class="moon" aria-hidden="true"></div>
         <h1>Казкова стежка</h1>
         <p>Обери казку — і вирішуй, що буде далі!</p>
+        <div class="head-pills">
+          <span class="purse" id="purse" aria-label="Монетки"></span>
+          <button class="pill" id="btn-heroes"><span class="pill-icon" aria-hidden="true">👫</span>Мої герої</button>
+        </div>
       </header>
       <div class="shelf" id="shelf"></div>
       <!-- a tale's card: opened from the shelf, the narrator tells what it is about -->
@@ -31,6 +35,38 @@
             <p id="tc-about"></p>
             <div id="tc-endings" class="book-endings"></div>
             <button id="tc-play" class="tc-play">▶&#xFE0E; Слухати казку</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <main id="heroes" class="screen library heroes" hidden>
+      <header class="heroes-head">
+        <button id="heroes-back" class="round" aria-label="До казок">🏠</button>
+        <div class="heroes-title">
+          <h1>Мої герої</h1>
+          <div class="heroes-count" id="heroes-count"></div>
+        </div>
+        <span class="purse" id="heroes-purse" aria-label="Монетки"></span>
+      </header>
+      <div class="hero-grid" id="hero-grid"></div>
+      <!-- one hero: hello, and the wardrobe -->
+      <div id="hero-card" class="tale-card hero-card" hidden>
+        <div class="tale-card-box hero-box" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="hero-name">
+          <button id="hero-close" class="tc-close" aria-label="Закрити">✕</button>
+          <div class="hero-view" id="hero-view"></div>
+          <div class="hero-side">
+            <div class="hero-top">
+              <h2 id="hero-name"></h2>
+              <span class="purse small" id="hero-purse"></span>
+            </div>
+            <label class="dress-toggle">
+              <input type="checkbox" id="hero-dressed" />
+              <span class="switch" aria-hidden="true"></span>
+              <span>Вбрання</span>
+            </label>
+            <div class="items" id="hero-items"></div>
+            <button id="hero-buy" class="tc-play buy" hidden></button>
           </div>
         </div>
       </div>
@@ -68,6 +104,7 @@
           <h2 id="ending-title"></h2>
           <div class="found" id="ending-found"></div>
           <div class="found-note" id="ending-note"></div>
+          <div class="reward" id="ending-reward" hidden></div>
           <div class="ending-buttons">
             <button id="btn-again" class="big">🔁 Ще раз</button>
             <button id="btn-library" class="big ghost">🏠 До казок</button>

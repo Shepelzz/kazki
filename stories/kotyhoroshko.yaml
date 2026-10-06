@@ -12,7 +12,7 @@ about: "З горошинки народився богатир Котигоро
 
 voices:
   narrator:     { name: "", pitch: 1.1, rate: 1 }
-  kotyhoroshko: { name: "Котигорошко", pitch: 0.95, rate: 1 }
+  kotyhoroshko: { name: "Котигорошко", pitch: 0.95, rate: 1, hello: "Я Котигорошко! З горошинки виріс — і ого який!" }
   sestra:       { name: "Оленка", pitch: 1.25, rate: 1 }
   braty:        { name: "Брати", pitch: 0.85, rate: 1 }
   zmiy:         { name: "Змій", pitch: 0.55, rate: 0.9 }

@@ -9,10 +9,10 @@ about: "Найдужчий чоловік у Києві, Кирило Кожум
 
 voices:
   narrator:   { name: "", pitch: 1.1, rate: 1 }
-  kyrylo:     { name: "Кирило", pitch: 0.7, rate: 0.9 }
-  zmiy:       { name: "Змій", pitch: 0.55, rate: 0.9 }
-  knyaz:      { name: "Князь", pitch: 0.75, rate: 0.9 }
-  knyazivna:  { name: "Князівна", pitch: 1.2, rate: 1 }
+  kyrylo:     { name: "Кирило", pitch: 0.7, rate: 0.9, hello: "Я Кирило Кожум'яка, найдужчий у Києві!" }
+  zmiy:       { name: "Змій", pitch: 0.55, rate: 0.9, hello: "Я змій! Р-р-р... Ну гаразд, я не страшний." }
+  knyaz:      { name: "Князь", pitch: 0.75, rate: 0.9, hello: "Я князь київський. Вітаю тебе!" }
+  knyazivna:  { name: "Князівна", pitch: 1.2, rate: 1, hello: "Я князівна. Дякую, що завітала!" }
   did:        { name: "Старий", pitch: 0.72, rate: 0.9 }
   pastushok:  { name: "Парубок", pitch: 1.2, rate: 1.05 }
   dity:       { name: "Діти", pitch: 1.6, rate: 1.05 }

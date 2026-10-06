@@ -17,12 +17,14 @@ export const solombychok = () => {
   <rect x="-34" y="-84" width="20" height="84" rx="7" fill="#d4a531" ${st(4)}/>
   <rect x="30" y="-84" width="20" height="84" rx="7" fill="#d4a531" ${st(4)}/>
   <rect x="54" y="-84" width="20" height="84" rx="7" fill="#e2b45a" ${st(4)}/>
+  <g data-dress="legs"></g>
   <ellipse cx="8" cy="-120" rx="80" ry="48" fill="#e8bd45" ${stroke}/>
   ${straw}
   <!-- the tarred side: black and shiny -->
   <ellipse cx="22" cy="-116" rx="46" ry="30" fill="#1f1a17"/>
   <path d="M0 -132 q16 -8 30 -2" stroke="#6d6a68" stroke-width="5" fill="none" stroke-linecap="round"/>
   <path d="M-10 -90 q6 10 2 18 M30 -88 q4 12 0 22" stroke="#1f1a17" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <path d="M-64 -150 Q-78 -186 -64 -192 Q-54 -172 -50 -154 Z" fill="#fffaf0" ${st(3)}/>
   <path d="M-32 -156 Q-22 -192 -36 -196 Q-46 -176 -48 -158 Z" fill="#fffaf0" ${st(3)}/>
   <ellipse cx="-68" cy="-130" rx="40" ry="34" fill="#e8bd45" ${stroke}/>

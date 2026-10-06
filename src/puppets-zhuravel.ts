@@ -9,10 +9,12 @@ export const zhuravel = () => `
   <path d="M-12 -150 L-18 -4 M14 -150 L22 -4" stroke="${INK}" stroke-width="9" stroke-linecap="round"/>
   <path d="M-12 -150 L-18 -4 M14 -150 L22 -4" stroke="#455a64" stroke-width="5" stroke-linecap="round"/>
   <path d="M-30 -2 h26 M8 -2 h28" stroke="#455a64" stroke-width="6" stroke-linecap="round"/>
+  <g data-dress="legs"></g>
   <!-- body with dark tail plumes -->
   <path d="M40 -190 Q100 -170 96 -130 Q70 -150 40 -150 Z" fill="#37474f" ${st(4)}/>
   <ellipse cx="0" cy="-180" rx="60" ry="40" fill="#cfd8dc" ${stroke}/>
   <path d="M-30 -190 Q10 -160 54 -186" stroke="#90a4ae" stroke-width="5" fill="none"/>
+  <g data-dress="torso"></g>
   <!-- neck and head (pecks down) -->
   <g data-part="head" data-cx="-40" data-cy="-200">
     <path d="M-40 -200 Q-56 -270 -40 -320" fill="none" stroke="${INK}" stroke-width="20" stroke-linecap="round"/>

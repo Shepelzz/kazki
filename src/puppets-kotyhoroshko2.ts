@@ -11,12 +11,14 @@ function bohatyr(shirt: string, hair: string, extra: string) {
   <path d="M-46 -130 L-50 -12 L-12 -12 L-10 -130 Z" fill="#3e4a59" ${st(4)}/>
   <path d="M10 -130 L12 -12 L50 -12 L46 -130 Z" fill="#3e4a59" ${st(4)}/>
   <path d="M-60 0 q2 -18 14 -18 h34 v18 z M60 0 q-2 -18 -14 -18 h-34 v18 z" fill="#3b2416" ${st(4)}/>
+  <g data-dress="legs"></g>
   <path d="M-84 -290 Q-104 -200 -92 -120 L92 -120 Q104 -200 84 -290 Q0 -314 -84 -290 Z" fill="${shirt}" ${stroke}/>
   <rect x="-94" y="-150" width="188" height="18" rx="6" fill="#5d4037" ${st(4)}/>
   <path d="M-82 -282 Q-126 -230 -116 -160" fill="none" stroke="${INK}" stroke-width="46" stroke-linecap="round"/>
   <path d="M-82 -282 Q-126 -230 -116 -160" fill="none" stroke="${shirt}" stroke-width="35" stroke-linecap="round"/>
   <path d="M82 -282 Q126 -230 116 -160" fill="none" stroke="${INK}" stroke-width="46" stroke-linecap="round"/>
   <path d="M82 -282 Q126 -230 116 -160" fill="none" stroke="${shirt}" stroke-width="35" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <circle cx="-116" cy="-148" r="19" fill="#e0b090" ${st(4)}/><circle cx="116" cy="-148" r="19" fill="#e0b090" ${st(4)}/>
   <ellipse cx="0" cy="-344" rx="50" ry="52" fill="#e0b090" ${stroke}/>
   <path d="M-50 -350 Q-50 -404 0 -404 Q50 -404 50 -350 Q40 -378 0 -380 Q-40 -378 -50 -350 Z" fill="${hair}" ${st(4)}/>
@@ -47,9 +49,11 @@ export const krutyvus = () =>
 export const muzhychok = () => `
 <g data-part="body">
   <path d="M-16 -40 L-18 -6 L-4 -6 L-4 -40 Z M4 -40 L4 -6 L18 -6 L16 -40 Z" fill="#5d4037" ${st(3)}/>
+  <g data-dress="legs"></g>
   <path d="M-26 -96 Q-32 -70 -28 -36 L28 -36 Q32 -70 26 -96 Q0 -104 -26 -96 Z" fill="#8d6e63" ${st(4)}/>
+  <g data-dress="torso"></g>
   <ellipse cx="0" cy="-118" rx="22" ry="22" fill="#e0b090" ${st(4)}/>
-  <path d="M-24 -126 Q-24 -160 0 -164 Q24 -160 24 -126 Z" fill="#c62828" ${st(3)}/>
+<g data-part="hat"><path d="M-24 -126 Q-24 -160 0 -164 Q24 -160 24 -126 Z" fill="#c62828" ${st(3)}/></g>
   <!-- the endless beard trailing behind him -->
   <path d="M-18 -110 Q-20 -80 0 -70 Q60 -60 120 -30 Q200 0 300 -10 L300 4 Q200 14 110 -16 Q40 -50 0 -56 Q-24 -70 -18 -110 Z" fill="#eceff1" ${st(3)}/>
   ${eyes(0, -122, 14, 3)}
@@ -68,8 +72,10 @@ export const hryfon = () => `
   <ellipse cx="20" cy="-110" rx="130" ry="60" fill="#d4a656" ${stroke}/>
   <path d="M140 -120 Q220 -100 240 -50 Q200 -80 140 -90 Z" fill="#b5893f" ${stroke}/>
   <path d="M-30 -60 v50 M40 -60 v50" stroke="${INK}" stroke-width="12" stroke-linecap="round"/>
+  <g data-dress="legs"></g>
   <path d="M-90 -140 Q-130 -190 -130 -230" fill="none" stroke="${INK}" stroke-width="56" stroke-linecap="round"/>
   <path d="M-90 -140 Q-130 -190 -130 -230" fill="none" stroke="#f4efe6" stroke-width="44" stroke-linecap="round"/>
+  <g data-dress="torso"></g>
   <circle cx="-136" cy="-252" r="40" fill="#f4efe6" ${stroke}/>
   <path d="M-172 -260 Q-214 -250 -206 -222 Q-196 -236 -170 -238 Z" fill="#ffb300" ${st(4)}/>
   <g data-part="eyes" data-cx="-140" data-cy="-262"><circle cx="-140" cy="-262" r="9" fill="#ffca28" ${st(3)}/><circle cx="-142" cy="-262" r="4" fill="#2b1a10"/></g>

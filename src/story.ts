@@ -103,6 +103,10 @@ export interface Phrase {
 export const COMMON = {
   outro: 'Ось і казочці кінець! Хочеш послухати ще раз і вибрати по-іншому?',
   allFound: 'Ого! Ти знайшла всі кінцівки цієї казки! Молодчинка!',
+  heroes: 'Це твої герої! Натисни на героя — і він із тобою привітається.',
+  hidden: 'Цей герой ще ховається в казці. Послухай казки — і ти його знайдеш!',
+  bought: 'Ось так краса!',
+  notEnough: 'Ще треба монеток. Шукай нові кінцівки в казках!',
 };
 
 /** Everything a tale says aloud: lines, choice questions and options (read for a child who can't read yet). */
@@ -119,6 +123,7 @@ export function spokenPhrases(story: Story): Phrase[] {
   for (const e of Object.values(story.endings)) out.push({ who: 'narrator', text: endingPhrase(e) });
   for (const t of Object.values(COMMON)) out.push({ who: 'narrator', text: t });
   if (story.about) out.push({ who: 'narrator', text: aboutPhrase(story) });
+  for (const [who, v] of Object.entries(story.voices)) if (v.hello) out.push({ who, text: v.hello });
   return out;
 }
 

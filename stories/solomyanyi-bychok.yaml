@@ -11,7 +11,7 @@ voices:
   narrator:    { name: "", pitch: 1.1, rate: 1 }
   did:         { name: "Дід", pitch: 0.72, rate: 0.9 }
   baba:        { name: "Баба", pitch: 1.0, rate: 0.95 }
-  solombychok: { name: "Бичок", pitch: 1.2, rate: 1 }
+  solombychok: { name: "Бичок", pitch: 1.2, rate: 1, hello: "Я бичок-третячок, із соломи зроблений!" }
   vedmid:      { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
   vovk:        { name: "Вовк", pitch: 0.68, rate: 0.95 }
   lysytsia:    { name: "Лисичка", pitch: 1.18, rate: 0.9 }

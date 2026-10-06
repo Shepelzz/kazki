@@ -10,7 +10,7 @@ about: "Котик іде по дрова й каже півникові не в
 voices:
   narrator: { name: "", pitch: 1.1, rate: 1 }
   kit:      { name: "Котик", pitch: 1.15, rate: 1 }
-  pivnyk:   { name: "Півник", pitch: 1.4, rate: 1.1 }
+  pivnyk:   { name: "Півник", pitch: 1.4, rate: 1.1, hello: "Ку-ку-рі-ку! Я півник — золотий гребінчик!" }
   lysytsia: { name: "Лисичка", pitch: 1.18, rate: 0.9 }
 
 endings:
