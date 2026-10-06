@@ -449,6 +449,9 @@ $('btn-sound').addEventListener('click', () => {
   $('btn-sound').textContent = speechEnabled() ? '🔊' : '🔇';
 });
 
+// the moon on the shelf: a tap reloads the page (a fresh start, the newest version)
+$('moon').addEventListener('click', () => location.reload());
+
 renderShelf();
 drawPurses();
 show('library');

@@ -100,10 +100,12 @@ button:focus-visible {
   text-align: center;
 }
 
-/* the moon, warm and a little hazy */
+/* the moon, warm and a little hazy; a tap reloads the page */
 .moon {
   position: absolute;
-  z-index: 0;
+  z-index: 1;
+  padding: 0;
+  cursor: pointer;
   top: 22px;
   right: 4px;
   width: 64px;
@@ -111,6 +113,11 @@ button:focus-visible {
   border-radius: 50%;
   background: radial-gradient(circle at 38% 36%, #fff6d8, var(--glow) 70%);
   box-shadow: 0 0 0 10px rgba(255, 211, 107, 0.12), 0 0 46px rgba(255, 211, 107, 0.55);
+}
+
+.moon:active {
+  -webkit-transform: scale(0.9);
+  transform: scale(0.9);
 }
 
 .library-head h1 {
