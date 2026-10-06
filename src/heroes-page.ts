@@ -156,12 +156,11 @@ function redraw() {
   fitThumbs(box);
   // buying what's tried on
   const buy = $('hero-buy');
-  if (trying) {
-    const short = trying.price - progress.coins();
-    buy.hidden = false;
-    buy.classList.toggle('short', short > 0);
-    buy.innerHTML = short > 0 ? `Ще треба ${COIN}${short}` : `Купити за ${COIN}${trying.price}`;
-  } else buy.hidden = true;
+  // always there (the card doesn't jump), live only for a thing tried on
+  const short = trying ? trying.price - progress.coins() : 0;
+  (buy as HTMLButtonElement).disabled = !trying;
+  buy.classList.toggle('short', short > 0);
+  buy.innerHTML = !trying ? 'Купити' : short > 0 ? `Ще треба ${COIN}${short}` : `Купити за ${COIN}${trying.price}`;
   $('hero-purse').innerHTML = `${COIN}${progress.coins()}`;
 }
 
@@ -269,6 +268,8 @@ function openHero(h: Hero, tile: HTMLElement) {
   trying = null;
   $('hero-name').textContent = h.name;
   $('hero-card').hidden = false;
+  // the shelves under the card stay still
+  $('heroes').classList.add('locked');
   redraw();
   animate();
   ($('hero-card').querySelector('.tale-card-box') as HTMLElement).focus();
@@ -283,6 +284,7 @@ function closeHero() {
   stopSpeech();
   cancelAnimationFrame(anim);
   $('hero-card').hidden = true;
+  $('heroes').classList.remove('locked');
   renderHeroes();
   from?.focus();
 }

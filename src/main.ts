@@ -130,6 +130,8 @@ function openCard(story: Story, from: HTMLElement) {
   const box = $('tale-card');
   box.classList.remove('told');
   box.hidden = false;
+  // the shelf under the card stays still
+  $('library').classList.add('locked');
   // focus inside the dialog (for the keyboard), without a ring on the button for a tap
   $('tale-card').querySelector<HTMLElement>('.tale-card-box')!.focus();
   const told = story;
@@ -144,6 +146,7 @@ function closeCard() {
   carded = null;
   stopSpeech();
   $('tale-card').hidden = true;
+  $('library').classList.remove('locked');
   cardFrom?.focus();
 }
 
@@ -161,6 +164,7 @@ $('tc-play').addEventListener('click', () => {
   carded = null;
   stopSpeech();
   $('tale-card').hidden = true;
+  $('library').classList.remove('locked');
   void openTale(story);
 });
 

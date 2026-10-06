@@ -840,6 +840,24 @@ button.book:active {
   font-size: 22px;
 }
 
+.tc-play.buy:disabled {
+  background: #d9cfb8;
+  color: #8f8369;
+  box-shadow: 0 6px 0 #bfb39a;
+  cursor: default;
+  -webkit-transform: none;
+  transform: none;
+}
+
+/* a card open over a page: the page under it doesn't scroll */
+.screen.locked {
+  overflow: hidden;
+}
+
+.tale-card-box {
+  overscroll-behavior: contain;
+}
+
 .tc-play.buy.short {
   background: #b8ab8f;
   box-shadow: 0 6px 0 #8f8369;
