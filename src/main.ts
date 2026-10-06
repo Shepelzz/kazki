@@ -344,6 +344,7 @@ $('heroes-back').addEventListener('click', () => {
   stopSpeech();
   renderShelf();
   show('library');
+  updateIfWaiting();
 });
 
 // ---------- the pause ----------
@@ -439,6 +440,7 @@ function toLibrary() {
   $('ending').hidden = true;
   renderShelf();
   show('library');
+  updateIfWaiting();
 }
 
 $('btn-home').addEventListener('click', toLibrary);
@@ -448,6 +450,51 @@ $('btn-sound').addEventListener('click', () => {
   setSpeechEnabled(!speechEnabled());
   $('btn-sound').textContent = speechEnabled() ? '🔊' : '🔇';
 });
+
+// ---------- a new version on the server ----------
+// Opened from the iPad's home screen, the app is kept asleep for days and woken up as it was: a
+// new version never comes. So when it comes back to the screen (and every so often), it asks the
+// server for the page and compares the script the page loads (its name changes with every build).
+// A new one: the page reloads — at once on the shelf, else as soon as she is back on it (never in
+// the middle of a tale). Progress is in localStorage: a reload keeps it.
+let newVersion = false;
+const ourScript = (() => {
+  const s = document.querySelector<HTMLScriptElement>('script[type="module"][src*="/assets/"]');
+  return s ? new URL(s.src, location.href).pathname : '';
+})();
+
+/** on the shelf (or the heroes' page), with nothing open: a reload loses nothing */
+const atRest = () =>
+  ($('library').hidden === false || $('heroes').hidden === false) && $('tale-card').hidden && $('hero-card').hidden;
+
+function updateIfWaiting() {
+  if (newVersion && atRest()) location.reload();
+}
+
+async function checkVersion() {
+  // the dev server has no built script: nothing to compare
+  if (newVersion) return updateIfWaiting();
+  if (!ourScript || !navigator.onLine) return;
+  try {
+    const r = await fetch(`${location.pathname}?fresh=${Date.now()}`, { cache: 'no-store' });
+    if (!r.ok) return;
+    const m = /<script[^>]+type="module"[^>]+src="([^"]+)"/.exec(await r.text());
+    if (!m) return;
+    if (new URL(m[1], location.href).pathname !== ourScript) {
+      newVersion = true;
+      updateIfWaiting();
+    }
+  } catch {
+    // offline or the server asleep: next time
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') void checkVersion();
+});
+window.addEventListener('pageshow', () => void checkVersion());
+setInterval(() => void checkVersion(), 10 * 60 * 1000);
+void checkVersion();
 
 // the moon on the shelf: a tap reloads the page (a fresh start, the newest version)
 $('moon').addEventListener('click', () => location.reload());
