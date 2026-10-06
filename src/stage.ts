@@ -139,6 +139,10 @@ interface Actor {
   munch: number;
   /** pulling (seconds left): leans back and forth, heaving at the one in front */
   tug: number;
+  /** a reaction to a tap (see ACTS): which, seconds gone, how long */
+  act: string;
+  actT: number;
+  actDur: number;
   /** tumbling head over heels: degrees still to turn, and how fast */
   spin: number;
   spinSpeed: number;
@@ -148,6 +152,94 @@ interface Actor {
 const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka'];
+/**
+ * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
+ * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
+ */
+interface Act {
+  dur: number;
+  eyesShut?: boolean;
+  at: (p: number, env: number) => { lift?: number; rot?: number; ox?: number; sx?: number; sy?: number };
+}
+const ACTS: Record<string, Act> = {
+  // a jump for joy, squatting before and after
+  hop: { dur: 0.8, at: (p) => ({ lift: Math.max(0, Math.sin(((p - 0.15) / 0.7) * Math.PI)) * 70, sy: p < 0.15 ? 1 - Math.sin((p / 0.15) * Math.PI) * 0.12 : p > 0.85 ? 1 - Math.sin(((p - 0.85) / 0.15) * Math.PI) * 0.1 : 1 }) },
+  hops: { dur: 1.1, at: (p) => ({ lift: Math.abs(Math.sin(p * Math.PI * 3)) * 35 }) },
+  // scratches its behind: bent forward, the hips going side to side, eyes shut with pleasure
+  scratch: { dur: 1.8, eyesShut: true, at: (p, e) => ({ rot: -9 * e + Math.sin(p * Math.PI * 14) * 3 * e, ox: Math.sin(p * Math.PI * 14) * 6 * e }) },
+  // wags its whole back end
+  wiggle: { dur: 1.2, at: (p, e) => ({ rot: Math.sin(p * Math.PI * 8) * 7 * e }) },
+  // shivers all over
+  shiver: { dur: 1, at: (p, e) => ({ ox: Math.sin(p * Math.PI * 32) * 4 * e }) },
+  // a big stretch, up on its toes
+  stretch: { dur: 1.4, eyesShut: true, at: (p, e) => ({ sy: 1 + 0.16 * e, sx: 1 - 0.06 * e, rot: 3 * e }) },
+  // a bow
+  bow: { dur: 1.1, at: (p, e) => ({ rot: -14 * e, sy: 1 - 0.04 * e }) },
+  // shakes its head: no-no-no
+  no: { dur: 1, at: (p, e) => ({ rot: Math.sin(p * Math.PI * 6) * 5 * e }) },
+  // butts forward with its head
+  butt: { dur: 0.8, at: (p, e) => ({ ox: Math.sin(p * Math.PI) * 45, rot: -12 * e }) },
+  // a sneeze: draws back, then bursts forward, then straightens
+  sneeze: { dur: 0.9, at: (p) => ({ rot: p < 0.45 ? Math.sin((p / 0.45) * Math.PI * 0.5) * 9 : 9 * (1 - (p - 0.45) / 0.55) - Math.sin(((p - 0.45) / 0.55) * Math.PI) * 22 }) },
+  // shows its muscles
+  flex: { dur: 1.2, at: (p, e) => ({ sx: 1 + Math.abs(Math.sin(p * Math.PI * 2)) * 0.12 * e, sy: 1 - Math.abs(Math.sin(p * Math.PI * 2)) * 0.04 * e }) },
+  // curls into a ball (the hedgehog)
+  curl: { dur: 1.6, eyesShut: true, at: (p, e) => ({ sy: 1 - 0.35 * e, sx: 1 + 0.1 * e }) },
+  // dances: sways and bobs
+  dance: { dur: 1.8, at: (p, e) => ({ rot: Math.sin(p * Math.PI * 6) * 8 * e, lift: Math.abs(Math.sin(p * Math.PI * 6)) * 18 * e }) },
+  // goes round after its tail (turned by later() in poke)
+  chase: { dur: 1.6, at: (p, e) => ({ lift: Math.abs(Math.sin(p * Math.PI * 5)) * 15 * e }) },
+  // crows, chest out, head back
+  crow: { dur: 1.3, at: (p, e) => ({ rot: 12 * e, sy: 1 + 0.08 * e }) },
+  // giggles: little quick bounces
+  giggle: { dur: 1, at: (p, e) => ({ lift: Math.abs(Math.sin(p * Math.PI * 8)) * 8 * e, sy: 1 - Math.abs(Math.sin(p * Math.PI * 8)) * 0.03 * e }) },
+};
+/** what can be done sitting or lying */
+const QUIET = ['shiver', 'no', 'giggle', 'wiggle'];
+/** each hero's own reactions, shown one after another, tap by tap (spin / flip: a turn round) */
+const REACTIONS: Record<string, string[]> = {
+  _: ['hop', 'wiggle', 'giggle'],
+  did: ['scratch', 'bow', 'no', 'dance'],
+  baba: ['no', 'dance', 'bow'],
+  kolobok: ['hop', 'spin', 'hops', 'giggle'],
+  zayets: ['hops', 'shiver', 'hop', 'scratch'],
+  vovk: ['scratch', 'crow', 'shiver'],
+  vedmid: ['scratch', 'stretch', 'dance'],
+  lysytsia: ['wiggle', 'spin', 'bow', 'giggle'],
+  vnuchka: ['dance', 'spin', 'hop'],
+  zhuchka: ['chase', 'wiggle', 'hops'],
+  sobaka: ['wiggle', 'chase', 'sneeze'],
+  sirko: ['scratch', 'wiggle', 'sneeze'],
+  kishka: ['stretch', 'wiggle', 'sneeze'],
+  kit: ['stretch', 'scratch', 'spin'],
+  myshka: ['shiver', 'hops', 'giggle'],
+  zhabka: ['hop', 'hops', 'giggle'],
+  kaban: ['scratch', 'butt', 'sneeze'],
+  koza: ['butt', 'hop', 'no'],
+  yizhachok: ['curl', 'shiver', 'sneeze'],
+  rak: ['shiver', 'wiggle', 'no'],
+  pivnyk: ['crow', 'flip', 'hop'],
+  zhuravel: ['bow', 'stretch', 'dance'],
+  gusenia: ['hops', 'wiggle', 'giggle'],
+  solombychok: ['butt', 'wiggle', 'sneeze'],
+  telesyk: ['hop', 'flip', 'dance'],
+  kotyhoroshko: ['flex', 'flip', 'hop'],
+  kyrylo: ['flex', 'stretch', 'no'],
+  vernyhora: ['flex', 'stretch', 'scratch'],
+  vernydub: ['flex', 'scratch', 'no'],
+  krutyvus: ['flex', 'no', 'dance'],
+  muzhychok: ['hops', 'scratch', 'no'],
+  knyaz: ['bow', 'no', 'scratch'],
+  knyazivna: ['bow', 'spin', 'dance'],
+  nevista: ['dance', 'spin', 'bow'],
+  olenka: ['wiggle', 'giggle', 'dance'],
+  zmiyuchka: ['no', 'wiggle', 'shiver'],
+  koval: ['flex', 'scratch', 'no'],
+  pastushok: ['hop', 'scratch', 'dance'],
+  hryfon: ['crow', 'shiver', 'stretch'],
+  zmiy: ['crow', 'sneeze', 'scratch'],
+};
+
 /** one heave-ho of pulling (seconds) */
 const PULL = 1.8;
 /** a blow: the lunge and the being thrown back (seconds) */
@@ -1203,6 +1295,9 @@ export class Stage {
       ox: 0,
       munch: 0,
       tug: 0,
+      act: '',
+      actT: 0,
+      actDur: 0,
       spin: 0,
       spinSpeed: 0,
       parts: {
@@ -1885,48 +1980,49 @@ export class Stage {
   /** the last reaction to a tap, so the next one is a different one */
   private lastPoke = -1;
 
+  /** which reaction of its list each hero shows next */
+  private pokeNext: Record<string, number> = {};
+
   private poke(a: Actor) {
     if (a.prop) {
       a.wobble = 1;
       return;
     }
-    // busy (walking, carried, in a blow, lying down): just a little hop of the words
-    const busy = !!a.move || !!a.carriedBy || a.jab > 0 || a.knock > 0 || a.tug > 0 || a.spin > 0;
-    let r = Math.floor(Math.random() * 4);
-    if (r === this.lastPoke) r = (r + 1) % 4;
-    this.lastPoke = r;
-    const [x, y] = this.anchor(a, 'top');
-    if (r === 0 || busy || a.pose) {
-      // giggles
-      a.wobble = 1;
-      this.word(x, y, 'хі-хі!', '#e91e63');
-    } else if (r === 1) {
-      // jumps for joy
-      a.bounce = 1;
-      this.word(x, y, 'гоп!', '#1e88e5');
-    } else if (r === 2) {
-      // sneezes: a jerk back, a puff
-      a.knock = KNOCK * 0.6;
-      a.knockDx = (a.flip ? -1 : 1) * 30;
-      const [mx, my] = this.anchor(a, 'mouth');
-      this.word(mx, my - 40, 'апчхи!', '#43a047');
-      for (let i = 0; i < 6; i++) this.dustAt(mx + (a.flip ? 1 : -1) * (20 + i * 14), my + (Math.random() - 0.5) * 30);
-    } else {
-      // spins round
+    // walking, carried, in a blow or another reaction: not now
+    if (a.move || a.carriedBy || a.jab > 0 || a.knock > 0 || a.tug > 0 || a.spin > 0 || a.act) return;
+    const list = REACTIONS[a.id] || REACTIONS._;
+    // lying or sitting: only what can be done so
+    const can = a.pose ? list.filter((k) => QUIET.indexOf(k) >= 0) : list;
+    const pick = can.length ? can : ['wiggle'];
+    const i = (this.pokeNext[a.id] || 0) % pick.length;
+    this.pokeNext[a.id] = i + 1;
+    const kind = pick[i];
+    if (kind === 'spin' || kind === 'flip') {
+      // a turn round (with a jump: a somersault)
       a.spin = 360;
-      a.spinSpeed = 720;
-      a.bounce = 1;
-      this.word(x, y, 'ух!', '#fb8c00');
+      a.spinSpeed = kind === 'flip' ? 600 : 480;
+      if (kind === 'flip') a.bounce = 1;
+      return;
     }
-  }
-
-  /** a little word floating up (a tap's reaction) */
-  private word(x: number, y: number, text: string, color: string) {
-    const t = el('text', { 'font-size': 64, fill: color, 'font-weight': 900, 'text-anchor': 'middle', stroke: '#fff', 'stroke-width': 8, 'paint-order': 'stroke', 'font-family': 'Nunito, sans-serif' }, [text]);
-    this.particle(t, 1.2, (p, k) => {
-      t.setAttribute('transform', `translate(${x} ${y - 20 - k * 110}) scale(${Math.min(1, k * 6)})`);
-      t.setAttribute('opacity', String(k < 0.7 ? 1 : (1 - k) / 0.3));
-    });
+    a.act = kind;
+    a.actT = 0;
+    a.actDur = ACTS[kind].dur;
+    // eyes shut for a blissful scratch, a stretch, a curl
+    if (ACTS[kind].eyesShut && a.eyesOpen) {
+      this.setEyes(a.id, false);
+      this.later(a.actDur * 0.9, () => {
+        if (this.actors.get(a.id) === a && !a.asleep) this.setEyes(a.id, true);
+      });
+    }
+    // a sneeze blows a little cloud
+    if (kind === 'sneeze') {
+      const [mx, my] = this.anchor(a, 'mouth');
+      this.later(0.45, () => {
+        for (let k = 0; k < 6; k++) this.dustAt(mx + (a.flip ? 1 : -1) * (20 + k * 16), my + (Math.random() - 0.5) * 30);
+      });
+    }
+    // chasing its own tail: turns round and round
+    if (kind === 'chase') for (let k = 1; k <= 4; k++) this.later((a.actDur / 5) * k, () => (a.flip = !a.flip));
   }
 
   /** a "z" floating up from a sleeper's head */
@@ -2197,10 +2293,24 @@ export class Stage {
     }
     // old iPads: standing still means still (no breathing) — fewer repaints
     if (LOW_END && !a.talking && !a.wobble) breathe = 1;
+    // a reaction to a tap
+    let actSX = 1;
+    let actSY = 1;
+    if (a.act) {
+      a.actT += dt;
+      const p = Math.min(1, a.actT / a.actDur);
+      const r = ACTS[a.act].at(p, Math.sin(p * Math.PI));
+      blowLift += r.lift || 0;
+      blow += r.rot || 0;
+      a.ox += (r.ox || 0) * (a.flip ? 1 : -1);
+      actSX = r.sx || 1;
+      actSY = r.sy || 1;
+      if (p >= 1) a.act = '';
+    }
     setAttr(
       a.body,
       'transform',
-      `translate(0 ${(-lift - blowLift).toFixed(1)}) rotate(${(lean + blow + chew + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${((2 - breathe) * (flat ? 1.08 : sit ? 1.06 : 1)).toFixed(4)} ${(breathe * (flat ? 0.62 : sit ? 0.8 : 1)).toFixed(4)})`,
+      `translate(0 ${(-lift - blowLift).toFixed(1)}) rotate(${(lean + blow + chew + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${((2 - breathe) * actSX * (flat ? 1.08 : sit ? 1.06 : 1)).toFixed(4)} ${(breathe * actSY * (flat ? 0.62 : sit ? 0.8 : 1)).toFixed(4)})`,
     );
 
     // asleep: z-z-z from the head
