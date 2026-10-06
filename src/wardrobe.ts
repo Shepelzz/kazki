@@ -351,6 +351,10 @@ for (const g of [groupA, groupB, groupC, groupD, groupE, groupF, groupG, groupH]
  * wardrobe, and things moved to another slot.
  */
 export const EDITS = wardrobeEdits as { removed: string[]; slot: Record<string, Slot> };
+/** prices: 40% off what the things were drawn with (coins come only from endings: ~60 a tale) */
+const PRICE = 0.6;
+for (const it of ITEMS) it.price = Math.max(3, Math.round(it.price * PRICE));
+
 /** where each thing was drawn to go (before a move on fit.html) */
 export const DRAWN_SLOT: Record<string, Slot> = {};
 for (const it of ITEMS) {
