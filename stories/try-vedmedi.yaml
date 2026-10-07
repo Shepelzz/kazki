@@ -1,0 +1,951 @@
+# Три ведмеді — казка з вибором (Лев Толстой). Головна лінія — як у відомій казці (дівчинка
+# заблукала в лісі й прийшла до хатинки, де нікого не було; жили там три ведмеді: Михайло Іванович,
+# Настасія Петрівна й маленький Мишко; три миски юшки — з великої гаряча, з середньої несмачна, з
+# маленької з'їла все; три стільці — на маленькому гойднулася й зламала; три ліжка — у маленькому
+# заснула; «Хто сьорбав з моєї миски?» — грізно, тихіше й тоненько: «А хто сьорбав з моєї мисочки й
+# усе висьорбав?»; те саме зі стільцями й ліжками; «Ось вона! Тримай, тримай!» — дівчинка вистрибнула
+# у вікно й утекла); відгалуження — на виборах. Кроки ті самі, що в інших казках. Нові фони:
+# svitlytsia (у ведмежій хатинці: піч, віконце, три капелюхи й три кухлі) і spalnia (спальня: три
+# портрети). Стіл stil_vedmediv — спереду (стільниця на y = 620): хто за ним, того видно від пояса;
+# миски стоять на ньому (y 628). Стільці великий і середній — за столом, маленький — збоку; fx break
+# на маленькому стільчику — і лишаються уламки (stilets_lamanyi). Ліжка: велике (матрац на y 570),
+# середнє (високе, на y 440), маленьке (на y 670); хто лягає — lie на висоті матраца. Порожня
+# Мишкова мисочка — show miska_mala look: porozhnia. Віконце vikno в спальні — над маленьким ліжком.
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Три ведмеді
+cover: try_vedmedi
+about: "Пішла дівчинка Маша до лісу та й заблукала. А в лісі — хатинка, а в хатинці — нікого. Тільки три миски, три стільці й три ліжка… Чиї ж вони?"
+
+voices:
+  narrator:    { name: "", pitch: 1.1, rate: 1 }
+  masha:       { name: "Маша", pitch: 1.35, rate: 1.05, hello: "Привіт! Я Маша. Я тепер знаю, де в лісі ведмеді живуть! Тільки нікому не кажи!" }
+  vedmid:      { name: "Михайло Іванович", pitch: 0.55, rate: 0.85 }
+  vedmedytsia: { name: "Настасія Петрівна", pitch: 0.82, rate: 0.9, hello: "Добридень, серденько! Я Настасія Петрівна. Юшки хочеш? Тільки подуй — гаряча!" }
+  mishko:      { name: "Мишко", pitch: 1.55, rate: 1.1, hello: "Привіт! Я Мишко! Хто сьорбав з моєї мисочки? Хі-хі, жартую! Давай гратися!" }
+
+endings:
+  vikno:  { title: "Стриб у віконце!", icon: "🏃" }
+  gostia: { title: "Чемна гостя", icon: "🍯" }
+  yushka: { title: "Нова юшка", icon: "🥣" }
+  druzi:  { title: "Мишків друг", icon: "🐻" }
+
+start: start
+
+scenes:
+  start:
+    - scene: glade
+    - show: hryby
+      at: [520, 770]
+    - show: yahidky
+      at: [1180, 770]
+    - show: masha
+      at: [880, 770]
+    - narrator: "Привіт! Сьогодні — казка про трьох ведмедів. А ти допомагатимеш дівчинці Маші вибирати, що робити далі!"
+    - narrator: "Одна дівчинка, Маша, пішла з дому до лісу — по гриби та по ягоди."
+    - move: masha
+      to: [620, 770]
+      ms: 1000
+      wait: true
+    - hide: hryby
+    - fx: sparkle
+      on: masha
+    - masha: "Ой, грибочок! А он іще один! А там, мабуть, іще більше!"
+    - move: masha
+      to: [-300, 770]
+      ms: 2400
+      wait: true
+    - next: lost
+
+  lost:
+    - scene: deep
+    - show: masha
+      at: [1900, 770]
+    - move: masha
+      to: [800, 770]
+      ms: 2000
+      wait: true
+    - narrator: "Ходила Маша, ходила — та й заблукала. Стала шукати дорогу додому — і не знайшла."
+    - masha: "Ау! Ау-у! Мамо! Де ж наша стежка?"
+    - narrator: "Тільки луна відгукується: «Ау-у...»"
+    - fx: tears
+      on: masha
+    - masha: "Ой, заблукала я... Піду хоч куди-небудь."
+    - move: masha
+      to: [-300, 770]
+      ms: 2200
+      wait: true
+    - next: hut
+
+  hut:
+    - scene: forest
+    - show: khata_vedmedya
+      at: [1050, 770]
+    - show: masha
+      at: [-250, 770]
+      flip: true
+    - move: masha
+      to: [620, 770]
+      ms: 2200
+      wait: true
+    - narrator: "Ішла вона, ішла — аж бачить: стоїть у лісі хатинка."
+    - fx: bang
+      at: [990, 640]
+      word: "ТУК-ТУК!"
+    - masha: "Тук-тук! Хто в хатинці живе?"
+    - narrator: "Ніхто не відгукується. А двері відчинені. Зазирнула Маша в двері — у хатинці нікого немає."
+    - next: bears
+
+  bears:
+    - scene: glade
+    - show: vedmid
+      at: [-300, 770]
+      flip: true
+    - show: vedmedytsia
+      at: [-560, 770]
+      flip: true
+    - show: mishko
+      at: [-760, 770]
+      flip: true
+    - move: vedmid
+      to: [1150, 770]
+      ms: 2600
+    - move: vedmedytsia
+      to: [850, 770]
+      ms: 2600
+    - move: mishko
+      to: [600, 770]
+      hop: true
+      ms: 2600
+      wait: true
+    - narrator: "А жили в тій хатинці три ведмеді. Один ведмідь був тато, звали його Михайло Іванович. Він був великий і кошлатий."
+    - fx: shake
+      on: vedmid
+    - vedmid: "Гарна днинка! Погуляймо, поки юшка прохолоне."
+    - narrator: "Друга була ведмедиця — менша. Її звали Настасія Петрівна."
+    - vedmedytsia: "Погуляймо. Я юшки наварила — повні миски. Хай прохолоне."
+    - narrator: "А третій був маленький ведмедик — Мишко."
+    - mishko: "А я свою мисочку потім усю-усю висьорбаю!"
+    - fx: tumble
+      on: mishko
+    - narrator: "Ведмедів не було вдома: вони пішли гуляти до лісу."
+    - move: vedmid
+      to: [2100, 770]
+      ms: 2400
+    - move: vedmedytsia
+      to: [2000, 770]
+      ms: 2400
+    - move: mishko
+      to: [1900, 770]
+      hop: true
+      ms: 2400
+      wait: true
+    - next: door
+
+  door:
+    - scene: forest
+    - show: khata_vedmedya
+      at: [1050, 770]
+    - show: masha
+      at: [820, 770]
+    - narrator: "А Маша стоїть біля хатинки й думає."
+    - masha: "Двері відчинені, а нікого нема... Що ж мені робити?"
+    - choice: "У хатинці нікого немає. Що зробить Маша?"
+      options:
+        - label: "Зайти в хатинку"
+          icon: "🚪"
+          next: enter
+        - label: "Почекати на ґанку"
+          icon: "⏳"
+          next: porch
+
+  enter:
+    - masha: "Зайду, погріюся. Може, господарі скоро прийдуть."
+    - enter: masha
+      into: khata_vedmedya
+    - narrator: "І ввійшла Маша в хатинку."
+    - next: yushka
+
+  yushka:
+    - scene: svitlytsia
+    - show: stilets_velykyi
+      at: [560, 770]
+    - show: stilets_serednii
+      at: [820, 770]
+    - show: stilets_malyi
+      at: [1420, 770]
+    - show: miska_velyka
+      at: [560, 628]
+    - show: miska_serednia
+      at: [820, 628]
+    - show: miska_mala
+      at: [1100, 628]
+    - show: stil_vedmediv
+      at: [830, 770]
+    - show: masha
+      at: [1900, 770]
+    - move: masha
+      to: [680, 770]
+      flip: false
+      ms: 2400
+      wait: true
+    - narrator: "У хатинці було дві кімнати. В одній стояв стіл, а на столі — три миски з юшкою: велика, середня й маленька."
+    - narrator: "Велика миска — Михайла Івановича, середня — Настасії Петрівни, а маленька синенька мисочка — Мишкова."
+    - masha: "Ой, як смачно пахне! Я така голодна..."
+    - narrator: "Сьорбнула Маша з великої миски..."
+    - fx: munch
+      on: masha
+    - fx: bang
+      on: miska_velyka
+      word: "ГАРЯЧЕ!"
+    - masha: "Ой-ой-ой! Гаряча! Аж язик пече!"
+    - move: masha
+      to: [940, 770]
+      ms: 900
+      wait: true
+    - narrator: "Сьорбнула із середньої..."
+    - fx: munch
+      on: masha
+    - masha: "Фе! Несолона, несмачна..."
+    - move: masha
+      to: [1220, 770]
+      ms: 900
+      wait: true
+    - narrator: "А тоді сьорбнула з маленької синенької мисочки."
+    - fx: munch
+      on: masha
+    - masha: "Ммм! Якраз! Ні гаряча, ні холодна — а смачна-пресмачна!"
+    - fx: munch
+      on: masha
+    - hide: miska_mala
+    - show: miska_mala
+      at: [1100, 628]
+      look: porozhnia
+    - fx: sparkle
+      on: miska_mala
+    - narrator: "І з'їла Маша Мишкову юшку — усю, до краплинки."
+    - narrator: "Захотіла Маша сісти. Бачить — біля столу три стільці: великий — Михайла Івановича, середній — Настасії Петрівни, і маленький, із синенькою подушечкою, — Мишків."
+    - move: masha
+      to: [560, 612]
+      flip: false
+      hop: true
+      ms: 1300
+      wait: true
+    - fx: sit
+      on: masha
+    - masha: "Ой, як високо! Ноги не дістають... Незручно!"
+    - move: masha
+      to: [820, 642]
+      hop: true
+      ms: 900
+      wait: true
+    - fx: sit
+      on: masha
+    - masha: "А цей твердий-претвердий. Теж незручно!"
+    - move: masha
+      to: [1420, 702]
+      hop: true
+      ms: 1300
+      wait: true
+    - fx: sit
+      on: masha
+    - masha: "Ой, а цей — якраз для мене! Як зручно!"
+    - narrator: "Сіла Маша на маленький стільчик — та й давай гойдатися!"
+    - masha: "Гойда-гойда! Гойда-гой!"
+      sing: true
+    - fx: rock
+      on: masha
+    - fx: rock
+      on: stilets_malyi
+    - fx: break
+      on: stilets_malyi
+    - move: masha
+      to: [1420, 770]
+      ms: 200
+      wait: true
+    - fx: fallback
+      on: masha
+    - fx: bang
+      at: [1420, 640]
+      word: "ТРІСЬ!"
+    - narrator: "Тріснув стільчик і зламався. А Маша — гуп! — на підлогу."
+    - fx: stand
+      on: masha
+    - masha: "Ой... Зламала я Мишків стільчик..."
+    - choice: "Зламався стільчик! Що ж тепер робитиме Маша?"
+      options:
+        - label: "Піти в другу кімнату"
+          icon: "🛏️"
+          next: lizhka
+        - label: "Зварити ведмедям нової юшки"
+          icon: "🥣"
+          next: cook
+
+  lizhka:
+    - scene: spalnia
+    - show: dveri
+      at: [40, 770]
+    - show: vikno
+      at: [1480, 520]
+    - show: lizhko_velyke
+      at: [420, 770]
+    - show: lizhko_serednie
+      at: [920, 770]
+    - show: lizhko_male
+      at: [1330, 770]
+    - show: masha
+      at: [40, 770]
+      flip: true
+    - move: masha
+      to: [640, 770]
+      ms: 1600
+      wait: true
+    - narrator: "Пішла Маша в другу кімнату. А там — три ліжка: велике — Михайла Івановича, середнє — Настасії Петрівни, і маленьке — Мишкове."
+    - masha: "Ох, як мені спатоньки хочеться..."
+    - move: masha
+      to: [460, 555]
+      flip: false
+      hop: true
+      ms: 1000
+      wait: true
+    - fx: lie
+      on: masha
+    - narrator: "Лягла вона у велике ліжко..."
+    - masha: "Ой, яке ж воно велике! Просторо, аж страшно!"
+    - move: masha
+      to: [1020, 425]
+      hop: true
+      ms: 1200
+      wait: true
+    - fx: lie
+      on: masha
+    - narrator: "Лягла в середнє..."
+    - masha: "Ой, як високо! Ще впаду!"
+    - move: masha
+      to: [1455, 665]
+      hop: true
+      ms: 1200
+      wait: true
+    - fx: lie
+      on: masha
+    - narrator: "А тоді лягла в маленьке ліжечко. Воно було їй якраз."
+    - masha: "Якраз для мене... Ааа-ах..."
+    - fx: sleep
+      on: masha
+    - narrator: "І заснула Маша."
+    - pause: 1200
+    - next: return
+
+  return:
+    - scene: forest
+    - show: khata_vedmedya
+      at: [1050, 770]
+    - show: vedmid
+      at: [-300, 770]
+      flip: true
+    - show: vedmedytsia
+      at: [-560, 770]
+      flip: true
+    - show: mishko
+      at: [-760, 770]
+      flip: true
+    - move: vedmid
+      to: [700, 770]
+      ms: 2400
+    - move: vedmedytsia
+      to: [470, 770]
+      ms: 2400
+    - move: mishko
+      to: [280, 770]
+      hop: true
+      ms: 2400
+      wait: true
+    - narrator: "А тим часом ведмеді нагулялися в лісі й повернулися додому голодні."
+    - vedmid: "Ох і нагулялися! Тепер і пообідати можна."
+    - mishko: "Їсти! Їсти хочу! Мою мисочку!"
+    - enter: vedmid
+      into: khata_vedmedya
+    - enter: vedmedytsia
+      into: khata_vedmedya
+    - enter: mishko
+      into: khata_vedmedya
+    - next: obid
+
+  obid:
+    - scene: svitlytsia
+    - show: stilets_velykyi
+      at: [560, 770]
+    - show: stilets_serednii
+      at: [820, 770]
+    - show: stilets_lamanyi
+      at: [1420, 770]
+    - show: vedmid
+      at: [1900, 770]
+    - show: vedmedytsia
+      at: [2100, 770]
+    - show: mishko
+      at: [2250, 770]
+    - show: miska_velyka
+      at: [560, 628]
+    - show: miska_serednia
+      at: [820, 628]
+    - show: miska_mala
+      at: [1100, 628]
+      look: porozhnia
+    - show: stil_vedmediv
+      at: [830, 770]
+    - move: vedmid
+      to: [560, 770]
+      ms: 2600
+    - move: vedmedytsia
+      to: [820, 770]
+      ms: 2400
+    - move: mishko
+      to: [1260, 770]
+      hop: true
+      ms: 2400
+      wait: true
+    - narrator: "Михайло Іванович узяв свою миску, глянув — та як зареве страшним голосом:"
+    - fx: bang
+      on: vedmid
+      word: "Р-Р-Р!"
+    - vedmid: "ХТО СЬОРБАВ З МОЄЇ МИСКИ?!"
+    - narrator: "Настасія Петрівна подивилася на свою миску й загарчала — не так голосно:"
+    - fx: shake
+      on: vedmedytsia
+    - vedmedytsia: "Хто сьорбав з моєї миски?"
+    - narrator: "А Мишко побачив свою порожню мисочку й запищав тоненьким голоском:"
+    - fx: wake
+      on: mishko
+    - mishko: "А хто сьорбав з моєї мисочки й усе висьорбав?!"
+    - fx: tears
+      on: mishko
+    - narrator: "Глянув Михайло Іванович на свій стілець — і заревів страшним голосом:"
+    - fx: bang
+      on: vedmid
+      word: "Р-Р-Р!"
+    - vedmid: "ХТО СИДІВ НА МОЄМУ СТІЛЬЦІ Й ЗСУНУВ ЙОГО З МІСЦЯ?!"
+    - narrator: "Глянула Настасія Петрівна на свій стілець — і загарчала не так голосно:"
+    - fx: shake
+      on: vedmedytsia
+    - vedmedytsia: "Хто сидів на моєму стільці й зсунув його з місця?"
+    - move: mishko
+      to: [1300, 770]
+      ms: 500
+      wait: true
+    - narrator: "А Мишко побачив свій зламаний стільчик і запищав:"
+    - mishko: "А хто сидів на моєму стільчику й зламав його?!"
+    - fx: tears
+      on: mishko
+    - move: vedmid
+      to: [-300, 770]
+      flip: false
+      ms: 2400
+    - move: vedmedytsia
+      to: [-300, 770]
+      flip: false
+      ms: 2200
+    - move: mishko
+      to: [-300, 770]
+      flip: false
+      hop: true
+      ms: 2600
+      wait: true
+    - next: spalnia
+
+  spalnia:
+    - scene: spalnia
+    - show: dveri
+      at: [40, 770]
+    - show: vikno
+      at: [1480, 520]
+    - show: lizhko_velyke
+      at: [420, 770]
+    - show: lizhko_serednie
+      at: [920, 770]
+    - show: lizhko_male
+      at: [1330, 770]
+    - show: masha
+      at: [1455, 665]
+    - fx: lie
+      on: masha
+    - fx: sleep
+      on: masha
+    - show: vedmid
+      at: [40, 770]
+      flip: true
+    - show: vedmedytsia
+      at: [-200, 770]
+      flip: true
+    - show: mishko
+      at: [-400, 770]
+      flip: true
+    - move: vedmid
+      to: [480, 770]
+      ms: 2200
+    - move: vedmedytsia
+      to: [880, 770]
+      ms: 2600
+    - move: mishko
+      to: [1110, 770]
+      hop: true
+      ms: 2600
+      wait: true
+    - narrator: "Пішли ведмеді в другу кімнату."
+    - fx: bang
+      on: vedmid
+      word: "Р-Р-Р!"
+    - vedmid: "ХТО ЛЕЖАВ У МОЄМУ ЛІЖКУ Й ЗІМ'ЯВ ЙОГО?!"
+    - fx: shake
+      on: vedmedytsia
+    - vedmedytsia: "Хто лежав у моєму ліжку й зім'яв його?"
+    - narrator: "А Мишко підсунув ослінчика, поліз у своє ліжечко — та й запищав тоненьким голоском:"
+    - mishko: "А хто лежав у моєму ліжечку?.."
+    - fx: wake
+      on: mishko
+    - narrator: "І раптом побачив Машу — і заверещав, як ніби його ріжуть:"
+    - fx: bang
+      on: mishko
+      word: "ОСЬ ВОНА!"
+    - mishko: "Ось вона! Тримай, тримай! Ось вона! Ой-ой! Тримай!"
+    - narrator: "Хотів Мишко її вкусити..."
+    - move: mishko
+      to: [1200, 770]
+      hop: true
+      ms: 500
+      wait: true
+    - fx: wake
+      on: masha
+    - narrator: "...та Маша розплющила очі — і побачила ведмедів!"
+    - masha: "Ой! Ведмеді!"
+    - choice: "Прокинулася Маша, а довкола — три ведмеді! Що ж їй робити?"
+      options:
+        - label: "Вистрибнути у вікно"
+          icon: "🏃"
+          next: vikno
+        - label: "Попросити вибачення"
+          icon: "🙏"
+          next: vybach
+
+  vikno:
+    - narrator: "Кинулася Маша до вікна. А вікно було відчинене..."
+    - move: masha
+      to: [1500, 520]
+      hop: true
+      ms: 700
+      wait: true
+    - enter: masha
+      into: vikno
+    - fx: whoosh
+      on: vikno
+    - vedmid: "Тримай її! Тримай!"
+    - move: vedmid
+      to: [1000, 770]
+      flip: true
+      ms: 900
+    - move: vedmedytsia
+      to: [1180, 770]
+      flip: true
+      ms: 700
+      wait: true
+    - narrator: "...вистрибнула Маша у вікно — і втекла!"
+    - next: vtecha
+
+  vtecha:
+    - scene: forest
+    - show: khata_vedmedya
+      at: [700, 770]
+    - show: masha
+      at: [880, 610]
+    - move: masha
+      to: [1100, 770]
+      flip: true
+      hop: true
+      ms: 700
+      wait: true
+    - move: masha
+      to: [2200, 770]
+      flip: true
+      ms: 1600
+    - fx: whoosh
+      on: masha
+    - fx: dust
+      on: masha
+    - pause: 400
+    - show: vedmid
+      at: [640, 770]
+    - show: vedmedytsia
+      at: [520, 770]
+    - show: mishko
+      at: [400, 770]
+    - move: vedmid
+      to: [1000, 770]
+      flip: true
+      ms: 1200
+    - move: vedmedytsia
+      to: [820, 770]
+      flip: true
+      ms: 1200
+    - move: mishko
+      to: [660, 770]
+      flip: true
+      hop: true
+      ms: 1200
+      wait: true
+    - mishko: "Тікає! Тікає! Тримай!"
+    - vedmid: "Ех... Де там! Утекла!"
+    - narrator: "Побігли ведмеді за нею, та де там! Не наздогнали ведмеді Машу."
+    - vedmedytsia: "Нічого, Мишку. Не плач. Я тобі ще юшки наварю — а тато новий стільчик змайструє."
+    - fx: hearts
+      on: mishko
+    - next: vdoma
+
+  vdoma:
+    - scene: hata
+    - show: masha
+      at: [1950, 770]
+    - move: masha
+      to: [900, 770]
+      ms: 2000
+      wait: true
+    - narrator: "А Маша бігла-бігла — аж додому прибігла."
+    - masha: "Ух! Ото пригода! Більше сама до лісу — ні ногою!"
+    - narrator: "Отак Маша в ведмедів погостювала: юшку з'їла, стільчик зламала, у ліжечку поспала — та й утекла через віконце!"
+    - ending: vikno
+
+  # ---------- відгалуження: почекати на ґанку ----------
+
+  porch:
+    - masha: "Ні, без господарів до чужої хати не заходять. Посиджу, почекаю."
+    - move: masha
+      to: [760, 770]
+      ms: 500
+      wait: true
+    - fx: sit
+      on: masha
+    - narrator: "Сіла Маша на ґанку й чекає. Чекала, чекала — та й задрімала."
+    - fx: sleep
+      on: masha
+    - show: vedmid
+      at: [-300, 770]
+      flip: true
+    - show: vedmedytsia
+      at: [-520, 770]
+      flip: true
+    - show: mishko
+      at: [-700, 770]
+      flip: true
+    - move: vedmid
+      to: [520, 770]
+      ms: 2400
+    - move: vedmedytsia
+      to: [320, 770]
+      ms: 2400
+    - move: mishko
+      to: [150, 770]
+      hop: true
+      ms: 2400
+      wait: true
+    - narrator: "Аж ось і ведмеді з прогулянки йдуть."
+    - fx: bang
+      on: vedmid
+      word: "Р-Р-Р!"
+    - vedmid: "ХТО ЦЕ СИДИТЬ БІЛЯ НАШОЇ ХАТИ?!"
+    - vedmedytsia: "Хто це сидить біля нашої хати?"
+    - mishko: "А хто це такий маленький?"
+    - fx: wake
+      on: masha
+    - masha: "Ой! Добрий день! Я Маша. Я в лісі заблукала. А до вашої хати не заходила — чекала господарів."
+    - vedmid: "Гм! Ото чемна дівчинка!"
+    - vedmedytsia: "Бідненька, ти ж, мабуть, голодна! Ходімо до хати — юшка якраз прохолола."
+    - mishko: "Ура! У нас гості!"
+    - fx: tumble
+      on: mishko
+    - enter: vedmid
+      into: khata_vedmedya
+    - enter: vedmedytsia
+      into: khata_vedmedya
+    - enter: mishko
+      into: khata_vedmedya
+    - enter: masha
+      into: khata_vedmedya
+    - next: gostyna
+
+  gostyna:
+    - scene: svitlytsia
+    - show: stilets_velykyi
+      at: [560, 770]
+    - show: stilets_serednii
+      at: [820, 770]
+    - show: stilets_malyi
+      at: [1420, 770]
+    - show: vedmid
+      at: [560, 770]
+    - show: vedmedytsia
+      at: [820, 770]
+    - show: masha
+      at: [1100, 770]
+    - show: mishko
+      at: [1300, 770]
+    - show: miska_velyka
+      at: [560, 628]
+    - show: miska_serednia
+      at: [820, 628]
+    - show: miska_mala
+      at: [1100, 628]
+    - show: stil_vedmediv
+      at: [830, 770]
+    - narrator: "Посадили ведмеді Машу за стіл."
+    - mishko: "Бери мою мисочку! Вона найсмачніша. А я — з маминої сьорбну!"
+    - vedmid: "Ото по-ведмежому! Гостеві — найкраще."
+    - fx: munch
+      on: masha
+    - fx: munch
+      on: vedmid
+    - masha: "Ммм! Дякую, Мишку! Дякую, Настасіє Петрівно! Така смачна юшка!"
+    - fx: hearts
+      on: vedmedytsia
+    - vedmedytsia: "Їж на здоров'я, дитинко. А тоді Михайло Іванович відведе тебе додому — він у лісі кожну стежку знає."
+    - next: provody
+
+  provody:
+    - scene: hata
+    - show: vedmid
+      at: [-300, 770]
+      flip: true
+    - show: masha
+      at: [-500, 770]
+      flip: true
+    - show: mishko
+      at: [-650, 770]
+      flip: true
+    - move: vedmid
+      to: [700, 770]
+      ms: 2600
+    - move: masha
+      to: [500, 770]
+      ms: 2600
+    - move: mishko
+      to: [320, 770]
+      hop: true
+      ms: 2600
+      wait: true
+    - narrator: "Провели ведмеді Машу лісом аж до самої хати."
+    - masha: "Дякую вам! Приходьте до нас у гості — я вам пиріжків напечу!"
+    - mishko: "Прийдемо! І ти приходь! Тільки стукай — тук-тук!"
+    - fx: hearts
+      on: masha
+    - fx: hearts
+      on: mishko
+    - narrator: "Відтоді Маша часто в ведмедів гостює. Бо чемну гостю в кожній хаті радо зустрічають — навіть у ведмежій!"
+    - ending: gostia
+
+  # ---------- відгалуження: нова юшка ----------
+
+  cook:
+    - masha: "Ой, що ж я наробила! Прийдуть ведмеді голодні — а юшки нема, і стільчик зламаний... Треба все виправити!"
+    - move: masha
+      to: [300, 770]
+      flip: false
+      ms: 1700
+      wait: true
+    - narrator: "Розпалила Маша піч, знайшла картоплю, моркву й цибульку — та й заходилася юшку варити."
+    - fx: bake
+    - fx: sparkle
+      on: masha
+    - masha: "Ще трішки солі — бо несолону ніхто не любить!"
+    - move: masha
+      to: [1180, 770]
+      flip: true
+      ms: 1600
+      wait: true
+    - hide: miska_mala
+    - show: miska_mala
+      at: [1100, 628]
+    - fx: sparkle
+      on: miska_mala
+    - narrator: "Налила свіжої юшки в Мишкову мисочку..."
+    - move: masha
+      to: [1400, 770]
+      ms: 600
+      wait: true
+    - narrator: "...а тоді знайшла молоток і цвяшки — та й полагодила стільчик!"
+    - fx: bang
+      at: [1420, 660]
+      word: "ТУК-ТУК!"
+    - hide: stilets_lamanyi
+    - show: stilets_malyi
+      at: [1420, 770]
+    - fx: sparkle
+      on: stilets_malyi
+    - masha: "Отак! Ще й міцніший став!"
+    - move: masha
+      to: [1180, 770]
+      flip: false
+      ms: 600
+      wait: true
+    - show: vedmid
+      at: [1900, 770]
+    - show: vedmedytsia
+      at: [2100, 770]
+    - show: mishko
+      at: [2250, 770]
+    - move: vedmid
+      to: [560, 770]
+      ms: 2600
+    - move: vedmedytsia
+      to: [820, 770]
+      ms: 2400
+    - move: mishko
+      to: [1300, 770]
+      hop: true
+      ms: 2400
+      wait: true
+    - hide: miska_velyka
+    - show: miska_velyka
+      at: [560, 628]
+    - hide: miska_serednia
+    - show: miska_serednia
+      at: [820, 628]
+    - narrator: "Тут і ведмеді повернулися."
+    - fx: bang
+      on: vedmid
+      word: "Р-Р-Р!"
+    - vedmid: "ХТО ЦЕ В НАШІЙ ХАТІ ХАЗЯЙНУЄ?!"
+    - vedmedytsia: "Хто це в нашій хаті хазяйнує?"
+    - mishko: "А хто це мені юшки налив і стільчика полагодив?"
+    - masha: "Це я, Маша. Вибачте мене, будь ласка! Я заблукала, голодна була — з'їла Мишкову юшку й зламала стільчик. Тож наварила вам нової юшки, а стільчик полагодила."
+    - fx: munch
+      on: vedmid
+    - vedmid: "Гм... А юшка ж яка смачна! Ще й посолена якраз!"
+    - fx: munch
+      on: mishko
+    - mishko: "Смакота! Мамо, вона ще й варити вміє!"
+    - fx: hearts
+      on: vedmedytsia
+    - vedmedytsia: "Ото хазяйновита дівчинка! Сідай, Машо, з нами обідати."
+    - fx: munch
+      on: masha
+    - narrator: "Пообідали всі разом, а тоді ведмеді провели Машу додому. А відтоді щонеділі кличуть її в гості — юшку варити. Бо такої смачної юшки в усьому лісі ніхто не варить!"
+    - ending: yushka
+
+  # ---------- відгалуження: попросити вибачення ----------
+
+  vybach:
+    - fx: stand
+      on: masha
+    - move: masha
+      to: [1400, 770]
+      flip: false
+      hop: true
+      ms: 600
+      wait: true
+    - masha: "Ой, не кусайте! Вибачте мене, будь ласка! Я в лісі заблукала, голодна була. Я з'їла Мишкову юшку... і стільчик зламала. Я не хотіла!"
+    - mishko: "Мій стільчик... Мою юшку..."
+    - fx: tears
+      on: mishko
+    - vedmid: "Гм! Чемно вибачилася. Не годиться на таких сердитися."
+    - vedmedytsia: "Що ж, коли щиро вибачилася — то й не сердимося. А стільчик тато новий змайструє."
+    - masha: "Мишку, не плач! Хочеш, я тебе гратися навчу? У хованки — знаєш таку гру?"
+    - mishko: "Гратися? У хованки? Ура!"
+    - fx: tumble
+      on: mishko
+    - move: masha
+      to: [-300, 770]
+      flip: false
+      ms: 2200
+    - move: mishko
+      to: [-300, 770]
+      flip: false
+      hop: true
+      ms: 2400
+      wait: true
+    - next: khovanky
+
+  khovanky:
+    - scene: glade
+    - show: bush
+      at: [1180, 770]
+    - show: mishko
+      at: [560, 770]
+    - show: masha
+      at: [760, 770]
+    - narrator: "Вибігли Маша й Мишко на галявину."
+    - mishko: "Раз, два, три, чотири, п'ять — я іду шукать!"
+    - eyes: mishko
+      state: closed
+    - move: masha
+      to: [1200, 770]
+      flip: true
+      ms: 1000
+      wait: true
+    - fx: sit
+      on: masha
+    - narrator: "Мишко очі заплющив, а Маша — шусть за кущик! Присіла й сидить тихенько."
+    - fx: rustle
+      on: bush
+    - eyes: mishko
+      state: open
+    - mishko: "Де ж це Маша? Під пеньком нема... На дереві нема..."
+    - move: mishko
+      to: [980, 770]
+      flip: true
+      ms: 1200
+      wait: true
+    - fx: rustle
+      on: bush
+    - mishko: "Ага! Ось вона! Тримай, тримай!"
+    - move: masha
+      to: [1300, 770]
+      flip: false
+      hop: true
+      ms: 500
+      wait: true
+    - masha: "Хі-хі! Знайшов! А тепер ти ховайся!"
+    - fx: tumble
+      on: masha
+    - fx: tumble
+      on: mishko
+    - narrator: "Гралися вони й у хованки, і в квача, і через пеньок стрибали — аж до самого вечора."
+    - fx: hearts
+      on: mishko
+    - fx: hearts
+      on: masha
+    - next: druzi
+
+  druzi:
+    - scene: hata
+    - show: vedmid
+      at: [-300, 770]
+      flip: true
+    - show: vedmedytsia
+      at: [-480, 770]
+      flip: true
+    - show: masha
+      at: [-640, 770]
+      flip: true
+    - show: mishko
+      at: [-780, 770]
+      flip: true
+    - move: vedmid
+      to: [800, 770]
+      ms: 2600
+    - move: vedmedytsia
+      to: [600, 770]
+      ms: 2600
+    - move: masha
+      to: [1150, 770]
+      ms: 2800
+    - move: mishko
+      to: [980, 770]
+      hop: true
+      ms: 2800
+      wait: true
+    - narrator: "А ввечері ведмеді всією родиною провели Машу додому."
+    - mishko: "Машо! А завтра прийдеш гратися?"
+    - masha: "Прийду! А ти мене не кусай — бо я тебе в квача заквачу!"
+    - fx: hearts
+      on: mishko
+    - narrator: "Відтоді Маша й Мишко — найкращі друзі. Ходять одне до одного в гості, граються в хованки... А стільчик Михайло Іванович новий змайстрував — ще й гойдалку до нього!"
+    - ending: druzi

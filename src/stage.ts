@@ -149,9 +149,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv'];
 /**
  * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
  * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
@@ -246,6 +246,9 @@ const REACTIONS: Record<string, string[]> = {
   korol: ['crow', 'no', 'dance'],
   pryntsesa: ['giggle', 'spin', 'dance', 'bow'],
   lyudozher: ['flex', 'sneeze', 'stretch', 'giggle'],
+  masha: ['spin', 'hop', 'giggle', 'bow'],
+  vedmedytsia: ['bow', 'wiggle', 'stretch', 'no'],
+  mishko: ['hops', 'sneeze', 'chase', 'curl'],
 };
 
 /** one heave-ho of pulling (seconds) */
@@ -255,7 +258,7 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
-const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
+const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri'];
 
 interface Particle {
   el: SVGElement;
@@ -952,7 +955,77 @@ interface Backdrop {
   leaves?: boolean;
 }
 
+// ---------- «Три ведмеді» ----------
+
+/** the bears' hut inside: honey-coloured log walls, a plank floor, a beam; room: what is in it */
+function vedmezha(room: 'svitlytsia' | 'spalnia') {
+  const F = GROUND - 40;
+  let logs = '';
+  for (let i = 0, y = F - 60; y > -1300; i++, y -= 60) logs += `<rect x="-1600" y="${y}" width="4800" height="58" rx="28" fill="${i % 2 ? '#c99a62' : '#d6aa70'}"/><path d="M-1600 ${y + 58} H3200" stroke="#8a5e34" stroke-width="4"/>`;
+  let planks = '';
+  for (let x = -1600; x < 3200; x += 130) planks += `<path d="M${x} ${F} L${x - 280} 6000" stroke="#7a5232" stroke-width="4"/>`;
+  const base = `
+  <rect x="-1600" y="-1300" width="4800" height="${F + 1300}" fill="#c99a62"/>${logs}
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#a1704a"/>${planks}
+  <rect x="-1600" y="${F - 14}" width="4800" height="18" fill="#7a5232"/>`;
+  // a bear's face in a round frame (the portraits over the beds), s — its size
+  const portrait = (x: number, y: number, s: number, fur: string, frame: string, extra = '') => `<g transform="translate(${x} ${y}) scale(${s})">
+    <path d="M0 -70 V-110" stroke="#5a3a22" stroke-width="3"/><circle cx="0" cy="-112" r="5" fill="#5a3a22"/>
+    <ellipse cx="0" cy="0" rx="62" ry="70" fill="#fff8e1" stroke="${frame}" stroke-width="12"/>
+    <circle cx="-26" cy="-30" r="14" fill="${fur}" stroke="#5a3a22" stroke-width="3"/><circle cx="26" cy="-30" r="14" fill="${fur}" stroke="#5a3a22" stroke-width="3"/>
+    <ellipse cx="0" cy="6" rx="38" ry="34" fill="${fur}" stroke="#5a3a22" stroke-width="3"/>
+    <ellipse cx="0" cy="18" rx="16" ry="12" fill="#e6c49a"/><ellipse cx="0" cy="12" rx="6" ry="4" fill="#2b1a10"/>
+    <circle cx="-13" cy="-4" r="4" fill="#2b1a10"/><circle cx="13" cy="-4" r="4" fill="#2b1a10"/>${extra}</g>`;
+  if (room === 'svitlytsia')
+    return `${base}
+  <!-- the clay stove, its fire, a pot on it -->
+  <path d="M60 ${F} L60 330 Q70 290 110 290 L330 290 Q370 290 380 330 L380 ${F} Z" fill="#efe3cf" stroke="#b9a586" stroke-width="6"/>
+  <path d="M170 290 L180 -60 L270 -60 L280 290 Z" fill="#efe3cf" stroke="#b9a586" stroke-width="6"/>
+  <path d="M130 ${F - 10} L130 590 Q220 520 310 590 L310 ${F - 10} Z" fill="#3a2418"/>
+  <ellipse data-glow="1" cx="220" cy="${F - 50}" rx="110" ry="54" fill="#ff9a3c" opacity=".45"/>
+  <g transform="translate(220 ${F - 14})">
+    <path data-flame="1" d="M-60 0 Q-70 -50 -42 -78 Q-34 -44 -16 -34 Q-26 -88 10 -112 Q10 -60 36 -52 Q36 -86 62 -94 Q78 -44 60 0 Z" fill="#ff7a1a"/>
+    <path data-flame="1" d="M-34 0 Q-44 -34 -20 -56 Q-14 -30 0 -26 Q-6 -60 18 -78 Q22 -38 40 -30 Q52 -16 34 0 Z" fill="#ffd23f"/>
+    <rect x="-70" y="-10" width="140" height="14" rx="6" fill="#4e2f18"/>
+  </g>
+  ${[[100, 380], [340, 420], [110, 520], [350, 560]].map(([x, y]) => `<path d="M${x - 16} ${y} q16 -22 32 0 q-16 14 -32 0z" fill="#e53935"/><circle cx="${x}" cy="${y - 2}" r="5" fill="#ffd54f"/>`).join('')}
+  <path d="M250 290 q-30 0 -30 -34 q0 -30 30 -34 q30 4 30 34 q0 34 -30 34z" fill="#c0542e" stroke="#7a3a1e" stroke-width="4"/>
+  <!-- the window with little curtains -->
+  <rect x="680" y="230" width="240" height="210" fill="#9fd3c0" stroke="#5a3a22" stroke-width="12"/>
+  <path d="M700 440 L750 320 L800 440 Z M780 440 L840 290 L900 440 Z" fill="#2e7d32"/>
+  <path d="M800 230 v210 M680 335 h240" stroke="#5a3a22" stroke-width="8"/>
+  <path d="M674 226 Q720 300 690 380 L674 380 Z M926 226 Q880 300 910 380 L926 380 Z" fill="#e57373" stroke="#5a3a22" stroke-width="4"/>
+  <rect x="664" y="440" width="272" height="16" rx="5" fill="#8b5a2b" stroke="#5a3a22" stroke-width="4"/>
+  <!-- three hats on pegs: the father's big brown one, the mother's red kerchief, Mishko's blue cap -->
+  <rect x="1100" y="190" width="420" height="14" rx="5" fill="#6d4426"/>
+  <path d="M1140 200 q0 -70 60 -72 q60 2 60 72 z" fill="#6d4c41" stroke="#3e2723" stroke-width="5"/><rect x="1120" y="194" width="160" height="16" rx="7" fill="#5d4037" stroke="#3e2723" stroke-width="4"/>
+  <path d="M1320 204 L1370 290 L1420 204 Z" fill="#d32f2f" stroke="#5a3a22" stroke-width="4"/><circle cx="1350" cy="230" r="4" fill="#fff"/><circle cx="1385" cy="226" r="4" fill="#fff"/><circle cx="1368" cy="256" r="4" fill="#fff"/>
+  <path d="M1452 204 q0 -44 34 -44 q34 0 34 44 z" fill="#1e88e5" stroke="#0d47a1" stroke-width="4"/><circle cx="1486" cy="158" r="8" fill="#fff" stroke="#0d47a1" stroke-width="3"/>
+  <!-- a shelf with three mugs: big, middle, little -->
+  <rect x="1100" y="420" width="420" height="14" rx="5" fill="#6d4426"/>
+  <path d="M1140 420 v-70 h60 v70 z" fill="#8d5a2b" stroke="#5a3a22" stroke-width="4"/><path d="M1200 364 q24 0 24 20 q0 18 -24 18" fill="none" stroke="#5a3a22" stroke-width="6"/>
+  <path d="M1280 420 v-52 h46 v52 z" fill="#c62828" stroke="#5a3a22" stroke-width="4"/><path d="M1326 378 q18 0 18 14 q0 14 -18 14" fill="none" stroke="#5a3a22" stroke-width="5"/>
+  <path d="M1410 420 v-36 h32 v36 z" fill="#1e88e5" stroke="#5a3a22" stroke-width="4"/><path d="M1442 392 q12 0 12 10 q0 10 -12 10" fill="none" stroke="#5a3a22" stroke-width="4"/>
+  <!-- a round rug -->
+  <ellipse cx="900" cy="${GROUND + 80}" rx="420" ry="56" fill="#f5c542" opacity=".9"/>
+  <ellipse cx="900" cy="${GROUND + 80}" rx="330" ry="40" fill="none" stroke="#e57373" stroke-width="10"/>`;
+  return `${base}
+  <!-- the portraits: the father, the mother in her kerchief, Mishko -->
+  ${portrait(430, 250, 1.1, '#7b4b2a', '#6d4426')}
+  ${portrait(930, 190, 0.9, '#96603a', '#b07a45', '<path d="M-44 -24 Q-40 -62 0 -64 Q40 -62 44 -24 Q30 -46 0 -46 Q-30 -46 -44 -24 Z" fill="#d32f2f" stroke="#5a3a22" stroke-width="3"/>')}
+  ${portrait(1240, 340, 0.7, '#b9814a', '#1e88e5')}
+  <!-- a shelf with a candle and a clock -->
+  <rect x="580" y="430" width="160" height="12" rx="4" fill="#6d4426"/>
+  <rect x="604" y="380" width="18" height="50" fill="#fff8e1" stroke="#5a3a22" stroke-width="3"/><path d="M613 376 q-8 -14 0 -26 q8 12 0 26z" fill="#ffb300"/>
+  <circle cx="690" cy="396" r="30" fill="#fff8e1" stroke="#5a3a22" stroke-width="5"/><path d="M690 396 V376 M690 396 h14" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
+  <!-- a long rug with paw prints -->
+  <rect x="80" y="${GROUND + 40}" width="1440" height="70" rx="30" fill="#7cb342" opacity=".85"/>
+  ${[200, 420, 640, 860, 1080, 1300].map((x, i) => `<g transform="translate(${x} ${GROUND + 70 + (i % 2) * 14})"><ellipse rx="13" ry="10" fill="#33691e"/><circle cx="-11" cy="-15" r="4.5" fill="#33691e"/><circle cx="0" cy="-19" r="4.5" fill="#33691e"/><circle cx="11" cy="-15" r="4.5" fill="#33691e"/></g>`).join('')}`;
+}
+
 const BACKDROPS: Record<string, () => Backdrop> = {
+  svitlytsia: () => ({ still: vedmezha('svitlytsia'), layers: [] }),
+  spalnia: () => ({ still: vedmezha('spalnia'), layers: [] }),
   mlyn: () => ({
     // the miller's windmill on a hill, wheat fields round it
     still:
@@ -1864,6 +1937,7 @@ export class Stage {
         // the sledge leaves its broken pieces; torn hides are replaced by the next stack; the golden
         // egg leaves its shell
         if (id === 'sanky') this.show('lamani', [x, GROUND]);
+        else if (id === 'stilets_malyi') this.show('stilets_lamanyi', [x, a.y]);
         else if (gold) this.show('shkarlupa', [x, a.y]);
         else if (id === 'kozhi') this.later(0.6, () => this.show(id, [x, a.y]));
         return this.wait(700);

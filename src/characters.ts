@@ -20,6 +20,7 @@ import { dytyna, halushky, knyazivna, nevista, sirko, snip, stil, vnuchka } from
 import { hriadka, ripka } from './puppets-ripka';
 import { hryby, kasha, khata_vedmedya, korob, mariyka, penok, podruzhky, soroka, yahidky } from './puppets-mariyka';
 import { kareta, kit_chobotar, kit_chobotar_bosyi, korol, kosari, krolyk, kulka, kuropatky, lakhmittia, lev, lyudozher, markiz, myshenia, osel, pryntsesa, restoran, starshi, syn, voda, zhentsi } from './puppets-kit';
+import { dveri, lizhko_male, lizhko_serednie, lizhko_velyke, lozhka, masha, mishko, miska_mala, miska_mala_porozhnia, miska_serednia, miska_velyka, stil_vedmediv, stilets_lamanyi, stilets_malyi, stilets_serednii, stilets_velykyi, vedmedytsia, vikno } from './puppets-vedmedi';
 import { kubelko, kurcha, ryaba, shkarlupa, shokolad, yaieshnia, yaiechko, zolote } from './puppets-ryaba';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
@@ -519,6 +520,27 @@ export const PUPPETS: Record<string, () => string> = {
   voda,
   lakhmittia,
   restoran,
+  masha,
+  vedmedytsia,
+  mishko,
+  miska_velyka,
+  miska_serednia,
+  miska_mala,
+  miska_mala_porozhnia,
+  lozhka,
+  stilets_velykyi,
+  stilets_serednii,
+  stilets_malyi,
+  stilets_lamanyi,
+  stil_vedmediv,
+  lizhko_velyke,
+  lizhko_serednie,
+  lizhko_male,
+  vikno,
+  dveri,
+  // the cover of «Три ведмеді»: the father, the mother and Mishko side by side
+  try_vedmedi: () =>
+    `<g transform="translate(-120 0) scale(.6)">${vedmid()}</g><g transform="translate(30 0) scale(.6)">${vedmedytsia()}</g><g transform="translate(150 0) scale(.6)">${mishko()}</g>`,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -684,4 +706,23 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   voda: { mouth: [0, -150], top: -160 },
   lakhmittia: { mouth: [0, -30], top: -60 },
   restoran: { mouth: [0, -170], top: -430 },
+  masha: { mouth: [0, -224], top: -300, hands: [0, -140] },
+  vedmedytsia: { mouth: [-17, -238], top: -340, hands: [60, -130] },
+  mishko: { mouth: [-12, -132], top: -220, hands: [0, -60] },
+  miska_velyka: { mouth: [0, -60], top: -110 },
+  miska_serednia: { mouth: [0, -50], top: -90 },
+  miska_mala: { mouth: [0, -40], top: -70 },
+  miska_mala_porozhnia: { mouth: [0, -40], top: -50 },
+  lozhka: { mouth: [0, -80], top: -110 },
+  stilets_velykyi: { mouth: [0, -220], top: -500 },
+  stilets_serednii: { mouth: [0, -190], top: -400 },
+  stilets_malyi: { mouth: [0, -120], top: -250 },
+  stilets_lamanyi: { mouth: [0, -20], top: -60 },
+  stil_vedmediv: { mouth: [0, -150], top: -160 },
+  lizhko_velyke: { mouth: [0, -200], top: -320 },
+  lizhko_serednie: { mouth: [0, -330], top: -450 },
+  lizhko_male: { mouth: [0, -100], top: -220 },
+  // mouth = the window itself: Masha jumps out through it
+  vikno: { mouth: [0, -60], top: -260 },
+  dveri: { mouth: [0, -20], top: -400 },
 };
