@@ -18,6 +18,7 @@ import { chovnyk, gusenia, gusy, koval, kovadlo, kolyska, lopata, olenka, pyrohy
 import { bychok, drova, lunka, lysytsia_tisto, pastushok, pyrizhok, sanky, sanky_lamani, viz, vudka } from './puppets-lysychka';
 import { dytyna, halushky, knyazivna, nevista, sirko, snip, stil, vnuchka } from './puppets-sirko';
 import { hriadka, ripka } from './puppets-ripka';
+import { hryby, kasha, khata_vedmedya, korob, mariyka, penok, podruzhky, soroka, yahidky } from './puppets-mariyka';
 import { kubelko, kurcha, ryaba, shkarlupa, shokolad, yaieshnia, yaiechko, zolote } from './puppets-ryaba';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
@@ -486,6 +487,17 @@ export const PUPPETS: Record<string, () => string> = {
   shokolad,
   kurcha,
   yaieshnia,
+  mariyka,
+  podruzhky,
+  soroka,
+  korob,
+  penok,
+  hryby,
+  hryby2: hryby,
+  hryby3: hryby,
+  yahidky,
+  kasha,
+  khata_vedmedya,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -498,14 +510,16 @@ export function makePuppet(id: string, actor = id): SVGGElement {
 }
 
 /** Where on a puppet things come from: the mouth (notes, chomp), the top (sparkles), the hands (carrying). */
-export const ANCHORS: Record<string, { mouth: [number, number]; top: number; hands?: [number, number] }> = {
+/** behind: what it carries rides behind it (on the bear's back), not in front */
+export const ANCHORS: Record<string, { mouth: [number, number]; top: number; hands?: [number, number]; behind?: boolean }> = {
   // hands: where a carried kolobok's bottom is, held in front of the chest
   did: { mouth: [0, -268], top: -400, hands: [0, -120] },
   baba: { mouth: [0, -262], top: -352, hands: [0, -128] },
   kolobok: { mouth: [6, -36], top: -104 },
   zayets: { mouth: [-44, -126], top: -280, hands: [-34, -66] },
   vovk: { mouth: [-60, -236], top: -350, hands: [-84, -196] },
-  vedmid: { mouth: [-20, -272], top: -390 },
+  // hands: what he carries rides on his back (the box with Marijka in it)
+  vedmid: { mouth: [-20, -272], top: -390, hands: [70, -150], behind: true },
   lysytsia: { mouth: [-70, -180], top: -300, hands: [-92, -150] },
   bush: { mouth: [0, -80], top: -156 },
   sobaka: { mouth: [-80, -90], top: -150 },
@@ -617,4 +631,16 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   shokolad: { mouth: [0, -44], top: -90 },
   kurcha: { mouth: [-24, -34], top: -84 },
   yaieshnia: { mouth: [0, -24], top: -50 },
+  mariyka: { mouth: [0, -226], top: -306, hands: [0, -140] },
+  podruzhky: { mouth: [70, -206], top: -270 },
+  soroka: { mouth: [-58, -80], top: -110 },
+  // mouth = the top, where Marijka climbs in and pops out
+  korob: { mouth: [0, -150], top: -200 },
+  penok: { mouth: [0, -60], top: -110 },
+  hryby: { mouth: [0, -30], top: -70 },
+  hryby2: { mouth: [0, -30], top: -70 },
+  hryby3: { mouth: [0, -30], top: -70 },
+  yahidky: { mouth: [0, -20], top: -50 },
+  kasha: { mouth: [0, -60], top: -110 },
+  khata_vedmedya: { mouth: [-60, -20], top: -420 },
 };

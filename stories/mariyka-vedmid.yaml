@@ -1,0 +1,824 @@
+# Марійка і ведмідь — казка з вибором. Головна лінія — як у народній казці (пішла Марійка з
+# подружками до лісу, заблукала, прийшла до ведмежої хатинки; «топи піч, вари кашу, а то не
+# випущу»; сховалась у короб під пиріжки; «Сяду на пеньок, з'їм пиріжок!» — «Бачу-бачу! Не сідай
+# на пеньок, не їж пиріжок! Неси бабусі, неси дідусеві!»; собаки загавкали, ведмідь утік);
+# відгалуження — на виборах. Кроки ті самі, що в інших казках; нова сцена berloga — у ведмежій
+# хатинці; fx tuck on: korob who: [mariyka] — Марійка вже сидить у коробі (з нової сцени): її очі
+# видно в шпаринку, а говорить вона з коробу.
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Марійка і ведмідь
+cover: mariyka
+about: "Пішла Марійка з подружками до лісу по гриби — та й заблукала. А в лісі хатинка, а в хатинці — ведмідь! Як же Марійці додому повернутися?"
+
+voices:
+  narrator:  { name: "", pitch: 1.1, rate: 1 }
+  did:       { name: "Дід", pitch: 0.72, rate: 0.9 }
+  baba:      { name: "Баба", pitch: 1.0, rate: 0.95 }
+  mariyka:   { name: "Марійка", pitch: 1.4, rate: 1.05, hello: "Привіт! Я Марійка. Ходімо до лісу по гриби? Тільки не відставай!" }
+  podruzhky: { name: "Подружки", pitch: 1.5, rate: 1.05 }
+  vedmid:    { name: "Ведмідь", pitch: 0.55, rate: 0.85 }
+  sobaka:    { name: "Собачка", pitch: 1.2, rate: 1.1 }
+  soroka:    { name: "Сорока", pitch: 1.55, rate: 1.15 }
+
+endings:
+  home:    { title: "Марійка вдома", icon: "🏠" }
+  friends: { title: "Ведмідь у гостях", icon: "🍯" }
+  perets:  { title: "Пиріжок із перцем", icon: "🌶️" }
+  soroka:  { title: "Сорока-провідниця", icon: "🐦" }
+
+start: start
+
+scenes:
+  start:
+    - scene: hata
+    - show: did
+      at: [960, 770]
+    - show: baba
+      at: [1160, 770]
+    - show: mariyka
+      at: [1360, 770]
+    - narrator: "Привіт! Сьогодні — казка про Марійку і ведмедя. А ти допомагатимеш Марійці вибирати, що робити далі!"
+    - narrator: "Жили собі дід та баба, а з ними — онучка Марійка. Весела, моторна, а ще й кмітлива."
+    - show: podruzhky
+      at: [1950, 770]
+    - move: podruzhky
+      to: [1560, 770]
+      ms: 1800
+      wait: true
+    - podruzhky: "Марійко! Ходімо з нами до лісу по гриби та по ягоди!"
+    - mariyka: "Дідусю, бабусю, пустіть мене з подружками до лісу!"
+    - did: "Іди, онученько. Тільки від подружок не відставай, бо заблукаєш."
+    - baba: "І кошичок повний принось — грибочків на юшку!"
+    - mariyka: "Добре! Я швиденько!"
+    - narrator: "Пішла Марійка з подружками до лісу."
+    - move: podruzhky
+      to: [2200, 770]
+      ms: 1800
+    - move: mariyka
+      to: [2000, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - next: forest
+
+  forest:
+    - scene: forest
+    - show: hryby
+      at: [640, 770]
+    - show: hryby2
+      at: [250, 770]
+    - show: yahidky
+      at: [1180, 770]
+    - show: podruzhky
+      at: [1330, 770]
+    - show: mariyka
+      at: [900, 770]
+    - narrator: "Прийшли дівчата до лісу. Подружки ягідки збирають, а Марійка — грибочки."
+    - move: mariyka
+      to: [700, 770]
+      ms: 900
+      wait: true
+    - hide: hryby
+    - fx: sparkle
+      on: mariyka
+    - mariyka: "Ой, які гарні боровички! А он іще! І ще!"
+    - move: mariyka
+      to: [320, 770]
+      ms: 1400
+      wait: true
+    - hide: hryby2
+    - fx: sparkle
+      on: mariyka
+    - narrator: "Деревце за деревцем, кущик за кущиком — та й відійшла Марійка далеко-далеко від подружок."
+    - move: podruzhky
+      to: [2200, 770]
+      ms: 2600
+    - move: mariyka
+      to: [-300, 770]
+      ms: 2200
+      wait: true
+    - next: lost
+
+  lost:
+    - scene: deep
+    - show: mariyka
+      at: [820, 770]
+    - narrator: "Підвела Марійка голову — а довкола темний-темний ліс. Ні подружок, ні стежки."
+    - mariyka: "Ау! Подружки! Де ви? Ау-у!"
+    - narrator: "Тільки луна відгукується: «Ау-у...»"
+    - fx: tears
+      on: mariyka
+    - mariyka: "Ой, заблукала я... Куди ж мені тепер іти?"
+    - choice: "Заблукала Марійка. Що ж їй робити?"
+      options:
+        - label: "Шукати стежку в лісі"
+          icon: "🌲"
+          next: hut
+        - label: "Спитати дорогу в пташок"
+          icon: "🐦"
+          next: magpie
+
+  hut:
+    - show: khata_vedmedya
+      at: [1150, 770]
+    - move: mariyka
+      to: [880, 770]
+      flip: true
+      ms: 1400
+    - narrator: "Ішла Марійка, ішла — аж бачить: стоїть у гущавині хатинка."
+    - fx: rock
+      on: khata_vedmedya
+    - fx: bang
+      at: [1090, 640]
+      word: "ТУК-ТУК!"
+    - mariyka: "Тук-тук! Хто в хатинці живе?"
+    - narrator: "Ніхто не відгукується. Штовхнула Марійка двері — вони й відчинилися."
+    - enter: mariyka
+      into: khata_vedmedya
+    - narrator: "А жив у тій хатинці великий-превеликий ведмідь. Тільки його саме вдома не було."
+    - next: den
+
+  den:
+    - scene: berloga
+    - show: kasha
+      at: [960, 596]
+    - show: mariyka
+      at: [700, 770]
+    - narrator: "Сіла Марійка біля віконця та й чекає, що буде."
+    - fx: sit
+      on: mariyka
+    - narrator: "Аж увечері — тупу-тупу! — повертається хазяїн."
+    - show: vedmid
+      at: [1850, 770]
+    - move: vedmid
+      to: [1200, 770]
+      ms: 1800
+      wait: true
+    - fx: shake
+      on: vedmid
+    - vedmid: "Ого! Хто це в моїй хаті?"
+    - fx: stand
+      on: mariyka
+    - mariyka: "Я Марійка. Я в лісі заблукала..."
+    - vedmid: "Ну, то тепер у мене й житимеш! Будеш піч топити, кашу варити, мене кашею годувати. А не то — не випущу!"
+    - fx: tears
+      on: mariyka
+    - narrator: "Зажурилася Марійка. Та що ж робити — стала вона жити в ведмедя."
+    - fx: sparkle
+      on: kasha
+    - narrator: "Ведмідь цілими днями в лісі бродить, а Марійка в хатинці хазяйнує: піч топить, кашу варить."
+    - fx: munch
+      on: vedmid
+    - vedmid: "Ох і смачна каша! Ох і хазяйновита дівчинка!"
+    - narrator: "А Марійка все думає: як би їй додому, до дідуся й бабусі, повернутися?"
+    - choice: "Що ж надумає Марійка?"
+      options:
+        - label: "Перехитрити ведмедя"
+          icon: "🧺"
+          next: bake
+        - label: "Подружитися з ведмедем"
+          icon: "🐻"
+          next: friend
+
+  bake:
+    - mariyka: "Ведмедику, відпусти мене на один денечок до села. Віднесу дідусеві й бабусі гостинця."
+    - vedmid: "Ні, ти в лісі заблукаєш. Давай гостинця — я сам віднесу!"
+    - narrator: "А Марійці того й треба! Напекла вона пиріжків..."
+    - hide: kasha
+    - show: pyrohy
+      at: [960, 596]
+    - fx: sparkle
+      on: pyrohy
+    - show: korob
+      at: [520, 770]
+    - narrator: "...дістала великий-превеликий короб і каже ведмедеві:"
+    - mariyka: "Дивись, ведмедику: я покладу пиріжки в короб, а ти неси дідусеві й бабусі. Та короба не відкривай і пиріжків не їж! Я на високий дуб вилізу — буду за тобою дивитися!"
+    - vedmid: "Добре, давай короб."
+    - mariyka: "Вийди-но спершу на ґанок, подивися, чи не йде дощ!"
+    - move: vedmid
+      to: [1900, 770]
+      flip: true
+      ms: 1600
+      wait: true
+    - narrator: "Тільки ведмідь вийшов — Марійка взяла миску з пиріжками..."
+    - move: mariyka
+      to: [960, 770]
+      flip: true
+      ms: 700
+      wait: true
+    - carry: pyrohy
+      by: mariyka
+    - move: mariyka
+      to: [700, 770]
+      flip: false
+      ms: 700
+      wait: true
+    - hide: pyrohy
+    - enter: mariyka
+      into: korob
+    - narrator: "...та й шмиг у короб! А миску з пиріжками собі на голову поставила."
+    - move: vedmid
+      to: [800, 770]
+      flip: false
+      ms: 1500
+      wait: true
+    - vedmid: "Короб готовий! Ну, понесу гостинця."
+    - move: vedmid
+      to: [450, 770]
+      ms: 700
+      wait: true
+    - carry: korob
+      by: vedmid
+    - narrator: "Закинув ведмідь короб на спину та й пішов до села."
+    - move: vedmid
+      to: [1900, 770]
+      flip: true
+      ms: 2600
+      wait: true
+    - next: stump
+
+  stump:
+    - scene: forest
+    - show: penok
+      at: [960, 770]
+    - show: vedmid
+      at: [-250, 770]
+      flip: true
+    - show: korob
+      at: [-320, 620]
+    - carry: korob
+      by: vedmid
+    - fx: tuck
+      on: korob
+      who: [mariyka]
+    - move: vedmid
+      to: [700, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - narrator: "Іде ведмідь лісом, іде — та й притомився."
+    - put: korob
+      to: [630, 770]
+      ms: 500
+    - move: vedmid
+      to: [960, 770]
+      ms: 700
+      wait: true
+    - vedmid: "Сяду на пеньок, з'їм пиріжок!"
+    - fx: sit
+      on: vedmid
+    - mariyka: "Бачу-бачу! Не сідай на пеньок, не їж пиріжок! Неси бабусі, неси дідусеві!"
+    - fx: wake
+      on: vedmid
+    - vedmid: "Ач, яка окаста! Високо сидить, далеко дивиться!"
+    - move: vedmid
+      to: [560, 770]
+      flip: false
+      ms: 900
+      wait: true
+    - carry: korob
+      by: vedmid
+    - narrator: "Підхопив ведмідь короб і пішов далі."
+    - move: vedmid
+      to: [1900, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - next: stump2
+
+  stump2:
+    - scene: glade
+    - show: penok
+      at: [1040, 770]
+    - show: yahidky
+      at: [360, 770]
+    - show: vedmid
+      at: [-250, 770]
+      flip: true
+    - show: korob
+      at: [-320, 620]
+    - carry: korob
+      by: vedmid
+    - fx: tuck
+      on: korob
+      who: [mariyka]
+    - move: vedmid
+      to: [760, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - narrator: "Іде ведмідь далі. Знову притомився. Аж бачить — ще один пеньок."
+    - put: korob
+      to: [690, 770]
+      ms: 500
+    - move: vedmid
+      to: [1040, 770]
+      ms: 800
+      wait: true
+    - fx: sit
+      on: vedmid
+    - vedmid: "Сяду на пеньок, з'їм пиріжок! Тут уже Марійка мене не побачить..."
+    - choice: "Ведмідь хоче з'їсти пиріжок! Що зробить Марійка?"
+      options:
+        - label: "Знову гукнути з коробу"
+          icon: "📣"
+          next: shout
+        - label: "Хай з'їсть пиріжок"
+          icon: "🌶️"
+          next: perets
+
+  shout:
+    - mariyka: "Бачу-бачу! Не сідай на пеньок, не їж пиріжок! Неси бабусі, неси дідусеві!"
+    - fx: wake
+      on: vedmid
+    - vedmid: "Ото ж яка окаста! Високо сидить, далеко дивиться! Ну, понесу вже, понесу..."
+    - move: vedmid
+      to: [620, 770]
+      flip: false
+      ms: 1000
+      wait: true
+    - carry: korob
+      by: vedmid
+    - narrator: "Ухопив ведмідь короб — і бігом до села, аж не оглядається."
+    - move: vedmid
+      to: [1900, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - next: village
+
+  village:
+    - scene: hata
+    - show: sobaka
+      at: [470, 770]
+    - show: zhuchka
+      at: [640, 770]
+    - fx: lie
+      on: sobaka
+    - fx: sleep
+      on: sobaka
+    - fx: lie
+      on: zhuchka
+    - fx: sleep
+      on: zhuchka
+    - show: vedmid
+      at: [1950, 770]
+    - show: korob
+      at: [2020, 620]
+    - carry: korob
+      by: vedmid
+    - fx: tuck
+      on: korob
+      who: [mariyka]
+    - move: vedmid
+      to: [1150, 770]
+      ms: 2400
+      wait: true
+    - narrator: "Прийшов ведмідь до села, знайшов дідову хату та й стукає."
+    - fx: bang
+      at: [960, 560]
+      word: "ТУК-ТУК!"
+    - vedmid: "Тук-тук! Відчиняйте! Гостинця вам приніс — від Марійки!"
+    - choice: "Стукає ведмідь. Хто ж вибіжить йому назустріч?"
+      options:
+        - label: "Собаки"
+          icon: "🐕"
+          next: dogs
+        - label: "Дід і баба"
+          icon: "👵"
+          next: guests
+
+  dogs:
+    - fx: wake
+      on: sobaka
+    - fx: wake
+      on: zhuchka
+    - sobaka: "Гав-гав-гав! Хто там?"
+    - move: sobaka
+      to: [880, 770]
+      flip: true
+      hop: true
+      ms: 700
+    - move: zhuchka
+      to: [740, 770]
+      flip: true
+      hop: true
+      ms: 700
+      wait: true
+    - fx: bang
+      on: sobaka
+      word: "ГАВ-ГАВ!"
+    - narrator: "Почули собаки ведмедя — та як загавкають, та як кинуться до нього!"
+    - vedmid: "Ой-ой-ой! Собаки!"
+    - put: korob
+      to: [1220, 770]
+      ms: 400
+    - move: vedmid
+      to: [2200, 770]
+      flip: true
+      ms: 1300
+    - fx: whoosh
+      on: vedmid
+    - fx: dust
+      on: vedmid
+    - pause: 900
+    - narrator: "Кинув ведмідь короб — і навтікача до лісу! Тільки п'яти замиготіли."
+    - sobaka: "Гав! І не вертайся!"
+    - show: did
+      at: [320, 770]
+    - show: baba
+      at: [320, 770]
+    - move: did
+      to: [980, 770]
+      ms: 1500
+    - move: baba
+      to: [580, 770]
+      ms: 900
+      wait: true
+    - did: "Що там за гамір? Ого — короб! Та ще й із пиріжками!"
+    - baba: "Звідки ж це? Ану, подивімося..."
+    - move: baba
+      to: [1080, 770]
+      ms: 1300
+    - move: did
+      to: [880, 770]
+      ms: 600
+      wait: true
+    - fx: popout
+      on: korob
+      who: [mariyka]
+    - mariyka: "Дідусю! Бабусю! Це я!"
+    - did: "Марійко! Онученько!"
+    - baba: "Ой, радість яка! А ми ж тебе всюди шукали!"
+    - fx: hearts
+      on: baba
+    - fx: hearts
+      on: mariyka
+    - mariyka: "Це я ведмедя перехитрила! Він мене сам і приніс — у коробі, під пиріжками!"
+    - did: "Ото ж кмітлива в нас онучка!"
+    - fx: munch
+      on: sobaka
+    - fx: munch
+      on: zhuchka
+    - narrator: "А ведмідь біг до лісу так, що й не оглядався. А дід, баба й Марійка сіли пиріжки їсти — і собачкам по пиріжку дали!"
+    - ending: home
+
+  guests:
+    - show: did
+      at: [320, 770]
+    - show: baba
+      at: [320, 770]
+    - move: did
+      to: [880, 770]
+      ms: 1500
+    - move: baba
+      to: [700, 770]
+      ms: 1200
+      wait: true
+    - narrator: "Відчинили дід і баба ворота — аж там ведмідь!"
+    - fx: wake
+      on: baba
+    - fx: wake
+      on: did
+    - baba: "Ой, лишенько! Ведмідь!"
+    - vedmid: "Не бійтеся! Я гостинця приніс. Від Марійки!"
+    - did: "Від Марійки?! Та де ж вона, наша онучка?"
+    - put: korob
+      to: [1220, 770]
+      ms: 500
+    - fx: popout
+      on: korob
+      who: [mariyka]
+    - mariyka: "Тут я! Дідусю, бабусю!"
+    - vedmid: "Ого! То це ти в коробі сиділа? А я думав — на високому дубі! Ото ж хитра!"
+    - narrator: "Здивувався ведмідь — а тоді як зарегоче!"
+    - fx: bang
+      on: vedmid
+      word: "ХА-ХА-ХА!"
+    - mariyka: "Не сердься, ведмедику! Ти ж добрий — ти мене додому приніс."
+    - did: "Заходь до хати, ведмедику! Чаю з медом поп'ємо, пиріжків поїмо!"
+    - next: tea
+
+  friend:
+    - mariyka: "Ведмедику, а давай дружити! Я тобі ще смачнішої каші наварю — з медом!"
+    - vedmid: "Дружити? Зі мною ще ніхто не дружив... Усі мене бояться."
+    - fx: sparkle
+      on: kasha
+    - fx: munch
+      on: vedmid
+    - vedmid: "Ммм! З медом! Такої каші я зроду не їв!"
+    - fx: hearts
+      on: vedmid
+    - mariyka: "От бачиш! А моя бабуся ще смачніше варить. Тільки вона, мабуть, плаче — мене шукає..."
+    - vedmid: "Не плач, Марійко! Я тебе сам додому відведу. Я в лісі кожну стежку знаю!"
+    - mariyka: "Ура! Ходімо!"
+    - fx: tumble
+      on: mariyka
+    - move: vedmid
+      to: [1900, 770]
+      flip: true
+      ms: 1800
+    - move: mariyka
+      to: [1750, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - next: walk
+
+  walk:
+    - scene: forest
+    - show: mariyka
+      at: [620, 770]
+      flip: true
+    - show: vedmid
+      at: [900, 770]
+      flip: true
+    - roll: true
+    - narrator: "Пішли вони лісовою стежкою: ведмідь попереду, Марійка за ним. Ідуть та й пісеньку співають."
+    - mariyka: "Тупу-тупу, клишоногий, проведи мене дорогою! Ля-ля-ля!"
+      sing: true
+    - vedmid: "Ти-ри-ри, ти-ри-ра, а до хати вже пора!"
+      sing: true
+    - roll: false
+    - move: vedmid
+      to: [1900, 770]
+      ms: 1800
+    - move: mariyka
+      to: [1800, 770]
+      ms: 2000
+      wait: true
+    - next: arrive
+
+  arrive:
+    - scene: hata
+    - show: did
+      at: [700, 770]
+    - show: baba
+      at: [900, 770]
+    - show: vedmid
+      at: [1950, 770]
+    - show: mariyka
+      at: [2150, 770]
+    - move: vedmid
+      to: [1250, 770]
+      ms: 2000
+    - move: mariyka
+      to: [1450, 770]
+      ms: 2000
+      wait: true
+    - fx: wake
+      on: baba
+    - baba: "Ой, лишенько! Ведмідь!"
+    - did: "Марійко, тікай!"
+    - mariyka: "Не бійтеся! Це мій друг. Він мене з лісу додому привів!"
+    - vedmid: "Добридень! Ваша Марійка таку кашу варить — пальчики оближеш!"
+    - fx: hearts
+      on: baba
+    - baba: "Ну, коли друг — то милості просимо до хати! Чаю з медом поп'ємо!"
+    - next: tea
+
+  tea:
+    - scene: pich
+    - show: pyrohy
+      at: [860, 600]
+    - show: med
+      at: [990, 600]
+    - show: did
+      at: [480, 770]
+    - show: mariyka
+      at: [680, 770]
+    - show: baba
+      at: [1180, 770]
+    - show: vedmid
+      at: [1400, 770]
+    - fx: sit
+      on: did
+    - fx: sit
+      on: mariyka
+    - fx: sit
+      on: baba
+    - fx: sit
+      on: vedmid
+    - narrator: "Сіли всі до столу: дід, баба, Марійка й ведмідь. П'ють чай із медом, пиріжки їдять."
+    - fx: munch
+      on: vedmid
+    - fx: munch
+      on: did
+    - vedmid: "Ох і гарно в гостях! А можна, я ще прийду?"
+    - baba: "Приходь, ведмедику, щонеділі!"
+    - mariyka: "А я до тебе — по малину!"
+    - fx: hearts
+      on: mariyka
+    - fx: hearts
+      on: vedmid
+    - narrator: "Відтоді ведмідь щонеділі приходить до Марійки в гості — на чай із медом. А сусіди дивуються: ведмідь, а такий чемний!"
+    - ending: friends
+
+  perets:
+    - narrator: "Мовчить Марійка в коробі, тільки посміхається. Бо зверху вона поклала пиріжок не простий, а з гірким перцем — для ласунів!"
+    - fx: stand
+      on: vedmid
+    - move: vedmid
+      to: [880, 770]
+      ms: 800
+      wait: true
+    - show: pyrizhok
+      at: [850, 540]
+    - fx: sparkle
+      on: pyrizhok
+    - fx: munch
+      on: vedmid
+    - hide: pyrizhok
+    - vedmid: "Ам! Смачний пиріжок... Ой! Ой-ой-ой!"
+    - fx: bang
+      on: vedmid
+      word: "ПЕЧЕ!"
+    - fx: tears
+      on: vedmid
+    - vedmid: "Пече! Пече! Води! Води!"
+    - move: vedmid
+      to: [2200, 770]
+      flip: true
+      hop: true
+      ms: 1400
+    - fx: whoosh
+      on: vedmid
+    - fx: dust
+      on: vedmid
+    - pause: 900
+    - narrator: "Схопився ведмідь — і стрибом до річки, воду пити!"
+    - fx: popout
+      on: korob
+      who: [mariyka]
+    - mariyka: "Хі-хі! Отак тобі, ведмедику: не їж чужих пиріжків!"
+    - narrator: "Озирнулася Марійка — а за березами вже й село видно! Ведмідь її майже до самої хати доніс."
+    - mariyka: "Ой, он наша хата! Біжу додому!"
+    - move: mariyka
+      to: [1900, 770]
+      flip: true
+      ms: 1800
+      wait: true
+    - next: river
+
+  river:
+    - scene: river
+    - show: vedmid
+      at: [800, 770]
+    - fx: sit
+      on: vedmid
+    - narrator: "А ведмідь сидить біля річки та воду п'є — ніяк не нап'ється."
+    - fx: munch
+      on: vedmid
+    - vedmid: "Хлюп-хлюп... Ох, більше ніколи-ніколи не їстиму чужих пиріжків!"
+    - next: perets_home
+
+  perets_home:
+    - scene: hata
+    - show: did
+      at: [700, 770]
+    - show: baba
+      at: [900, 770]
+    - show: mariyka
+      at: [1950, 770]
+    - move: mariyka
+      to: [1150, 770]
+      ms: 1800
+      wait: true
+    - mariyka: "Дідусю! Бабусю! Я повернулася!"
+    - baba: "Марійко! Онученько! Де ж ти була?"
+    - fx: hearts
+      on: baba
+    - mariyka: "У ведмедя! А додому мене ведмідь сам приніс — у коробі. А ще я його пиріжком із перцем почастувала!"
+    - did: "Ха-ха! Ото провчила клишоногого! Ото кмітлива онучка!"
+    - fx: hearts
+      on: did
+    - narrator: "Відтоді ведмідь як побачить пиріжок — то спершу понюхає: чи нема там перцю? А Марійка до лісу ходить тільки з подружками — і не відстає!"
+    - ending: perets
+
+  magpie:
+    - mariyka: "Пташечки, лісові пташечки! Покажіть мені дорогу додому!"
+    - show: soroka
+      at: [1800, 480]
+      size: 1.4
+    - move: soroka
+      to: [1180, 560]
+      ms: 1400
+      wait: true
+    - move: soroka
+      to: [1100, 770]
+      ms: 500
+      wait: true
+    - soroka: "Скре-ке-ке! Я сорока-білобока, все на світі знаю! І твою хату знаю — коло неї дід дрова рубає!"
+    - mariyka: "Ой, сороко, відведи мене додому! Я тобі ягідок дам."
+    - soroka: "Скре-ке-ке! Лети... тобто йди за мною! Та не відставай!"
+    - move: soroka
+      to: [2000, 540]
+      flip: true
+      ms: 1600
+    - move: mariyka
+      to: [1900, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - next: trail
+
+  trail:
+    - scene: glade
+    - show: hryby
+      at: [640, 770]
+    - show: hryby2
+      at: [1000, 770]
+    - show: yahidky
+      at: [1340, 770]
+    - show: mariyka
+      at: [260, 770]
+      flip: true
+    - show: soroka
+      at: [520, 560]
+      flip: true
+      size: 1.4
+    - narrator: "Летить сорока з деревця на деревце, а Марійка — за нею. А по дорозі грибочки збирає!"
+    - move: soroka
+      to: [900, 520]
+      flip: true
+      ms: 1000
+    - move: mariyka
+      to: [560, 770]
+      ms: 1100
+      wait: true
+    - hide: hryby
+    - fx: sparkle
+      on: mariyka
+    - move: soroka
+      to: [1260, 560]
+      flip: true
+      ms: 1000
+    - move: mariyka
+      to: [920, 770]
+      ms: 1100
+      wait: true
+    - hide: hryby2
+    - fx: sparkle
+      on: mariyka
+    - mariyka: "То боровичок, то підберезник! А ось і ягідки — для сороки!"
+    - move: mariyka
+      to: [1220, 770]
+      ms: 900
+      wait: true
+    - move: soroka
+      to: [1400, 770]
+      flip: false
+      ms: 600
+      wait: true
+    - hide: yahidky
+    - fx: munch
+      on: soroka
+    - soroka: "Скре-ке-ке! Смакота!"
+    - narrator: "Отак і вивела сорока Марійку з лісу — просто до дідової хати."
+    - move: soroka
+      to: [2000, 540]
+      flip: true
+      ms: 1400
+    - move: mariyka
+      to: [1900, 770]
+      ms: 1800
+      wait: true
+    - next: soroka_home
+
+  soroka_home:
+    - scene: hata
+    - show: did
+      at: [800, 770]
+    - show: baba
+      at: [1000, 770]
+    - narrator: "А дід і баба вже й не знають, де онучку шукати."
+    - fx: tears
+      on: baba
+    - show: soroka
+      at: [1900, 480]
+      size: 1.4
+    - show: mariyka
+      at: [2050, 770]
+    - move: soroka
+      to: [1480, 600]
+      ms: 1600
+    - move: mariyka
+      to: [1250, 770]
+      ms: 1800
+      wait: true
+    - mariyka: "Дідусю! Бабусю! Я вдома!"
+    - baba: "Марійко! Знайшлася!"
+    - fx: hearts
+      on: baba
+    - did: "Хто ж тебе з лісу вивів?"
+    - mariyka: "Сорока-білобока! А ще я повний кошик грибів принесла!"
+    - baba: "От і зварю юшку з грибочками! А сороці — пшона жменька."
+    - fx: munch
+      on: soroka
+    - soroka: "Скре-ке-ке! Дякую! Як заблукаєш — клич мене!"
+    - fx: hearts
+      on: mariyka
+    - narrator: "Відтоді Марійка й сорока — найкращі подружки. Сорока до неї щоранку прилітає, всі лісові новини приносить!"
+    - ending: soroka

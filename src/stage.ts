@@ -149,9 +149,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok'];
 /**
  * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
  * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
@@ -240,6 +240,7 @@ const REACTIONS: Record<string, string[]> = {
   zmiy: ['crow', 'sneeze', 'scratch'],
   ryaba: ['bow', 'wiggle', 'dance', 'flip'],
   kurcha: ['hops', 'shiver', 'spin'],
+  mariyka: ['giggle', 'bow', 'hops', 'spin'],
 };
 
 /** one heave-ho of pulling (seconds) */
@@ -249,7 +250,7 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
-const BACK = ['khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
+const BACK = ['khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
 
 interface Particle {
   el: SVGElement;
@@ -737,6 +738,58 @@ function kurnyk(night: boolean) {
   );
 }
 
+/**
+ * Inside the bear's log hut: walls of round logs, a clay stove with a fire (it flickers like the
+ * one in the hata), a window onto the fir forest, shelves of honey pots, a table of planks, a big
+ * bed with a patchwork quilt, a paw-print rug.
+ */
+function berloga() {
+  const F = GROUND - 40;
+  let logs = '';
+  for (let i = 0, y = F - 64; y > -1300; i++, y -= 64) logs += `<rect x="-1600" y="${y}" width="4800" height="62" rx="30" fill="${i % 2 ? '#9a6a3e' : '#a87a4a'}"/><path d="M-1600 ${y + 62} H3200" stroke="#6d4426" stroke-width="4"/>`;
+  let planks = '';
+  for (let x = -1600; x < 3200; x += 140) planks += `<path d="M${x} ${F} L${x - 260} 6000" stroke="#5d3b22" stroke-width="4"/>`;
+  let quilt = '';
+  const colors = ['#e57373', '#fff176', '#81c784', '#64b5f6', '#ffb74d', '#ba68c8'];
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) quilt += `<rect x="${1330 + i * 52}" y="${600 + j * 40}" width="52" height="40" fill="${colors[(i + j * 3) % 6]}" stroke="#5a3a22" stroke-width="3"/>`;
+  const pot = (x: number, y: number) =>
+    `<path d="M${x - 26} ${y} Q${x - 34} ${y - 30} ${x - 20} ${y - 50} L${x + 20} ${y - 50} Q${x + 34} ${y - 30} ${x + 26} ${y} Z" fill="#c0542e" stroke="#7a3a1e" stroke-width="4"/>` +
+    `<ellipse cx="${x}" cy="${y - 52}" rx="22" ry="6" fill="#ffb300"/><path d="M${x - 6} ${y - 50} q2 14 0 22" stroke="#ffb300" stroke-width="6" stroke-linecap="round"/>`;
+  return `
+  <rect x="-1600" y="-1200" width="4800" height="${F + 1200}" fill="#8b5a2b"/>${logs}
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#7a4e2a"/>${planks}
+  <!-- the clay stove, its fire -->
+  <path d="M160 ${F} L160 330 Q170 290 210 290 L430 290 Q470 290 480 330 L480 ${F} Z" fill="#c9b49a" stroke="#8a7458" stroke-width="6"/>
+  <path d="M260 290 L270 -40 L360 -40 L370 290 Z" fill="#c9b49a" stroke="#8a7458" stroke-width="6"/>
+  ${[[200, 380], [300, 350], [420, 400], [230, 480], [440, 520]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="24" ry="14" fill="#b39c80"/>`).join('')}
+  <path d="M230 ${F - 10} L230 590 Q320 520 410 590 L410 ${F - 10} Z" fill="#3a2418"/>
+  <ellipse data-glow="1" cx="320" cy="${F - 50}" rx="110" ry="54" fill="#ff9a3c" opacity=".45"/>
+  <g transform="translate(320 ${F - 14})">
+    <path data-flame="1" d="M-60 0 Q-70 -50 -42 -78 Q-34 -44 -16 -34 Q-26 -88 10 -112 Q10 -60 36 -52 Q36 -86 62 -94 Q78 -44 60 0 Z" fill="#ff7a1a"/>
+    <path data-flame="1" d="M-34 0 Q-44 -34 -20 -56 Q-14 -30 0 -26 Q-6 -60 18 -78 Q22 -38 40 -30 Q52 -16 34 0 Z" fill="#ffd23f"/>
+    <rect x="-70" y="-10" width="140" height="14" rx="6" fill="#4e2f18"/>
+  </g>
+  <!-- the window onto the forest -->
+  <rect x="600" y="300" width="200" height="180" fill="#9fd3c0" stroke="#5a3a22" stroke-width="12"/>
+  <path d="M640 480 L680 360 L720 480 Z M700 480 L750 330 L800 480 Z" fill="#2e6b35"/>
+  <path d="M700 300 v180 M600 390 h200" stroke="#5a3a22" stroke-width="8"/>
+  <!-- shelves of honey pots -->
+  <rect x="880" y="330" width="360" height="16" rx="5" fill="#5d3b22"/>
+  ${pot(930, 330)}${pot(1010, 330)}${pot(1090, 330)}${pot(1170, 330)}
+  <!-- a table of planks on stumps -->
+  <rect x="890" y="620" width="40" height="${F - 620 + 30}" fill="#6d4426"/><rect x="1150" y="620" width="40" height="${F - 620 + 30}" fill="#6d4426"/>
+  <rect x="860" y="596" width="360" height="30" rx="8" fill="#a1704a" stroke="#5a3a22" stroke-width="5"/>
+  <!-- the big bed, a patchwork quilt -->
+  <rect x="1300" y="520" width="30" height="${F - 520 + 30}" fill="#6d4426" stroke="#4e2f18" stroke-width="4"/>
+  <rect x="1310" y="590" width="360" height="40" rx="10" fill="#fbf7ee" stroke="#5a3a22" stroke-width="4"/>
+  ${quilt}
+  <rect x="1320" y="680" width="360" height="24" rx="6" fill="#8b5a2b" stroke="#4e2f18" stroke-width="4"/>
+  <ellipse cx="1360" cy="584" rx="40" ry="20" fill="#fff" stroke="#5a3a22" stroke-width="4"/>
+  <!-- a rug with paw prints -->
+  <ellipse cx="760" cy="${GROUND + 70}" rx="300" ry="50" fill="#c62828" opacity=".85"/>
+  ${[620, 720, 820, 900].map((x, i) => `<g transform="translate(${x} ${GROUND + 60 + (i % 2) * 22})"><ellipse rx="14" ry="11" fill="#7f1d1d"/><circle cx="-12" cy="-16" r="5" fill="#7f1d1d"/><circle cx="0" cy="-20" r="5" fill="#7f1d1d"/><circle cx="12" cy="-16" r="5" fill="#7f1d1d"/></g>`).join('')}`;
+}
+
 function stump(x: number) {
   return `<g transform="translate(${x} ${GROUND - 10})"><path d="M-46 0 L-40 -70 L40 -70 L46 0 Z" fill="#7a5232" stroke="#5a3a22" stroke-width="5"/>
     <ellipse cx="0" cy="-74" rx="48" ry="16" fill="#f7fbff" stroke="#c9dcee" stroke-width="4"/></g>`;
@@ -754,6 +807,7 @@ interface Backdrop {
 }
 
 const BACKDROPS: Record<string, () => Backdrop> = {
+  berloga: () => ({ still: berloga(), layers: [] }),
   kurnyk: () => ({ still: kurnyk(false), layers: [] }),
   'kurnyk-night': () => ({ still: kurnyk(true), layers: [] }),
   luh: () => ({
@@ -1428,7 +1482,9 @@ export class Stage {
     if (!a || !c || !ANCHORS[by].hands) return;
     a.move?.done();
     a.carriedBy = c;
-    a.g.parentNode!.appendChild(a.g);
+    // in front of the one carrying it, or on its back (behind it)
+    if (ANCHORS[by].behind && c.g.parentNode === a.g.parentNode) a.g.parentNode!.insertBefore(a.g, c.g);
+    else a.g.parentNode!.appendChild(a.g);
   }
 
   /** who is inside what: animal → the mitten / snow house */
@@ -1664,6 +1720,16 @@ export class Stage {
         a.actDur = ACTS.wiggle.dur;
         for (let i = 0; i < 4; i++) this.later(i * 0.1, () => this.dustAt(a.x + (a.flip ? -1 : 1) * (70 + i * 14), a.y - 30));
         return this.wait(900);
+      }
+      case 'tuck': {
+        // already sitting inside (a scene on): who is in the box, without climbing in on stage
+        if (!a) return this.wait(0);
+        for (const id of who) {
+          this.hide(id);
+          this.inside[id] = a.id;
+        }
+        if (a.parts.peek) a.parts.peek.style.display = '';
+        return this.wait(0);
       }
       case 'rock':
         // rocked (the cradle), shaken (the maple the snake gnaws)
