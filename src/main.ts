@@ -15,7 +15,7 @@ import { COIN, heroesOf } from './heroes';
 import TALES from 'virtual:tales';
 
 /** the shelf, in this order */
-const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid'];
+const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid', 'kit-u-chobotyakh'];
 /** what the shelf knows of each tale (a few kilobytes); the tale itself is fetched when its card opens */
 const TALE_LIST: TaleInfo[] = SHELF.map((id) => TALES[id]);
 /** each tale's scenes: a chunk of its own, fetched on demand */
@@ -57,6 +57,7 @@ const COVER_VIEW: Record<string, string> = {
   ripka: '-190 -450 380 470',
   ryaba: '-110 -225 250 235',
   mariyka: '-110 -320 230 330',
+  kit_chobotar: '-125 -385 265 395',
 };
 
 function cover(story: Pick<TaleInfo, 'cover'>) {

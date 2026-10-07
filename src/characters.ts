@@ -19,6 +19,7 @@ import { bychok, drova, lunka, lysytsia_tisto, pastushok, pyrizhok, sanky, sanky
 import { dytyna, halushky, knyazivna, nevista, sirko, snip, stil, vnuchka } from './puppets-sirko';
 import { hriadka, ripka } from './puppets-ripka';
 import { hryby, kasha, khata_vedmedya, korob, mariyka, penok, podruzhky, soroka, yahidky } from './puppets-mariyka';
+import { kareta, kit_chobotar, kit_chobotar_bosyi, korol, kosari, krolyk, kulka, kuropatky, lakhmittia, lev, lyudozher, markiz, myshenia, osel, pryntsesa, restoran, starshi, syn, voda, zhentsi } from './puppets-kit';
 import { kubelko, kurcha, ryaba, shkarlupa, shokolad, yaieshnia, yaiechko, zolote } from './puppets-ryaba';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
@@ -498,6 +499,26 @@ export const PUPPETS: Record<string, () => string> = {
   yahidky,
   kasha,
   khata_vedmedya,
+  kit_chobotar,
+  kit_chobotar_bosyi,
+  syn,
+  markiz,
+  korol,
+  pryntsesa,
+  lyudozher,
+  lev,
+  myshenia,
+  kulka,
+  starshi,
+  osel,
+  kosari,
+  zhentsi,
+  kareta,
+  krolyk,
+  kuropatky,
+  voda,
+  lakhmittia,
+  restoran,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -643,4 +664,24 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   yahidky: { mouth: [0, -20], top: -50 },
   kasha: { mouth: [0, -60], top: -110 },
   khata_vedmedya: { mouth: [-60, -20], top: -420 },
+  // hands: the bag with the rabbit, the partridges, the old clothes hang from his paw
+  kit_chobotar: { mouth: [0, -228], top: -360, hands: [-70, -40] },
+  syn: { mouth: [0, -276], top: -360, hands: [88, -120] },
+  markiz: { mouth: [0, -276], top: -400, hands: [88, -120] },
+  korol: { mouth: [0, -262], top: -415, hands: [108, -120] },
+  pryntsesa: { mouth: [0, -248], top: -335, hands: [62, -150] },
+  lyudozher: { mouth: [0, -418], top: -680, hands: [162, -190] },
+  lev: { mouth: [-96, -160], top: -275 },
+  myshenia: { mouth: [-38, -38], top: -92 },
+  kulka: { mouth: [0, -218], top: -460 },
+  starshi: { mouth: [0, -236], top: -310 },
+  osel: { mouth: [-146, -210], top: -330 },
+  kosari: { mouth: [0, -236], top: -320 },
+  zhentsi: { mouth: [0, -232], top: -300 },
+  kareta: { mouth: [0, -120], top: -300 },
+  krolyk: { mouth: [-56, -64], top: -170 },
+  kuropatky: { mouth: [0, -40], top: -80 },
+  voda: { mouth: [0, -150], top: -160 },
+  lakhmittia: { mouth: [0, -30], top: -60 },
+  restoran: { mouth: [0, -170], top: -430 },
 };

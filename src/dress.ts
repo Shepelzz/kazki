@@ -103,6 +103,9 @@ export const BODY: Record<string, Body> = {
   hryfon: { view: 'side', slots: { neck: { dx: 0.35 } }, never: ['monokl', 'piratska'] },
   solombychok: { slots: { neck: { dx: 0.3 } }, items: { bant: { dx: 0.3 } } },
   // the head drawn as a path (a sideways snout); the bow goes on the tail's tip
+  // the king's beard: the seal on its chain hangs below it
+  korol: { slots: { neck: { dy: 0.55 } } },
+  lyudozher: { slots: { neck: { dy: 0.4 } } },
   zmiy: { view: 'side', head: { x: -190, y: -352, rx: 78, ry: 46 }, slots: { mouth: { k: 1.7 } }, items: { zmiy_bant: { dx: 4.02, dy: 0.86 } } },
 };
 
@@ -222,6 +225,8 @@ export function dress(g: Element, hero: string, items: Wearable[]) {
   const on = (slot: Slot) => items.some((i) => i.slot === slot);
   for (const h of Array.from(g.querySelectorAll('[data-part="hat"]'))) (h as SVGElement).style.display = on('head') ? 'none' : '';
   for (const c of Array.from(g.querySelectorAll('[data-part="collar"]'))) (c as SVGElement).style.display = on('neck') ? 'none' : '';
+  // and its own boots for other shoes (the Cat in Boots' big cuffed ones)
+  for (const c of Array.from(g.querySelectorAll('[data-part="boots"]'))) (c as SVGElement).style.display = on('feet') ? 'none' : '';
   // and its own beard and moustache for another one
   for (const c of Array.from(g.querySelectorAll('[data-part="beard"]'))) (c as SVGElement).style.display = items.some((i) => i.beard) ? 'none' : '';
   for (const c of Array.from(g.querySelectorAll('[data-part="outfit-body"]'))) c.parentNode!.removeChild(c);

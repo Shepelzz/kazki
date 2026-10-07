@@ -20,6 +20,7 @@ import * as groupH from './items/h';
 import * as groupZmiy from './items/zmiy';
 import * as groupRyaba from './items/ryaba';
 import * as groupMariyka from './items/mariyka';
+import * as groupKit from './items/kit';
 
 export * from './dress';
 
@@ -323,7 +324,7 @@ export const ITEMS: Item[] = [
 ];
 
 // the heroes' own things (src/items/*.ts)
-for (const g of [groupA, groupB, groupC, groupD, groupE, groupF, groupG, groupH, groupZmiy, groupRyaba, groupMariyka]) ITEMS.push(...g.ITEMS);
+for (const g of [groupA, groupB, groupC, groupD, groupE, groupF, groupG, groupH, groupZmiy, groupRyaba, groupMariyka, groupKit]) ITEMS.push(...g.ITEMS);
 
 /**
  * Changes made on fit.html (dev server, src/wardrobe-edits.json): things taken away from the
@@ -399,11 +400,17 @@ const HERO_ITEMS: Record<string, string> = {
   ryaba: 'koruna bant kvitka serdechka namysto',
   // and hers (items/mariyka.ts)
   mariyka: 'kvitka bant serdechka sontsezakhysni namysto',
+  // the heroes of «Кіт у чоботях»: a few common things, and their own (items/kit.ts)
+  kit_chobotar: 'monokl metelyk kravatka',
+  markiz: 'tsylindr okuliary metelyk',
+  korol: 'koruna monokl medal',
+  pryntsesa: 'koruna bant serdechka namysto',
+  lyudozher: 'kovpak sontsezakhysni sharf',
 };
 
 for (const g of [groupA, groupB, groupC, groupD]) Object.assign(HERO_ITEMS, g.SETS);
 // the later groups add to the sets
-for (const g of [groupE, groupF, groupG, groupH, groupZmiy, groupRyaba, groupMariyka])
+for (const g of [groupE, groupF, groupG, groupH, groupZmiy, groupRyaba, groupMariyka, groupKit])
   for (const h of Object.keys(g.SETS)) HERO_ITEMS[h] = ((HERO_ITEMS[h] || '') + ' ' + g.SETS[h]).trim();
 
 export const FITTED_HEROES = Object.keys(HERO_ITEMS);

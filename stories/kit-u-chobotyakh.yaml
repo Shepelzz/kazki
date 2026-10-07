@@ -1,0 +1,1008 @@
+# Кіт у чоботях — казка з вибором (Шарль Перро). Головна лінія — як у відомій казці (помер
+# мірошник, наймолодшому синові дістався кіт; «справ мені чоботи й дай торбу»; кролик у торбі й
+# куріпки королеві «від маркіза Карабаса»; «Рятуйте! Маркіз Карабас тоне!» — одяг під каменем,
+# королівське вбрання; «Кажіть, що це луки й поля маркіза Карабаса!»; замок людожера: «Кажуть, ти
+# вмієш перетворюватися на лева?» — кіт стрибає під стелю; «А на мишку?» — кіт стрибнув і з'їв
+# мишку; маркіз одружується з принцесою, кіт став вельможею й ловив мишей лише для розваги);
+# відгалуження — на виборах. Кроки ті самі, що в інших казках. Нові: фони mlyn (вітряк на пагорбі),
+# palats (тронна зала), richka (берег: дорога ліворуч, річка праворуч), zamok (замок людожера), zal
+# (зала замку, сволок на y = 420 — туди стрибає кіт); fx poof on: хто who: [ким стає] — чари: клуб
+# диму, і на тому місці вже інший; fx bow — уклін. Карета (kareta) — відкрита: хто в ній їде, стоїть
+# за нею на 40 вище (y 730), місця — на 20, 130 і 240 позаду від її середини (дивиться праворуч:
+# x − 20, x − 130, x − 240); щоб карета була попереду, її показують після пасажирів. Вода voda — спереду:
+# хто в ній, того видно від пояса. Кіт спершу босий (look: bosyi), потім у чоботях.
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Кіт у чоботях
+cover: kit_chobotar
+about: "Дістався наймолодшому синові мірошника у спадок тільки кіт. Та не простий кіт — а хитрий-прехитрий! Попросив він чоботи й торбу — і як закрутилося!"
+
+voices:
+  narrator:     { name: "", pitch: 1.1, rate: 1 }
+  kit_chobotar: { name: "Кіт у чоботях", pitch: 1.2, rate: 1.05, hello: "Мур-мяу! Я Кіт у чоботях! Бачиш, які в мене чоботи? Найкращі в королівстві!" }
+  syn:          { name: "Син мірошника", pitch: 1.0, rate: 1.0 }
+  markiz:       { name: "Маркіз Карабас", pitch: 1.0, rate: 1.0, hello: "Добридень! Я маркіз Карабас. Тільки цс-с — це мене котик так назвав!" }
+  korol:        { name: "Король", pitch: 0.75, rate: 0.9, hello: "Я король! Хочеш покататися в моїй золотій кареті?" }
+  pryntsesa:    { name: "Принцеса", pitch: 1.35, rate: 1.0, hello: "Привіт! Я принцеса. Ходімо гуляти понад річкою?" }
+  lyudozher:    { name: "Людожер", pitch: 0.6, rate: 0.85, hello: "Ого-го! Я людожер! Та не бійся — я вже пообідав!" }
+  starshi:      { name: "Старші брати", pitch: 0.85, rate: 1.0 }
+  kosari:       { name: "Косарі", pitch: 0.8, rate: 1.0 }
+  zhentsi:      { name: "Женці", pitch: 1.25, rate: 1.0 }
+  lev:          { name: "Лев", pitch: 0.5, rate: 0.85 }
+  myshenia:     { name: "Мишка", pitch: 1.75, rate: 1.15 }
+  kulka:        { name: "Кулька", pitch: 1.45, rate: 1.1 }
+
+endings:
+  canon:  { title: "Маркіз Карабас", icon: "👑" }
+  ryba:   { title: "Юшка від Кота", icon: "🐟" }
+  svyato: { title: "Свято в людожера", icon: "🎉" }
+  kulka:  { title: "Людожер-кулька", icon: "🎈" }
+
+start: start
+
+scenes:
+  start:
+    - scene: mlyn
+    - show: osel
+      at: [380, 770]
+    - show: starshi
+      at: [620, 770]
+    - show: syn
+      at: [980, 770]
+    - show: kit_chobotar
+      at: [1180, 770]
+      look: bosyi
+    - narrator: "Привіт! Сьогодні — казка про Кота в чоботях. А ти допомагатимеш котикові вибирати, що робити далі!"
+    - narrator: "Жив собі старий мірошник, і було в нього троє синів. Помер мірошник — і залишив синам у спадок млин, осла та кота."
+    - starshi: "Млин — старшому братові, осел — середньому! А тобі, наймолодшому, — кіт!"
+    - fx: bang
+      on: osel
+      word: "ІА!"
+    - narrator: "Забрали старші брати млин та осла — та й пішли собі працювати."
+    - move: osel
+      to: [-300, 770]
+      ms: 2600
+    - move: starshi
+      to: [-200, 770]
+      ms: 2600
+      wait: true
+    - narrator: "А наймолодшому дістався тільки кіт."
+    - fx: sit
+      on: syn
+    - syn: "Ех... Брати разом млин крутитимуть, борошно мелютимуть. А що ж мені робити з котом?"
+    - move: kit_chobotar
+      to: [1120, 770]
+      ms: 600
+      wait: true
+    - kit_chobotar: "Не журися, хазяїне! Дай мені лише одну річ — і побачиш: не такий я вже й поганий спадок!"
+    - fx: wake
+      on: syn
+    - syn: "Ти... ти вмієш говорити?!"
+    - kit_chobotar: "Ще й як! Мур-мяу!"
+    - choice: "Що ж попросить кіт у хазяїна?"
+      options:
+        - label: "Чоботи й торбу"
+          icon: "👢"
+          next: boots
+        - label: "Вудку й казанок"
+          icon: "🎣"
+          next: fishing
+
+  boots:
+    - kit_chobotar: "Справ мені, хазяїне, чоботи, щоб по кущах ходити, та дай торбу. Та й побачиш, що не такий я вже поганий спадок!"
+    - syn: "Ну що ж... Віддам останні грошики. Однаково більше нічого в мене нема."
+    - narrator: "Справив хлопець котові чоботи — гарні, з халявками! Дав торбу. Та ще й старого капелюха з пером знайшов."
+    - fx: sparkle
+      on: kit_chobotar
+    - show: kit_chobotar
+      at: [1120, 770]
+    - fx: sparkle
+      on: kit_chobotar
+    - fx: tumble
+      on: kit_chobotar
+    - kit_chobotar: "Ох і гарні чобітки! Тепер мене ніхто не наздожене!"
+    - syn: "Ну й красень! Справжній пан!"
+    - fx: bow
+      on: kit_chobotar
+    - kit_chobotar: "Чекай на мене, хазяїне. Скоро все зміниться!"
+    - move: kit_chobotar
+      to: [1900, 770]
+      flip: true
+      ms: 1600
+      wait: true
+    - next: hunt
+
+  hunt:
+    - scene: glade
+    - show: kit_chobotar
+      at: [-200, 770]
+      flip: true
+    - move: kit_chobotar
+      to: [640, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - narrator: "Прийшов кіт на лісову галявину, де багато кроликів. Насипав у торбу висівок та заячої капусти..."
+    - show: torba
+      at: [880, 770]
+    - fx: sparkle
+      on: torba
+    - narrator: "...поставив торбу, а сам ліг на травичку й прикинувся мертвим. Лежить — не дихає."
+    - fx: lie
+      on: kit_chobotar
+    - eyes: kit_chobotar
+      state: closed
+    - show: krolyk
+      at: [1850, 770]
+    - move: krolyk
+      to: [1150, 770]
+      hop: true
+      ms: 1600
+      wait: true
+    - narrator: "Аж ось біжить молоденький кролик. Принюхався — ммм, смачно пахне!"
+    - enter: krolyk
+      into: torba
+    - narrator: "Та й шмиг — просто в торбу!"
+    - fx: wake
+      on: kit_chobotar
+    - move: kit_chobotar
+      to: [780, 770]
+      flip: true
+      ms: 400
+      wait: true
+    - fx: bang
+      on: torba
+      word: "ЦАП!"
+    - narrator: "А кіт — стриб! — і затягнув мотузочок. Попався кролик!"
+    - kit_chobotar: "Ось і гостинець для самого короля!"
+    - carry: torba
+      by: kit_chobotar
+    - move: kit_chobotar
+      to: [1900, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - next: palace
+
+  palace:
+    - scene: palats
+    - show: korol
+      at: [1150, 770]
+    - fx: sit
+      on: korol
+    - show: pryntsesa
+      at: [1420, 770]
+    - show: kit_chobotar
+      at: [-200, 770]
+      flip: true
+    - show: torba
+      at: [-270, 730]
+    - carry: torba
+      by: kit_chobotar
+    - fx: tuck
+      on: torba
+      who: [krolyk]
+    - move: kit_chobotar
+      to: [760, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - narrator: "Прийшов кіт до королівського палацу — та й просто до короля."
+    - fx: bow
+      on: kit_chobotar
+    - kit_chobotar: "Ваша величносте! Мій пан, маркіз Карабас, звелів передати вам цього кролика!"
+    - put: torba
+      to: [900, 770]
+    - fx: popout
+      on: torba
+      who: [krolyk]
+    - korol: "Ого, який гарний кролик! Скажи своєму панові, маркізові Карабасу, що я дуже дякую. Мені дуже приємно!"
+    - pryntsesa: "Маркіз Карабас? Ніколи про такого не чула..."
+    - korol: "Гей, слуги! Несіть кролика на королівську кухню!"
+    - move: krolyk
+      to: [1950, 770]
+      hop: true
+      flip: true
+      ms: 1400
+    - hide: torba
+    - move: kit_chobotar
+      to: [-250, 770]
+      flip: false
+      ms: 1500
+      wait: true
+    - narrator: "А наступного дня кіт знову прийшов до короля — і приніс пару куріпок. Знову від маркіза Карабаса!"
+    - show: kuropatky
+      at: [-320, 730]
+    - carry: kuropatky
+      by: kit_chobotar
+    - move: kit_chobotar
+      to: [760, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - put: kuropatky
+      to: [900, 770]
+    - fx: sparkle
+      on: kuropatky
+    - fx: bow
+      on: kit_chobotar
+    - korol: "Знову від маркіза Карабаса? Ото щедрий пан! Треба б із ним познайомитися."
+    - narrator: "Отак два чи три місяці носив кіт королеві дичину. І все — від маркіза Карабаса."
+    - fx: stand
+      on: korol
+    - korol: "Доню, завтра поїдемо в кареті на прогулянку — понад річкою!"
+    - pryntsesa: "Ой, як гарно! Я так люблю річку!"
+    - narrator: "Почув це кіт — і притьмом до хазяїна!"
+    - move: kit_chobotar
+      to: [-300, 770]
+      flip: false
+      ms: 1300
+    - fx: whoosh
+      on: kit_chobotar
+    - fx: dust
+      on: kit_chobotar
+    - pause: 900
+    - next: river
+
+  river:
+    - scene: richka
+    - show: kamin
+      at: [1000, 770]
+    - show: voda
+      at: [1480, 770]
+    - show: syn
+      at: [560, 770]
+      flip: true
+    - show: kit_chobotar
+      at: [-200, 770]
+      flip: true
+    - move: kit_chobotar
+      to: [380, 770]
+      flip: true
+      ms: 1800
+      wait: true
+    - kit_chobotar: "Хазяїне! Роби все, що я скажу, — і щастя саме до тебе прийде. Іди скупайся в річці — ось тут!"
+    - syn: "У річці? Ну... гаразд, котику. Тобі видніше."
+    - show: lakhmittia
+      at: [600, 770]
+    - narrator: "Скинув хлопець свою латану одежину — та й до річки!"
+    - move: syn
+      to: [1440, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - fx: bang
+      at: [1440, 640]
+      word: "БУЛЬК!"
+    - narrator: "А кіт тим часом схопив хазяїнову одежину — і сховав під великим каменем."
+    - move: kit_chobotar
+      to: [560, 770]
+      flip: true
+      ms: 500
+      wait: true
+    - carry: lakhmittia
+      by: kit_chobotar
+    - move: kit_chobotar
+      to: [900, 770]
+      flip: true
+      ms: 800
+      wait: true
+    - hide: lakhmittia
+    - fx: rock
+      on: kamin
+    - fx: dust
+      on: kamin
+    - kit_chobotar: "Отак! Тепер ніхто й не знайде."
+    - narrator: "Аж ось на дорозі — цок-цок-цок! — їде королівська карета."
+    - show: korol
+      at: [-420, 730]
+      flip: true
+    - show: pryntsesa
+      at: [-530, 730]
+      flip: true
+    - show: kareta
+      at: [-400, 770]
+      flip: true
+    - move: kareta
+      to: [260, 770]
+      flip: true
+      ms: 2800
+    - move: korol
+      to: [240, 730]
+      flip: true
+      ms: 2800
+    - move: pryntsesa
+      to: [130, 730]
+      flip: true
+      ms: 2800
+      wait: true
+    - fx: bang
+      on: kit_chobotar
+      word: "РЯТУЙТЕ!"
+    - kit_chobotar: "Рятуйте! Рятуйте! Маркіз Карабас тоне!"
+    - syn: "Буль-буль! Рятуйте!"
+    - korol: "Маркіз Карабас? Той, що мені кроликів дарує? Гей, слуги! Швидше рятуйте маркіза!"
+    - narrator: "Кинулися королівські слуги — та й витягли маркіза з води."
+    - move: syn
+      to: [1110, 770]
+      flip: false
+      ms: 1200
+      wait: true
+    - kit_chobotar: "Ваша величносте, поки мій пан купався, злодії вкрали його одежу!"
+    - korol: "Ой, лишенько! Принесіть маркізові найкраще вбрання з моєї скрині!"
+    - narrator: "Принесли слуги вбрання — оксамитове, з золотими ґудзиками, ще й капелюх із пером!"
+    - fx: sparkle
+      on: syn
+    - hide: syn
+    - show: markiz
+      at: [1110, 770]
+    - fx: sparkle
+      on: markiz
+    - move: markiz
+      to: [1060, 770]
+      ms: 900
+      wait: true
+    - fx: bow
+      on: markiz
+    - markiz: "Дякую, ваша величносте! Ви мене врятували!"
+    - narrator: "А маркіз у новому вбранні — такий гарний, такий статечний!"
+    - pryntsesa: "Ах, який гарний маркіз!"
+    - fx: hearts
+      on: pryntsesa
+    - korol: "Сідайте до нас у карету, маркізе! Поїдемо разом!"
+    - move: markiz
+      to: [110, 770]
+      ms: 1700
+      wait: true
+    - hide: markiz
+    - show: markiz
+      at: [20, 730]
+      flip: true
+    - show: kareta
+      at: [260, 770]
+      flip: true
+    - narrator: "Сів маркіз у карету поруч із принцесою. А кіт — бігом попереду!"
+    - move: kit_chobotar
+      to: [1900, 770]
+      flip: true
+      ms: 1300
+    - fx: whoosh
+      on: kit_chobotar
+    - move: kareta
+      to: [2400, 770]
+      flip: true
+      ms: 3600
+    - move: korol
+      to: [2380, 730]
+      flip: true
+      ms: 3600
+    - move: pryntsesa
+      to: [2270, 730]
+      flip: true
+      ms: 3600
+    - move: markiz
+      to: [2160, 730]
+      flip: true
+      ms: 3600
+      wait: true
+    - next: meadow
+
+  meadow:
+    - scene: luh
+    - show: kosari
+      at: [1130, 770]
+    - fx: rock
+      on: kosari
+    - show: kit_chobotar
+      at: [-200, 770]
+      flip: true
+    - move: kit_chobotar
+      to: [760, 770]
+      flip: true
+      ms: 1500
+      wait: true
+    - narrator: "Біжить кіт попереду карети, аж чоботи блищать. Бачить — на луках косарі траву косять."
+    - kit_chobotar: "Гей, косарі! Зараз король проїжджатиме. Як спитає, чиї це луки, — кажіть: «Маркіза Карабаса»! А як не скажете — посічуть вас усіх на дрібну капусту!"
+    - kosari: "Ой-ой! Скажемо, котику, скажемо!"
+    - move: kit_chobotar
+      to: [1900, 770]
+      flip: true
+      ms: 1400
+      wait: true
+    - show: korol
+      at: [-420, 730]
+      flip: true
+    - show: pryntsesa
+      at: [-530, 730]
+      flip: true
+    - show: markiz
+      at: [-640, 730]
+      flip: true
+    - show: kareta
+      at: [-400, 770]
+      flip: true
+    - move: kareta
+      to: [500, 770]
+      flip: true
+      ms: 3000
+    - move: korol
+      to: [480, 730]
+      flip: true
+      ms: 3000
+    - move: pryntsesa
+      to: [370, 730]
+      flip: true
+      ms: 3000
+    - move: markiz
+      to: [260, 730]
+      flip: true
+      ms: 3000
+      wait: true
+    - korol: "Гей, косарі! Чиї це луки?"
+    - kosari: "Маркіза Карабаса!"
+    - korol: "Ого! Гарні в тебе луки, маркізе!"
+    - markiz: "Е-е... Так, ваша величносте. Щороку добре родять!"
+    - move: kareta
+      to: [2400, 770]
+      flip: true
+      ms: 3600
+    - move: korol
+      to: [2380, 730]
+      flip: true
+      ms: 3600
+    - move: pryntsesa
+      to: [2270, 730]
+      flip: true
+      ms: 3600
+    - move: markiz
+      to: [2160, 730]
+      flip: true
+      ms: 3600
+      wait: true
+    - next: field
+
+  field:
+    - scene: zhnyva
+    - show: zhentsi
+      at: [1340, 770]
+    - show: kit_chobotar
+      at: [-200, 770]
+      flip: true
+    - move: kit_chobotar
+      to: [820, 770]
+      flip: true
+      ms: 1500
+      wait: true
+    - narrator: "Біжить кіт далі. А на полі женці пшеницю жнуть."
+    - kit_chobotar: "Гей, женці! Як спитає король, чиї це поля, — кажіть: «Маркіза Карабаса»! А як не скажете — посічуть вас усіх на дрібну капусту!"
+    - zhentsi: "Ой, скажемо, котику, скажемо!"
+    - move: kit_chobotar
+      to: [1900, 770]
+      flip: true
+      ms: 1400
+      wait: true
+    - show: korol
+      at: [-420, 730]
+      flip: true
+    - show: pryntsesa
+      at: [-530, 730]
+      flip: true
+    - show: markiz
+      at: [-640, 730]
+      flip: true
+    - show: kareta
+      at: [-400, 770]
+      flip: true
+    - move: kareta
+      to: [600, 770]
+      flip: true
+      ms: 3000
+    - move: korol
+      to: [580, 730]
+      flip: true
+      ms: 3000
+    - move: pryntsesa
+      to: [470, 730]
+      flip: true
+      ms: 3000
+    - move: markiz
+      to: [360, 730]
+      flip: true
+      ms: 3000
+      wait: true
+    - korol: "Гей, женці! А чиї ж це поля?"
+    - zhentsi: "Маркіза Карабаса!"
+    - korol: "Ну й багатий же ти, маркізе! Ну й багатий!"
+    - pryntsesa: "А ще маркіз скромний — нічим не хвалиться!"
+    - fx: hearts
+      on: pryntsesa
+    - narrator: "А кіт тим часом добіг аж до високого замку. Жив у тому замку людожер — найбагатший у світі. Бо то були його луки й поля!"
+    - next: castle
+
+  castle:
+    - scene: zamok
+    - show: kit_chobotar
+      at: [-200, 770]
+      flip: true
+    - move: kit_chobotar
+      to: [820, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - fx: bang
+      at: [1150, 560]
+      word: "ТУК-ТУК!"
+    - kit_chobotar: "Тук-тук! Чи можна до вас, пане людожере?"
+    - show: lyudozher
+      at: [1220, 770]
+    - fx: shake
+      on: lyudozher
+    - lyudozher: "Хто там стукає? Я — людожер! І замок мій, і луки мої, і поля мої! Усе моє!"
+    - narrator: "Ох і великий людожер! Ох і страшний! А ще — він уміє чарувати."
+    - choice: "Як же кіт упорається з людожером?"
+      options:
+        - label: "Підлеститися до людожера"
+          icon: "🎩"
+          next: flatter
+        - label: "Покликати принцесу"
+          icon: "👸"
+          next: princess
+
+  flatter:
+    - fx: bow
+      on: kit_chobotar
+    - kit_chobotar: "Ой, пане людожере! Я стільки про вас чув! Кажуть, ви найвправніший чарівник у світі. Не міг я пройти мимо — та й не привітати вас!"
+    - lyudozher: "Найвправніший? Ну... так, найвправніший! Заходь, котику, заходь!"
+    - move: lyudozher
+      to: [1900, 770]
+      flip: true
+      ms: 1800
+    - move: kit_chobotar
+      to: [1800, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - next: hall
+
+  hall:
+    - scene: zal
+    - show: lyudozher
+      at: [1150, 770]
+    - show: kit_chobotar
+      at: [860, 770]
+      flip: true
+    - narrator: "Повів людожер кота до величезної зали. Золото, срібло — усе блищить!"
+    - kit_chobotar: "Кажуть, пане людожере, ви вмієте перетворюватися на будь-якого звіра. Навіть на лева! Та, мабуть, це вигадки..."
+    - lyudozher: "Вигадки?! Ану, дивись!"
+    - fx: poof
+      on: lyudozher
+      who: [lev]
+    - fx: bang
+      on: lev
+      word: "Р-Р-Р!"
+    - lev: "Р-р-р-р! Ну що, котику, бачив?"
+    - narrator: "Кіт так злякався, що — стриб! — аж під саму стелю, на сволок!"
+    - move: kit_chobotar
+      to: [470, 420]
+      hop: true
+      flip: false
+      ms: 700
+      wait: true
+    - kit_chobotar: "Ой-ой-ой! Бачив, бачив! Перетворіться назад, будь ласка!"
+    - fx: poof
+      on: lev
+      who: [lyudozher]
+    - lyudozher: "Ха-ха-ха! Отакий я чарівник!"
+    - move: kit_chobotar
+      to: [820, 770]
+      hop: true
+      flip: true
+      ms: 700
+      wait: true
+    - kit_chobotar: "Ох і страшно було! Але лев — то нескладно, ви ж і так великий. А от у щось маленьке-маленьке... мабуть, слабо?"
+    - choice: "На що ж кіт попросить людожера перетворитися?"
+      options:
+        - label: "На мишку"
+          icon: "🐭"
+          next: mouse
+        - label: "На повітряну кульку"
+          icon: "🎈"
+          next: balloon
+
+  mouse:
+    - kit_chobotar: "Кажуть, ви й на мишку можете перетворитися. Та я в це не вірю!"
+    - lyudozher: "Не віриш?! Дивись!"
+    - fx: poof
+      on: lyudozher
+      who: [myshenia]
+    - myshenia: "Пі-пі! Ну що, бачив? Отака я мишка!"
+    - narrator: "Тільки кіт того й чекав! Стрибнув кіт — цап! — та й з'їв мишку."
+    - move: kit_chobotar
+      to: [1060, 770]
+      flip: true
+      hop: true
+      ms: 400
+      wait: true
+    - fx: hit
+      on: kit_chobotar
+      who: [myshenia]
+      word: "ЦАП!"
+    - hide: myshenia
+    - fx: munch
+      on: kit_chobotar
+    - kit_chobotar: "Мур-р! Ось і нема людожера. Тепер цей замок буде — маркіза Карабаса!"
+    - fx: tumble
+      on: kit_chobotar
+    - next: welcome
+
+  welcome:
+    - scene: zamok
+    - show: kit_chobotar
+      at: [1180, 770]
+    - show: korol
+      at: [-420, 730]
+      flip: true
+    - show: pryntsesa
+      at: [-530, 730]
+      flip: true
+    - show: markiz
+      at: [-640, 730]
+      flip: true
+    - show: kareta
+      at: [-400, 770]
+      flip: true
+    - narrator: "Аж ось під'їжджає до замку королівська карета."
+    - move: kareta
+      to: [560, 770]
+      flip: true
+      ms: 3000
+    - move: korol
+      to: [540, 730]
+      flip: true
+      ms: 3000
+    - move: pryntsesa
+      to: [430, 730]
+      flip: true
+      ms: 3000
+    - move: markiz
+      to: [320, 730]
+      flip: true
+      ms: 3000
+      wait: true
+    - fx: bow
+      on: kit_chobotar
+    - kit_chobotar: "Ласкаво просимо, ваша величносте, до замку маркіза Карабаса!"
+    - korol: "Що? І цей замок — теж твій, маркізе?! Ну й диво!"
+    - markiz: "Котику... а це правда?"
+    - kit_chobotar: "Мур! Тепер — правда!"
+    - korol: "Ходімо ж до замку!"
+    - next: wedding
+
+  wedding:
+    - scene: zal
+    - show: korol
+      at: [1240, 770]
+    - show: pryntsesa
+      at: [930, 770]
+    - show: markiz
+      at: [740, 770]
+      flip: true
+    - show: kit_chobotar
+      at: [480, 770]
+      flip: true
+    - show: stil
+      at: [1000, 830]
+    - narrator: "А в замку вже й бенкет готовий: пироги, медяники, фрукти заморські!"
+    - fx: munch
+      on: korol
+    - korol: "Маркізе! Ти й багатий, і чемний, і скромний. Чи не хочеш стати моїм зятем?"
+    - markiz: "Ваша величносте... Принцесо, чи підеш за мене?"
+    - pryntsesa: "Піду! Звісно, піду!"
+    - fx: hearts
+      on: pryntsesa
+    - fx: hearts
+      on: markiz
+    - narrator: "Того ж дня й весілля справили! Музики грали, гості танцювали..."
+    - fx: tumble
+      on: pryntsesa
+    - fx: tumble
+      on: markiz
+    - kit_chobotar: "Мур-мур! Ото гарно все вийшло!"
+    - fx: bow
+      on: kit_chobotar
+    - narrator: "А кіт став вельможею — у найкращих чоботях у королівстві. І мишей ловив відтоді лише для розваги!"
+    - ending: canon
+
+  balloon:
+    - kit_chobotar: "А на повітряну кульку — слабо?"
+    - lyudozher: "Мені — слабо?! Та я що завгодно можу! Дивись!"
+    - fx: poof
+      on: lyudozher
+      who: [kulka]
+    - kulka: "Ой! Ой-ой! Я такий легенький! Я лечу-у-у!"
+    - move: kulka
+      to: [1150, 520]
+      ms: 1500
+      wait: true
+    - kit_chobotar: "Пане людожере, а назад перетворитися можете?"
+    - kulka: "Не хочу! Літати так весело! А бути людожером — так важко! Прощавай, котику!"
+    - move: kulka
+      to: [1900, 200]
+      flip: true
+      ms: 2600
+      wait: true
+    - narrator: "Вилетіла кулька у вікно — і полетіла понад полями аж до хмар."
+    - next: sky
+
+  sky:
+    - scene: nebo
+    - show: kulka
+      at: [-250, 620]
+      flip: true
+    - move: kulka
+      to: [800, 600]
+      flip: true
+      ms: 2600
+      wait: true
+    - kulka: "Гей, хмаринки! Беріть мене до себе! Я тепер легкий і добрий!"
+    - fx: hearts
+      on: kulka
+    - narrator: "Так і лишилася кулька серед хмар — і сама стала маленькою хмаринкою з вусами."
+    - next: welcome_kulka
+
+  welcome_kulka:
+    - scene: zamok
+    - show: kulka
+      at: [1350, 340]
+      size: 0.6
+    - show: kit_chobotar
+      at: [1150, 770]
+    - show: korol
+      at: [-420, 730]
+      flip: true
+    - show: pryntsesa
+      at: [-530, 730]
+      flip: true
+    - show: markiz
+      at: [-640, 730]
+      flip: true
+    - show: kareta
+      at: [-400, 770]
+      flip: true
+    - narrator: "А тут і королівська карета під'їжджає."
+    - move: kareta
+      to: [560, 770]
+      flip: true
+      ms: 3000
+    - move: korol
+      to: [540, 730]
+      flip: true
+      ms: 3000
+    - move: pryntsesa
+      to: [430, 730]
+      flip: true
+      ms: 3000
+    - move: markiz
+      to: [320, 730]
+      flip: true
+      ms: 3000
+      wait: true
+    - fx: bow
+      on: kit_chobotar
+    - kit_chobotar: "Ласкаво просимо, ваша величносте, до замку маркіза Карабаса!"
+    - korol: "І замок — теж твій, маркізе?! Ну й багатий же ти! Віддам за тебе свою доньку!"
+    - pryntsesa: "Ой, тату, я згодна!"
+    - fx: hearts
+      on: pryntsesa
+    - fx: hearts
+      on: markiz
+    - kulka: "Вітаю, вітаю! А на весілля — я вам дощику-грибничка!"
+    - fx: sparkle
+      on: kulka
+    - narrator: "Справили маркіз і принцеса весілля. А над замком і досі пливе червона хмаринка з вусами. Тепер вона добра: як треба — дощиком поля маркіза поливає."
+    - ending: kulka
+
+  princess:
+    - kit_chobotar: "Принцесо! Принцесо! Швидше сюди!"
+    - show: korol
+      at: [-420, 730]
+      flip: true
+    - show: pryntsesa
+      at: [-530, 730]
+      flip: true
+    - show: markiz
+      at: [-640, 730]
+      flip: true
+    - show: kareta
+      at: [-400, 770]
+      flip: true
+    - move: kareta
+      to: [420, 770]
+      flip: true
+      ms: 2400
+    - move: korol
+      to: [360, 730]
+      flip: true
+      ms: 2400
+    - move: pryntsesa
+      to: [290, 730]
+      flip: true
+      ms: 2400
+    - move: markiz
+      to: [180, 730]
+      flip: true
+      ms: 2400
+      wait: true
+    - narrator: "Під'їхала карета — і принцеса сміливо зістрибнула просто до людожера."
+    - hide: pryntsesa
+    - show: pryntsesa
+      at: [700, 770]
+      flip: true
+    - fx: tumble
+      on: pryntsesa
+    - move: pryntsesa
+      to: [930, 770]
+      flip: true
+      ms: 900
+      wait: true
+    - pryntsesa: "Добридень, пане людожере! Який у вас гарний замок! Тільки чому ви такий сердитий?"
+    - lyudozher: "Бо... бо до мене ніхто в гості не ходить. Усі мене бояться. Ніхто зі мною не грається..."
+    - fx: tears
+      on: lyudozher
+    - narrator: "І заплакав людожер — великими-превеликими сльозами."
+    - pryntsesa: "Не плачте! Хочете, ми будемо вашими гостями? Тільки пообіцяйте більше нікого не їсти й не лякати!"
+    - lyudozher: "Обіцяю! Їстиму тільки пироги! Заходьте! Заходьте всі!"
+    - fx: hearts
+      on: lyudozher
+    - next: party
+
+  party:
+    - scene: zal
+    - show: lyudozher
+      at: [1300, 770]
+    - show: korol
+      at: [1040, 770]
+    - show: pryntsesa
+      at: [830, 770]
+    - show: markiz
+      at: [640, 770]
+      flip: true
+    - show: kit_chobotar
+      at: [420, 770]
+      flip: true
+    - show: stil
+      at: [880, 830]
+    - narrator: "Ото було свято! Людожер показував чари: то квіти з рукава, то зорі зі стелі!"
+    - fx: sparkle
+      on: lyudozher
+    - fx: sparkle
+      on: pryntsesa
+    - fx: munch
+      on: lyudozher
+    - lyudozher: "Які смачні пироги! Маркізе, бери собі луки й поля — мені не шкода. Мені аби друзі!"
+    - korol: "Ото добрий людожер! Будеш у нас найголовнішим королівським чарівником!"
+    - fx: tumble
+      on: markiz
+    - fx: tumble
+      on: pryntsesa
+    - fx: hearts
+      on: pryntsesa
+    - kit_chobotar: "Мур-мяу! Оце я розумію — свято!"
+    - narrator: "Відтоді людожер щонеділі кличе всіх у гості, показує чари й пече пироги — завбільшки з колесо! А маркіз і принцеса незабаром справили весілля."
+    - ending: svyato
+
+  fishing:
+    - kit_chobotar: "Дай мені, хазяїне, вудку та казанок. Та й побачиш, що не такий я вже поганий спадок!"
+    - syn: "Вудку? Ну, тримай, котику. Вона ще батькова."
+    - show: vudka
+      at: [1060, 770]
+    - fx: sparkle
+      on: vudka
+    - carry: vudka
+      by: kit_chobotar
+    - narrator: "Узяв кіт вудку й казанок — та й пішли вони з хазяїном до річки."
+    - move: kit_chobotar
+      to: [1900, 770]
+      flip: true
+      ms: 1800
+    - move: syn
+      to: [1800, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - next: fish
+
+  fish:
+    - scene: richka
+    - show: syn
+      at: [560, 770]
+      flip: true
+    - show: kit_chobotar
+      at: [900, 770]
+      flip: true
+      look: bosyi
+    - show: vudka
+      at: [980, 770]
+    - fx: sit
+      on: kit_chobotar
+    - narrator: "Закинув кіт вудку. Сидить, чекає, не ворухнеться..."
+    - fx: rock
+      on: vudka
+    - fx: bang
+      at: [1200, 700]
+      word: "КЛЮЄ!"
+    - show: ryba
+      at: [1060, 770]
+    - fx: sparkle
+      on: ryba
+    - kit_chobotar: "Є! Ще одна! І ще! Мур-мяу, скільки рибки!"
+    - narrator: "До вечора наловив кіт повний казанок риби."
+    - syn: "Котику, а що ж ми з такою купою риби робитимемо?"
+    - fx: stand
+      on: kit_chobotar
+    - kit_chobotar: "Зваримо юшку! Таку смачну, що весь світ прибіжить куштувати!"
+    - next: restoran
+
+  restoran:
+    - scene: luh
+    - show: restoran
+      at: [1000, 770]
+    - show: syn
+      at: [760, 770]
+      flip: true
+    - show: kit_chobotar
+      at: [1310, 770]
+      look: bosyi
+    - narrator: "Поставили вони над річкою столик, повісили вивіску — «Юшка від Кота». Варить кіт юшку, аж пара йде!"
+    - fx: sparkle
+      on: restoran
+    - show: kosari
+      at: [1950, 770]
+    - move: kosari
+      to: [1520, 770]
+      ms: 1800
+      wait: true
+    - kosari: "Що це так смачно пахне? Нам по мисочці!"
+    - fx: munch
+      on: kosari
+    - kosari: "Ох і юшка! Пальчики оближеш!"
+    - narrator: "Аж тут — цок-цок-цок! — їде королівська карета."
+    - show: korol
+      at: [-420, 730]
+      flip: true
+    - show: pryntsesa
+      at: [-530, 730]
+      flip: true
+    - show: kareta
+      at: [-400, 770]
+      flip: true
+    - move: kareta
+      to: [220, 770]
+      flip: true
+      ms: 2600
+    - move: korol
+      to: [200, 730]
+      flip: true
+      ms: 2600
+    - move: pryntsesa
+      to: [90, 730]
+      flip: true
+      ms: 2600
+      wait: true
+    - korol: "Стій! Що це за чудовий запах?"
+    - kit_chobotar: "Юшка від Кота, ваша величносте! Найсмачніша в королівстві!"
+    - fx: munch
+      on: korol
+    - korol: "Ммм! Такої юшки навіть у моєму палаці не варять! Будьте моїми королівськими кухарями!"
+    - fx: munch
+      on: pryntsesa
+    - pryntsesa: "Ой, тату, і я хочу ще мисочку!"
+    - kit_chobotar: "Дякуємо, ваша величносте! Але ми краще тут лишимося — щоб кожен міг юшки скуштувати!"
+    - korol: "Тоді я сам щонеділі до вас приїжджатиму!"
+    - fx: hearts
+      on: syn
+    - fx: hearts
+      on: kit_chobotar
+    - narrator: "Відтоді над річкою стоїть найвідоміший ресторан у королівстві — «Юшка від Кота». Хлопець юшку розливає, кіт рибу ловить, а король щонеділі приїжджає по добавку!"
+    - ending: ryba

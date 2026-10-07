@@ -149,9 +149,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda'];
 /**
  * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
  * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
@@ -241,6 +241,11 @@ const REACTIONS: Record<string, string[]> = {
   ryaba: ['bow', 'wiggle', 'dance', 'flip'],
   kurcha: ['hops', 'shiver', 'spin'],
   mariyka: ['giggle', 'bow', 'hops', 'spin'],
+  kit_chobotar: ['bow', 'spin', 'stretch', 'hops'],
+  markiz: ['scratch', 'hop', 'bow'],
+  korol: ['crow', 'no', 'dance'],
+  pryntsesa: ['giggle', 'spin', 'dance', 'bow'],
+  lyudozher: ['flex', 'sneeze', 'stretch', 'giggle'],
 };
 
 /** one heave-ho of pulling (seconds) */
@@ -250,7 +255,7 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
-const BACK = ['khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
+const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama'];
 
 interface Particle {
   el: SVGElement;
@@ -795,6 +800,147 @@ function stump(x: number) {
     <ellipse cx="0" cy="-74" rx="48" ry="16" fill="#f7fbff" stroke="#c9dcee" stroke-width="4"/></g>`;
 }
 
+// ---------- «Кіт у чоботях» ----------
+
+/** the windmill on a hill (the miller's mill): a tower of planks, four sails, sacks of flour at the door */
+function windmill(x: number) {
+  const y = GROUND - 150;
+  let planks = '';
+  for (let i = 1; i < 8; i++) planks += `<path d="M${x - 90 + i * 4} ${y - i * 44} H${x + 90 - i * 4}" stroke="#8b5a2b" stroke-width="3"/>`;
+  const sail = (a: number) => `<g transform="rotate(${a} ${x} ${y - 330})"><path d="M${x} ${y - 330} V${y - 560}" stroke="#5a3a22" stroke-width="10"/>
+    <rect x="${x + 4}" y="${y - 550}" width="56" height="200" fill="#fbf7ee" stroke="#5a3a22" stroke-width="5"/>
+    ${[0, 1, 2, 3].map((i) => `<path d="M${x + 4} ${y - 510 + i * 40} h56" stroke="#c9b48a" stroke-width="3"/>`).join('')}</g>`;
+  return `<g>
+    <path d="M${x - 420} ${GROUND - 40} Q${x} ${y - 120} ${x + 460} ${GROUND - 40} Z" fill="#8bc34a"/>
+    <path d="M${x - 96} ${y + 20} L${x - 64} ${y - 320} L${x + 64} ${y - 320} L${x + 96} ${y + 20} Z" fill="#c98a4b" stroke="#5a3a22" stroke-width="6"/>${planks}
+    <path d="M${x - 84} ${y - 316} Q${x} ${y - 420} ${x + 84} ${y - 316} Z" fill="#8d6e63" stroke="#5a3a22" stroke-width="6"/>
+    <path d="M${x - 30} ${y + 20} v-90 q30 -30 60 0 v90 Z" fill="#5d3b22"/>
+    <circle cx="${x}" cy="${y - 200}" r="24" fill="#9fd3f0" stroke="#5a3a22" stroke-width="6"/>
+    ${sail(20)}${sail(110)}${sail(200)}${sail(290)}
+    <circle cx="${x}" cy="${y - 330}" r="16" fill="#5d3b22"/>
+    ${[[-150, 0], [-110, 6], [-130, -34]].map(([dx, dy]) => `<path d="M${x + dx - 26} ${y + 30 + dy} Q${x + dx - 32} ${y - 20 + dy} ${x + dx - 14} ${y - 34 + dy} L${x + dx + 14} ${y - 34 + dy} Q${x + dx + 32} ${y - 20 + dy} ${x + dx + 26} ${y + 30 + dy} Z" fill="#fff8e1" stroke="#5a3a22" stroke-width="4"/>`).join('')}
+  </g>`;
+}
+
+/** the king's throne room: pink-gold walls, tall arched windows, red banners with crowns, a red carpet, the gold throne */
+function palats() {
+  const F = GROUND - 40;
+  const win = (x: number) => `<path d="M${x - 70} ${F - 140} V200 Q${x} 90 ${x + 70} 200 V${F - 140} Z" fill="#9fd3f0" stroke="#c99a1e" stroke-width="10"/>
+    <path d="M${x} ${F - 140} V140 M${x - 70} 380 h140" stroke="#c99a1e" stroke-width="6"/>
+    <path d="M${x - 50} ${F - 150} q20 -60 50 -20 q30 -50 50 20 z" fill="#7cb342" opacity=".7"/>`;
+  const banner = (x: number) => `<path d="M${x - 50} 80 H${x + 50} V330 L${x} 290 L${x - 50} 330 Z" fill="#c62828" stroke="#8e1b1b" stroke-width="5"/>
+    <path d="M${x - 26} 210 L${x - 30} 170 L${x - 12} 186 L${x} 156 L${x + 12} 186 L${x + 30} 170 L${x + 26} 210 Z" fill="#ffd54f" stroke="#c99a1e" stroke-width="3"/>`;
+  const column = (x: number) => `<rect x="${x - 30}" y="-1200" width="60" height="${F + 1200}" fill="#fff3d6" stroke="#e0c27a" stroke-width="5"/><rect x="${x - 44}" y="${F - 40}" width="88" height="40" fill="#f2d27a" stroke="#c99a1e" stroke-width="5"/>`;
+  return `
+  <rect x="-1600" y="-1200" width="4800" height="${F + 1200}" fill="#f8e1c4"/>
+  ${Array.from({ length: 30 }, (_, i) => `<path d="M${-1600 + i * 160 + 80} 60 l14 20 l-14 20 l-14 -20 z" fill="#f0c98a"/>`).join('')}
+  <rect x="-1600" y="${F - 30}" width="4800" height="30" fill="#e0b97a"/>
+  ${win(160)}${win(560)}${banner(360)}${banner(820)}
+  ${column(-40)}${column(1000)}${column(1640)}
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#d7b98a"/>
+  ${Array.from({ length: 24 }, (_, i) => `<path d="M${-1600 + i * 200} ${F} L${-1900 + i * 200} 6000" stroke="#c4a374" stroke-width="4"/>`).join('')}
+  <path d="M-1600 ${GROUND + 6} L3200 ${GROUND + 6} L3200 ${GROUND + 120} L-1600 ${GROUND + 120} Z" fill="#c62828"/>
+  <path d="M-1600 ${GROUND + 18} H3200 M-1600 ${GROUND + 108} H3200" stroke="#ffd54f" stroke-width="6"/>
+  <!-- the throne -->
+  <g transform="translate(1150 ${F})">
+    <path d="M-120 0 V-330 Q-120 -420 0 -440 Q120 -420 120 -330 V0 Z" fill="#ffd54f" stroke="#c99a1e" stroke-width="8"/>
+    <path d="M-86 -60 V-320 Q-86 -390 0 -400 Q86 -390 86 -320 V-60 Z" fill="#c62828"/>
+    <path d="M-40 -440 L-48 -490 L-20 -466 L0 -508 L20 -466 L48 -490 L40 -440 Z" fill="#ffd54f" stroke="#c99a1e" stroke-width="5"/>
+    <rect x="-150" y="-150" width="40" height="150" rx="10" fill="#ffd54f" stroke="#c99a1e" stroke-width="6"/>
+    <rect x="110" y="-150" width="40" height="150" rx="10" fill="#ffd54f" stroke="#c99a1e" stroke-width="6"/>
+    <rect x="-130" y="-130" width="260" height="40" rx="12" fill="#e53935" stroke="#8e1b1b" stroke-width="5"/>
+  </g>`;
+}
+
+/** the river bank: the road on the left, the river on the right (water in front of the bather is the actor voda) */
+function richka() {
+  return (
+    sky('#7cc4f2', '#e0f4ff') +
+    sun(1380, 230) +
+    clouds(221) +
+    [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#a5d6a7', GROUND - 190, 60, 222)}${treeRow(223, false)}</g>`).join('') +
+    `<rect x="-1600" y="${GROUND - 120}" width="4800" height="90" fill="#4aa3df"/>` +
+    ground('#7cb342', '#c9a77a') +
+    `<path d="M1070 ${GROUND - 40} Q1120 ${GROUND + 30} 1100 2000 L3200 2000 L3200 ${GROUND - 40} Z" fill="#4aa3df"/>` +
+    `<path d="M1060 ${GROUND - 40} Q1122 ${GROUND + 30} 1102 2000" fill="none" stroke="#c9a77a" stroke-width="16"/>` +
+    Array.from({ length: 14 }, (_, i) => `<path d="M${1160 + ((i * 97) % 460)} ${GROUND - 20 + ((i * 53) % 200)} q20 -9 40 0" stroke="#d6f0ff" stroke-width="5" fill="none" stroke-linecap="round"/>`).join('') +
+    Array.from({ length: 7 }, (_, i) => `<g transform="translate(${1040 + i * 14} ${GROUND - 30})"><path d="M0 0 V-${80 + (i % 3) * 20}" stroke="#5d8f3a" stroke-width="5"/><rect x="-5" y="-${108 + (i % 3) * 20}" width="10" height="30" rx="5" fill="#7a4a24"/></g>`).join('') +
+    `<g>${verge(224, false)}</g>`.replace('<g>', '<g transform="translate(-700 0)">')
+  );
+}
+
+/** the ogre's castle: grey walls and towers with red roofs and purple flags, an open gate */
+function zamok() {
+  const x = 1150;
+  const B = GROUND - 30;
+  let cren = '';
+  for (let i = 0; i < 9; i++) cren += `<rect x="${x - 300 + i * 70}" y="${B - 440}" width="40" height="40" fill="#9e9e9e" stroke="#616161" stroke-width="5"/>`;
+  const tower = (tx: number, h: number) => `<rect x="${tx - 80}" y="${B - h}" width="160" height="${h}" fill="#a8a8a8" stroke="#616161" stroke-width="6"/>
+    <path d="M${tx - 100} ${B - h} L${tx} ${B - h - 200} L${tx + 100} ${B - h} Z" fill="#c62828" stroke="#8e1b1b" stroke-width="6"/>
+    <path d="M${tx} ${B - h - 200} V${B - h - 280}" stroke="#5a3a22" stroke-width="6"/><path d="M${tx} ${B - h - 280} l70 18 l-70 18 z" fill="#7b1fa2"/>
+    <path d="M${tx - 18} ${B - h + 110} v-40 q18 -24 36 0 v40 z" fill="#3a3a3a"/>`;
+  let blocks = '';
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 8; c++) blocks += `<rect x="${x - 290 + c * 74 + (r % 2) * 30}" y="${B - 400 + r * 44}" width="60" height="30" rx="4" fill="none" stroke="#8a8a8a" stroke-width="3"/>`;
+  return (
+    sky('#8fb8e0', '#f3e2c4') +
+    sun(300, 220, '#ffcc66') +
+    clouds(231) +
+    [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#93b07a', GROUND - 170, 70, 232)}</g>`).join('') +
+    ground('#7a9c4a', '#b8a48a') +
+    `<rect x="${x - 300}" y="${B - 400}" width="600" height="400" fill="#b5b5b5" stroke="#616161" stroke-width="6"/>${blocks}${cren}` +
+    tower(x - 320, 560) +
+    tower(x + 320, 520) +
+    `<path d="M${x - 90} ${B} V${B - 170} Q${x} ${B - 260} ${x + 90} ${B - 170} V${B} Z" fill="#2b2420" stroke="#616161" stroke-width="8"/>` +
+    Array.from({ length: 5 }, (_, i) => `<path d="M${x - 70 + i * 35} ${B - 216 + Math.abs(i - 2) * 14} V${B - 120}" stroke="#555" stroke-width="7"/>`).join('') +
+    `<path d="M${x - 90} ${B - 120} H${x + 90}" stroke="#555" stroke-width="7"/>` +
+    `<path d="M${x - 110} ${GROUND + 160} L${x - 90} ${B} L${x + 90} ${B} L${x + 140} ${GROUND + 160} Z" fill="#c9b48a"/>` +
+    `<g>${verge(233, false)}</g>`
+  );
+}
+
+/** the ogre's hall: grey stone walls, tall windows, a fireplace, his huge chair, chests of gold, a high beam (сволок) the cat jumps onto */
+function zal() {
+  const F = GROUND - 40;
+  let blocks = '';
+  for (let r = 0; r < 22; r++) for (let c = 0; c < 22; c++) blocks += `<rect x="${-200 + c * 100 + (r % 2) * 50}" y="${F - 60 - r * 60}" width="96" height="56" rx="6" fill="none" stroke="#8d8f96" stroke-width="3"/>`;
+  const win = (x: number) => `<path d="M${x - 60} 520 V220 Q${x} 140 ${x + 60} 220 V520 Z" fill="#5f7fa8" stroke="#555a64" stroke-width="10"/><path d="M${x} 520 V160 M${x - 60} 360 h120" stroke="#555a64" stroke-width="6"/>`;
+  const chest = (x: number) => `<path d="M${x - 60} ${F + 30} V${F - 40} H${x + 60} V${F + 30} Z" fill="#8b5a2b" stroke="#5a3a22" stroke-width="5"/>
+    <path d="M${x - 64} ${F - 40} Q${x} ${F - 110} ${x + 64} ${F - 40}" fill="#ffd54f" stroke="#c99a1e" stroke-width="4"/>
+    ${[-30, 0, 30, -14, 16].map((d, i) => `<ellipse cx="${x + d}" cy="${F - 56 - (i > 2 ? 20 : 0)}" rx="14" ry="6" fill="#ffe082" stroke="#c99a1e" stroke-width="2"/>`).join('')}
+    <rect x="${x - 10}" y="${F - 30}" width="20" height="24" fill="#ffd54f" stroke="#5a3a22" stroke-width="3"/>`;
+  return `
+  <rect x="-1600" y="-1200" width="4800" height="${F + 1200}" fill="#a3a6ae"/>${blocks}
+  ${win(1000)}${win(1500)}
+  <!-- the fireplace -->
+  <path d="M-200 ${F} V420 H140 V${F} Z" fill="#7d7f86" stroke="#555a64" stroke-width="8"/>
+  <path d="M-150 ${F} V520 Q-30 440 90 520 V${F} Z" fill="#2b2420"/>
+  <ellipse data-glow="1" cx="-30" cy="${F - 50}" rx="120" ry="54" fill="#ff9a3c" opacity=".45"/>
+  <g transform="translate(-30 ${F - 10})">
+    <path data-flame="1" d="M-60 0 Q-70 -50 -42 -78 Q-34 -44 -16 -34 Q-26 -88 10 -112 Q10 -60 36 -52 Q36 -86 62 -94 Q78 -44 60 0 Z" fill="#ff7a1a"/>
+    <path data-flame="1" d="M-34 0 Q-44 -34 -20 -56 Q-14 -30 0 -26 Q-6 -60 18 -78 Q22 -38 40 -30 Q52 -16 34 0 Z" fill="#ffd23f"/>
+  </g>
+  <!-- the high beam on two posts -->
+  <rect x="200" y="-1200" width="40" height="${F + 1200}" fill="#6d4426" stroke="#4e2f18" stroke-width="5"/>
+  <rect x="700" y="-1200" width="40" height="${F + 1200}" fill="#6d4426" stroke="#4e2f18" stroke-width="5"/>
+  <path d="M220 ${GROUND - 300} L300 ${GROUND - 220} M720 ${GROUND - 300} L640 ${GROUND - 220}" stroke="#6d4426" stroke-width="18"/>
+  <rect x="120" y="${GROUND - 350}" width="700" height="44" rx="8" fill="#8b5a2b" stroke="#4e2f18" stroke-width="6"/>
+  <path d="M140 ${GROUND - 328} H800" stroke="#6d4426" stroke-width="4"/>
+  <!-- banners -->
+  <path d="M1200 100 H1300 V340 L1250 300 L1200 340 Z" fill="#7b1fa2" stroke="#4a148c" stroke-width="5"/>
+  <circle cx="1250" cy="200" r="24" fill="#ffd54f" stroke="#c99a1e" stroke-width="4"/>
+  <!-- the ogre's huge chair -->
+  <g transform="translate(1380 ${F})">
+    <path d="M-110 0 V-420 Q0 -470 110 -420 V0 Z" fill="#5d4037" stroke="#3e2723" stroke-width="8"/>
+    <path d="M-80 -110 V-390 Q0 -430 80 -390 V-110 Z" fill="#7b1fa2"/>
+    <rect x="-140" y="-140" width="280" height="44" rx="12" fill="#6d4c41" stroke="#3e2723" stroke-width="6"/>
+  </g>
+  ${chest(560)}${chest(1640)}
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#6f7178"/>
+  ${Array.from({ length: 30 }, (_, i) => `<path d="M${-1600 + i * 180} ${F} L${-1900 + i * 180} 6000" stroke="#5d5f66" stroke-width="4"/>`).join('')}
+  ${Array.from({ length: 6 }, (_, i) => `<path d="M-1600 ${F + 40 + i * 70} H3200" stroke="#5d5f66" stroke-width="4"/>`).join('')}
+  <path d="M-1600 ${GROUND + 6} L3200 ${GROUND + 6} L3200 ${GROUND + 110} L-1600 ${GROUND + 110} Z" fill="#7b1fa2" opacity=".85"/>`;
+}
+
 interface Backdrop {
   /** drawn once, does not slide */
   still: string;
@@ -807,6 +953,22 @@ interface Backdrop {
 }
 
 const BACKDROPS: Record<string, () => Backdrop> = {
+  mlyn: () => ({
+    // the miller's windmill on a hill, wheat fields round it
+    still:
+      sky('#7cc4f2', '#e0f4ff') +
+      sun(300, 220) +
+      clouds(211) +
+      [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#c5e1a5', GROUND - 170, 50, 212)}</g>`).join('') +
+      windmill(1250) +
+      ground('#9ccc65', '#c9a77a') +
+      `<g>${verge(213, false)}</g>`,
+    layers: [],
+  }),
+  palats: () => ({ still: palats(), layers: [] }),
+  richka: () => ({ still: richka(), layers: [] }),
+  zamok: () => ({ still: zamok(), layers: [] }),
+  zal: () => ({ still: zal(), layers: [] }),
   berloga: () => ({ still: berloga(), layers: [] }),
   kurnyk: () => ({ still: kurnyk(false), layers: [] }),
   'kurnyk-night': () => ({ still: kurnyk(true), layers: [] }),
@@ -1504,7 +1666,7 @@ export class Stage {
     const dx = c.x + door[0] * c.size;
     const dy = c.y;
     // in the snow: a hop (frog, hare), the others walk
-    return this.moveTo(id, [dx + (a.x > dx ? 40 : -40), dy], Math.max(500, Math.abs(a.x - dx) * 1.4), { hop: id === 'zhabka' || id === 'zayets' || id === 'myshka' })
+    return this.moveTo(id, [dx + (a.x > dx ? 40 : -40), dy], Math.max(500, Math.abs(a.x - dx) * 1.4), { hop: id === 'zhabka' || id === 'zayets' || id === 'myshka' || id === 'krolyk' })
       .then(
         () =>
           new Promise<void>((resolve) => {
@@ -1919,6 +2081,27 @@ export class Stage {
       case 'smoke':
         for (let i = 0; i < 9; i++) this.later(i * 0.35, () => this.puff(708, 196));
         return this.wait(2400);
+      case 'bow':
+        // a bow (the cat sweeping his hat to the king)
+        if (a) {
+          a.act = 'bow';
+          a.actT = 0;
+          a.actDur = ACTS.bow.dur;
+        }
+        return this.wait(1000);
+      case 'poof': {
+        // magic: a puff of purple smoke and stars, and in its place stands who (the ogre — a lion)
+        if (!a) return this.wait(300);
+        const [x, y, flip] = [a.x, a.y, a.flip];
+        const h = -ANCHORS[a.id].top * a.size;
+        for (let i = 0; i < 16; i++) this.later(i * 0.03, () => this.smokeBall(x + (Math.random() - 0.5) * 300, y - Math.random() * h * 0.9));
+        for (let i = 0; i < 12; i++) this.star(x, y - h * 0.5, (i / 12) * Math.PI * 2);
+        this.later(0.3, () => {
+          this.hide(a.id);
+          if (who[0]) this.show(who[0], [x, y], flip);
+        });
+        return this.wait(1100);
+      }
       case 'sparkle': {
         const [x, y] = a ? this.anchor(a, 'top') : [800, 300];
         for (let i = 0; i < 12; i++) this.star(x, y + 40, (i / 12) * Math.PI * 2);
@@ -1959,6 +2142,17 @@ export class Stage {
       c.setAttribute('cy', String(y - k * 230));
       c.setAttribute('r', String(18 + k * 40));
       c.setAttribute('opacity', String(0.9 * (1 - k)));
+    });
+  }
+
+  /** a ball of magic smoke: swells and fades where it is */
+  private smokeBall(x: number, y: number) {
+    const c = el('circle', { r: 30, fill: Math.random() < 0.5 ? '#d1c4e9' : '#f3e5f5' });
+    this.particle(c, 1.3, (p, k) => {
+      c.setAttribute('cx', String(x));
+      c.setAttribute('cy', String(y - k * 40));
+      c.setAttribute('r', String(30 + Math.sin(Math.min(1, k * 2) * Math.PI * 0.5) * 70));
+      c.setAttribute('opacity', String(0.95 * (1 - k * k)));
     });
   }
 
