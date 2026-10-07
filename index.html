@@ -74,6 +74,12 @@
 
     <section id="play" class="screen play" hidden>
       <div id="stage-host" class="stage-host"></div>
+      <!-- the tale still coming (tapped play before it was all in) -->
+      <div id="loading" class="loading" hidden>
+        <div id="loading-title" class="loading-title"></div>
+        <div id="loading-wait" class="loading-wait"><span class="spinner"></span><b id="loading-pct">0%</b></div>
+        <button id="loading-retry" class="tc-play loading-retry" hidden>↻ Немає зв’язку — ще раз</button>
+      </div>
       <div class="topbar">
         <div class="topbar-left">
           <button id="btn-home" class="round" aria-label="До казок">🏠</button>

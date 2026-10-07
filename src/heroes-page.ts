@@ -5,7 +5,7 @@
 
 import CATALOG from 'virtual:wardrobe-catalog';
 import { el, makePuppet } from './characters';
-import { loadItems, loadOutfits, outfitIds, outfitOf, wearable } from './closet';
+import { loadItems, outfitIds, outfitOf, wearable } from './closet';
 import { dress, SLOTS, type Slot, type Wearable } from './dress';
 import { COIN, heroesOf, type Hero } from './heroes';
 import { progress } from './progress';
@@ -74,9 +74,7 @@ export function initHeroes(stories: Pick<Story, 'voices'>[]) {
   heroes = heroesOf(stories);
 }
 
-export async function renderHeroes() {
-  // the drawings of what the met heroes wear
-  await Promise.all([loadOutfits(heroes.filter((h) => progress.met(h.id)).map((h) => h.id)), loadItems(FRAME_IDS)]);
+export function renderHeroes() {
   const grid = $('hero-grid');
   grid.innerHTML = '';
   const met = heroes.filter((h) => progress.met(h.id)).length;
@@ -93,14 +91,17 @@ export async function renderHeroes() {
     name.textContent = known ? h.name : '?';
     tile.append(art, name);
     grid.appendChild(tile);
+    // drawn at once in what's here already; each one dressed as soon as its things come
     portrait(art, h.id, known ? outfitOf(h.id) : []);
+    const ids = known ? outfitIds(h.id) : [];
+    if (ids.some((id) => !wearable(id))) void loadItems(ids).then(() => art.isConnected && portrait(art, h.id, outfitOf(h.id)));
     tile.addEventListener('click', () => {
       unlockAudio();
       if (known) void openHero(h, tile);
       else if (__DEBUG__) {
         // DEBUG=TRUE builds: a hidden hero is met at a tap
         progress.meet(h.id);
-        void renderHeroes();
+        renderHeroes();
       } else {
         tile.classList.remove('shake');
         void tile.offsetWidth;
@@ -263,7 +264,7 @@ async function openHero(h: Hero, tile: HTMLElement) {
   // its things, to try on: fetched first (a moment, the first time)
   opening = true;
   tile.classList.add('loading');
-  await loadItems(setOf(h.id).concat(outfitIds(h.id)));
+  await loadItems(setOf(h.id).concat(outfitIds(h.id), FRAME_IDS));
   tile.classList.remove('loading');
   opening = false;
   if ($('heroes').hidden) return;
@@ -291,7 +292,7 @@ function closeHero() {
   cancelAnimationFrame(anim);
   $('hero-card').hidden = true;
   $('heroes').classList.remove('locked');
-  void renderHeroes();
+  renderHeroes();
   from?.focus();
 }
 

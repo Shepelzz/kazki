@@ -154,8 +154,6 @@ function fillPips(box: HTMLElement, story: Pick<TaleInfo, 'id' | 'endings'>) {
 
 // ---------- a tale's card: the picture, what it is about (said aloud), play ----------
 let carded: TaleInfo | null = null;
-/** the tale on the card, once fetched with every recording of it */
-let ready: Story | null = null;
 /** the shelf card it was opened from: focus goes back there */
 let cardFrom: HTMLElement | null = null;
 
@@ -179,7 +177,9 @@ function openCard(story: TaleInfo, from: HTMLElement) {
   // focus inside the dialog (for the keyboard), without a ring on the button for a tap
   $('tale-card').querySelector<HTMLElement>('.tale-card-box')!.focus();
   const told = story;
-  void say(story.voices.narrator, aboutPhrase(story)).then(() => {
+  aboutTalking = true;
+  about = say(story.voices.narrator, aboutPhrase(story)).then(() => {
+    aboutTalking = false;
     // told: the play button calls a little
     if (carded === told) box.classList.add('told');
   });
@@ -187,43 +187,99 @@ function openCard(story: TaleInfo, from: HTMLElement) {
 }
 
 /**
- * The tale on the card is fetched: its scenes, then every recording of it, into memory (the voice
- * starts at once, and an iPad that loses Wi-Fi in the middle still tells it to the end). Until
- * then the play button spins. Closing the card lets it all go.
+ * The tale on the card is fetched in the background from the moment the card opens: its scenes,
+ * the stage, what its heroes wear, then every recording of it, into memory (the voice starts at
+ * once, and an iPad that loses Wi-Fi in the middle still tells it to the end). The play button
+ * works all along: pressed before it's all in, the tale's screen shows how far it is.
+ * Closing the card lets it all go.
  */
-async function prepare(info: TaleInfo) {
-  ready = null;
-  const play = $<HTMLButtonElement>('tc-play');
-  const spin = (part: number) => {
-    play.disabled = true;
-    play.innerHTML = `<span class="spinner"></span>${Math.round(part * 100)}%`;
-  };
-  spin(0);
-  try {
-    // its scenes, the stage (the first time), and the drawings of what its heroes wear
-    const cast = ([] as string[]).concat(...Object.values(info.shows)).filter((a) => heroIds.indexOf(a) >= 0);
-    const [story] = await Promise.all([fetchStory(info.id), player(), loadOutfits(cast)]);
-    if (carded !== info) return;
-    const ok = await loadTale(spokenPhrases(story).map((p) => ({ voice: story.voices[p.who], text: p.text })), (done, all) => carded === info && spin(done / all));
-    if (carded !== info) return;
-    ready = story;
-    play.disabled = false;
-    // some recordings didn't come (Wi-Fi): it can be told anyway, those are fetched on the way
-    play.textContent = ok ? '▶\uFE0E Слухати казку' : '▶\uFE0E Слухати (поганий зв’язок)';
-  } catch {
-    // the tale itself didn't come: try again by tapping
-    if (carded !== info) return;
-    play.disabled = false;
-    play.textContent = '↻ Немає зв’язку — ще раз';
-  }
+let prep: { info: TaleInfo; story: Promise<Story | null>; part: number; done: boolean } | null = null;
+/** what the narrator says on the card; still going on the loading screen (she listens meanwhile) */
+let about: Promise<void> = Promise.resolve();
+let aboutTalking = false;
+
+function prepare(info: TaleInfo): Promise<Story | null> {
+  if (prep && prep.info === info) return prep.story;
+  const p = { info, part: 0, done: false, story: Promise.resolve<Story | null>(null) };
+  prep = p;
+  const live = () => prep === p;
+  p.story = (async () => {
+    try {
+      const cast = ([] as string[]).concat(...Object.values(info.shows)).filter((a) => heroIds.indexOf(a) >= 0);
+      const [story] = await Promise.all([fetchStory(info.id), player(), loadOutfits(cast)]);
+      if (!live()) return null;
+      // a recording that didn't come (Wi-Fi) is fetched again when it is said
+      await loadTale(spokenPhrases(story).map((ph) => ({ voice: story.voices[ph.who], text: ph.text })), (done, all) => {
+        if (!live()) return;
+        p.part = done / all;
+        showPart();
+      });
+      p.done = true;
+      return live() ? story : null;
+    } catch {
+      // the tale itself didn't come: the next try starts over
+      if (live()) prep = null;
+      return null;
+    }
+  })();
+  return p.story;
 }
+
+/** the tale fetched no more: its recordings let go */
+function dropPrep() {
+  prep = null;
+  waitingFor = null;
+  releaseTale();
+}
+
+// ---------- the tale's screen while it is still coming ----------
+/** the tale the screen waits for */
+let waitingFor: TaleInfo | null = null;
+
+function showPart() {
+  if (prep) $('loading-pct').textContent = `${Math.round(prep.part * 100)}%`;
+}
+
+async function startTale(info: TaleInfo) {
+  const story = prepare(info);
+  waitingFor = info;
+  show('play');
+  $('ending').hidden = true;
+  for (const id of ['btn-pause', 'btn-back', 'btn-next']) $(id).hidden = true;
+  $('loading-title').textContent = info.title;
+  $('loading-retry').hidden = true;
+  $('loading-wait').hidden = false;
+  showPart();
+  $('loading').hidden = false;
+  const s = await story;
+  // gone home meanwhile
+  if (waitingFor !== info) return;
+  // the narrator finishes telling what it is about first
+  if (s && aboutTalking) {
+    $('loading-pct').textContent = '100%';
+    await about;
+    if (waitingFor !== info) return;
+  }
+  if (!s) {
+    $('loading-wait').hidden = true;
+    $('loading-retry').hidden = false;
+    return;
+  }
+  waitingFor = null;
+  $('loading').hidden = true;
+  void openTale(s);
+}
+
+$('loading-retry').addEventListener('click', () => {
+  unlockAudio();
+  if (waitingFor) void startTale(waitingFor);
+});
 
 function closeCard() {
   if (!carded) return;
   carded = null;
-  ready = null;
   stopSpeech();
-  releaseTale();
+  dropPrep();
   $('tale-card').hidden = true;
   $('library').classList.remove('locked');
   cardFrom?.focus();
@@ -238,15 +294,14 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeCard();
 });
 $('tc-play').addEventListener('click', () => {
-  if (!carded) return;
-  if (!ready) return void prepare(carded);
-  const story = ready;
+  const info = carded;
+  if (!info) return;
   carded = null;
-  ready = null;
-  stopSpeech();
+  // still coming: the narrator goes on telling what it is about on the loading screen
+  if (prep && prep.info === info && prep.done) stopSpeech();
   $('tale-card').hidden = true;
   $('library').classList.remove('locked');
-  void openTale(story);
+  void startTale(info);
 });
 
 // ---------- subtitles of long lines: in pages, turned as the voice goes on ----------
@@ -440,8 +495,10 @@ $('btn-heroes').addEventListener('click', () => {
   unlockAudio();
   stopSpeech();
   show('heroes');
+  // the page's script still coming (the first time): a spinner meanwhile
+  if (!$('hero-grid').children.length) $('hero-grid').innerHTML = '<div class="grid-wait"><span class="spinner"></span></div>';
   void loadHeroesPage().then((hp) => {
-    void hp.renderHeroes();
+    hp.renderHeroes();
     if (!heroesIntroSaid) {
       heroesIntroSaid = true;
       hp.sayHeroesIntro(TALE_LIST[0].voices.narrator);
@@ -547,7 +604,8 @@ function toLibrary() {
   current = null;
   stopSpeech();
   // the tale and its recordings are let go
-  releaseTale();
+  dropPrep();
+  $('loading').hidden = true;
   $('ending').hidden = true;
   renderShelf();
   show('library');
