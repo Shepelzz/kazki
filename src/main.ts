@@ -62,8 +62,43 @@ const COVER_VIEW: Record<string, string> = {
 
 function cover(story: Story) {
   const svgEl = el('svg', { viewBox: COVER_VIEW[story.cover] || '-200 -400 400 420', class: 'cover-art' });
-  svgEl.appendChild(makePuppet(story.cover));
+  const g = makePuppet(story.cover);
+  svgEl.appendChild(g);
+  // the hero of the cover in what she bought it
+  dress(g, story.cover, outfitOf(story.cover));
   return svgEl;
+}
+
+/**
+ * A dressed cover hero's hat may stick out of its picture: the picture grows to take it in (once
+ * the covers are on the page, where they can be measured), keeping its middle.
+ */
+function fitCovers(root: HTMLElement) {
+  for (const s of Array.from(root.querySelectorAll<SVGSVGElement>('svg.cover-art'))) {
+    const things = Array.from(s.querySelectorAll<SVGGraphicsElement>('[data-part="outfit"], [data-part="outfit-body"]'));
+    if (!things.length) continue;
+    const [x, y, w, h] = (s.getAttribute('viewBox') || '').split(' ').map(Number);
+    let x0 = x;
+    let y0 = y;
+    let x1 = x + w;
+    let y1 = y + h;
+    for (const t of things) {
+      try {
+        const b = t.getBBox();
+        if (!b.width) continue;
+        x0 = Math.min(x0, b.x);
+        y0 = Math.min(y0, b.y);
+        x1 = Math.max(x1, b.x + b.width);
+        y1 = Math.max(y1, b.y + b.height);
+      } catch {
+        // not measurable: the picture as it was
+      }
+    }
+    // grow evenly round the middle so the hero stays in the middle
+    const cx = x + w / 2;
+    const half = Math.max(cx - x0, x1 - cx);
+    s.setAttribute('viewBox', `${(cx - half).toFixed(0)} ${y0.toFixed(0)} ${(half * 2).toFixed(0)} ${(y1 - y0).toFixed(0)}`);
+  }
 }
 
 function renderShelf() {
@@ -96,6 +131,8 @@ function renderShelf() {
     card.innerHTML = `<div class="book-art"><span class="soon-icon">${s.icon}</span></div><div class="book-title">${s.title}</div>`;
     shelf.appendChild(card);
   }
+  // measured on the next frame: the shelf may be shown only just after this
+  requestAnimationFrame(() => fitCovers(shelf));
 }
 
 /** a round slot per ending: the found ones show their picture */
@@ -125,6 +162,7 @@ function openCard(story: Story, from: HTMLElement) {
   art.innerHTML = '';
   art.appendChild(cover(story));
   $('tc-title').textContent = story.title;
+  requestAnimationFrame(() => fitCovers(art));
   $('tc-about').textContent = story.about;
   fillPips($('tc-endings'), story);
   const box = $('tale-card');
