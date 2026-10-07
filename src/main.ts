@@ -4,30 +4,27 @@
 
 import './style.css';
 import { makePuppet, el } from './characters';
-import { Teller, type TellerUi } from './engine';
-import { pauseSpeech, resumeSpeech, say, speechProgress, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
-import { Stage } from './stage';
-import { aboutPhrase, COMMON, endingPhrase, parseStory, type Story } from './story';
+import type { Teller, TellerUi } from './engine';
+import { loadTale, pauseSpeech, releaseTale, resumeSpeech, say, speechProgress, setSpeechEnabled, speechEnabled, stopSpeech, unlockAudio } from './speech';
+import type { Stage } from './stage';
+import { aboutPhrase, COMMON, endingPhrase, parseStory, spokenPhrases, type Story, type TaleInfo } from './story';
 import { progress } from './progress';
-import { COIN, heroesOf, initHeroes, outfitOf, renderHeroes, sayHeroesIntro, wireHeroes } from './heroes-page';
-import { dress } from './wardrobe';
-import kolobokRaw from '../stories/kolobok.yaml';
-import rukavychkaRaw from '../stories/rukavychka.yaml';
-import kozaRaw from '../stories/koza-dereza.yaml';
-import kotskyiRaw from '../stories/pan-kotskyi.yaml';
-import sirkoRaw from '../stories/sirko.yaml';
-import lysychkaRaw from '../stories/lysychka.yaml';
-import telesykRaw from '../stories/telesyk.yaml';
-import kyryloRaw from '../stories/kyrylo.yaml';
-import kotyhoroshkoRaw from '../stories/kotyhoroshko.yaml';
-import bychokRaw from '../stories/solomyanyi-bychok.yaml';
-import pivnykRaw from '../stories/kotyk-pivnyk.yaml';
-import zhuravelRaw from '../stories/lysychka-zhuravel.yaml';
-import kotyhoroshko2Raw from '../stories/kotyhoroshko2.yaml';
-import ripkaRaw from '../stories/ripka.yaml';
+import { loadOutfits, outfitOf } from './closet';
+import { dress } from './dress';
+import { COIN, heroesOf } from './heroes';
+import TALES from 'virtual:tales';
 
-const STORIES: Story[] = [parseStory('kolobok', kolobokRaw), parseStory('ripka', ripkaRaw), parseStory('rukavychka', rukavychkaRaw), parseStory('koza-dereza', kozaRaw), parseStory('pan-kotskyi', kotskyiRaw), parseStory('sirko', sirkoRaw), parseStory('lysychka', lysychkaRaw), parseStory('telesyk', telesykRaw), parseStory('kyrylo', kyryloRaw), parseStory('kotyhoroshko', kotyhoroshkoRaw),
-  parseStory('kotyhoroshko2', kotyhoroshko2Raw), parseStory('solomyanyi-bychok', bychokRaw), parseStory('kotyk-pivnyk', pivnykRaw), parseStory('lysychka-zhuravel', zhuravelRaw)];
+/** the shelf, in this order */
+const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel'];
+/** what the shelf knows of each tale (a few kilobytes); the tale itself is fetched when its card opens */
+const TALE_LIST: TaleInfo[] = SHELF.map((id) => TALES[id]);
+/** each tale's scenes: a chunk of its own, fetched on demand */
+const TALE_FILES = import.meta.glob<Record<string, any>>('../stories/*.yaml', { import: 'default' });
+
+/** The tale's scenes (from the server the first time, then from the browser's cache). */
+async function fetchStory(id: string): Promise<Story> {
+  return parseStory(id, await TALE_FILES[`../stories/${id}.yaml`]());
+}
 /** tales still being written: shown on the shelf as "soon" */
 const SOON: { title: string; icon: string }[] = [];
 
@@ -37,7 +34,7 @@ const HOME_SCENES = ['hata', 'hata-evening', 'hata-winter', 'hata-night', 'pich'
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
 // ---------- endings found, per tale (kept by progress.ts) ----------
-function found(story: Story): string[] {
+function found(story: Pick<TaleInfo, 'id' | 'endings'>): string[] {
   return progress.endings(story.id).filter((e) => e in story.endings);
 }
 
@@ -60,12 +57,10 @@ const COVER_VIEW: Record<string, string> = {
   ripka: '-190 -450 380 470',
 };
 
-function cover(story: Story) {
+function cover(story: Pick<TaleInfo, 'cover'>) {
   const svgEl = el('svg', { viewBox: COVER_VIEW[story.cover] || '-200 -400 400 420', class: 'cover-art' });
   const g = makePuppet(story.cover);
   svgEl.appendChild(g);
-  // the hero of the cover in what she bought it
-  dress(g, story.cover, outfitOf(story.cover));
   return svgEl;
 }
 
@@ -73,6 +68,16 @@ function cover(story: Story) {
  * A dressed cover hero's hat may stick out of its picture: the picture grows to take it in (once
  * the covers are on the page, where they can be measured), keeping its middle.
  */
+/** The heroes of the covers in what she bought them (fetched first), the pictures grown to fit it. */
+function dressCovers(root: HTMLElement) {
+  const covers = Array.from(root.querySelectorAll<SVGGElement>('svg.cover-art > [data-actor]'));
+  void loadOutfits(covers.map((g) => g.getAttribute('data-actor')!)).then(() => {
+    for (const g of covers) dress(g, g.getAttribute('data-actor')!, outfitOf(g.getAttribute('data-actor')!));
+    // measured on the next frame: the shelf may be shown only just after this
+    requestAnimationFrame(() => fitCovers(root));
+  });
+}
+
 function fitCovers(root: HTMLElement) {
   for (const s of Array.from(root.querySelectorAll<SVGSVGElement>('svg.cover-art'))) {
     const things = Array.from(s.querySelectorAll<SVGGraphicsElement>('[data-part="outfit"], [data-part="outfit-body"]'));
@@ -104,7 +109,7 @@ function fitCovers(root: HTMLElement) {
 function renderShelf() {
   const shelf = $('shelf');
   shelf.innerHTML = '';
-  for (const story of STORIES) {
+  for (const story of TALE_LIST) {
     const card = document.createElement('button');
     card.className = 'book';
     const art = document.createElement('div');
@@ -131,12 +136,11 @@ function renderShelf() {
     card.innerHTML = `<div class="book-art"><span class="soon-icon">${s.icon}</span></div><div class="book-title">${s.title}</div>`;
     shelf.appendChild(card);
   }
-  // measured on the next frame: the shelf may be shown only just after this
-  requestAnimationFrame(() => fitCovers(shelf));
+  dressCovers(shelf);
 }
 
 /** a round slot per ending: the found ones show their picture */
-function fillPips(box: HTMLElement, story: Story) {
+function fillPips(box: HTMLElement, story: Pick<TaleInfo, 'id' | 'endings'>) {
   box.innerHTML = '';
   const got = found(story);
   for (const k of Object.keys(story.endings)) {
@@ -149,11 +153,13 @@ function fillPips(box: HTMLElement, story: Story) {
 }
 
 // ---------- a tale's card: the picture, what it is about (said aloud), play ----------
-let carded: Story | null = null;
+let carded: TaleInfo | null = null;
+/** the tale on the card, once fetched with every recording of it */
+let ready: Story | null = null;
 /** the shelf card it was opened from: focus goes back there */
 let cardFrom: HTMLElement | null = null;
 
-function openCard(story: Story, from: HTMLElement) {
+function openCard(story: TaleInfo, from: HTMLElement) {
   unlockAudio();
   carded = story;
   cardFrom = from;
@@ -162,7 +168,7 @@ function openCard(story: Story, from: HTMLElement) {
   art.innerHTML = '';
   art.appendChild(cover(story));
   $('tc-title').textContent = story.title;
-  requestAnimationFrame(() => fitCovers(art));
+  dressCovers(art);
   $('tc-about').textContent = story.about;
   fillPips($('tc-endings'), story);
   const box = $('tale-card');
@@ -177,12 +183,47 @@ function openCard(story: Story, from: HTMLElement) {
     // told: the play button calls a little
     if (carded === told) box.classList.add('told');
   });
+  void prepare(story);
+}
+
+/**
+ * The tale on the card is fetched: its scenes, then every recording of it, into memory (the voice
+ * starts at once, and an iPad that loses Wi-Fi in the middle still tells it to the end). Until
+ * then the play button spins. Closing the card lets it all go.
+ */
+async function prepare(info: TaleInfo) {
+  ready = null;
+  const play = $<HTMLButtonElement>('tc-play');
+  const spin = (part: number) => {
+    play.disabled = true;
+    play.innerHTML = `<span class="spinner"></span>${Math.round(part * 100)}%`;
+  };
+  spin(0);
+  try {
+    // its scenes, the stage (the first time), and the drawings of what its heroes wear
+    const cast = ([] as string[]).concat(...Object.values(info.shows)).filter((a) => heroIds.indexOf(a) >= 0);
+    const [story] = await Promise.all([fetchStory(info.id), player(), loadOutfits(cast)]);
+    if (carded !== info) return;
+    const ok = await loadTale(spokenPhrases(story).map((p) => ({ voice: story.voices[p.who], text: p.text })), (done, all) => carded === info && spin(done / all));
+    if (carded !== info) return;
+    ready = story;
+    play.disabled = false;
+    // some recordings didn't come (Wi-Fi): it can be told anyway, those are fetched on the way
+    play.textContent = ok ? '▶\uFE0E Слухати казку' : '▶\uFE0E Слухати (поганий зв’язок)';
+  } catch {
+    // the tale itself didn't come: try again by tapping
+    if (carded !== info) return;
+    play.disabled = false;
+    play.textContent = '↻ Немає зв’язку — ще раз';
+  }
 }
 
 function closeCard() {
   if (!carded) return;
   carded = null;
+  ready = null;
   stopSpeech();
+  releaseTale();
   $('tale-card').hidden = true;
   $('library').classList.remove('locked');
   cardFrom?.focus();
@@ -197,9 +238,11 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeCard();
 });
 $('tc-play').addEventListener('click', () => {
-  const story = carded;
-  if (!story) return;
+  if (!carded) return;
+  if (!ready) return void prepare(carded);
+  const story = ready;
   carded = null;
+  ready = null;
   stopSpeech();
   $('tale-card').hidden = true;
   $('library').classList.remove('locked');
@@ -264,7 +307,7 @@ function showPages(text: string) {
   if (pages.length < 2) return;
   const estimate = 1200 + text.length * 45;
   pageTimer = setInterval(() => {
-    if (!stage.paused) shownFor += 100 * (fastSpeed || 1);
+    if (!stage?.paused) shownFor += 100 * (fastSpeed || 1);
     const progress = speechProgress();
     const k = progress !== null ? progress : Math.min(1, shownFor / estimate);
     let i = 0;
@@ -286,7 +329,9 @@ function turnPage(i: number) {
 }
 
 // ---------- the tale ----------
-const stage = new Stage($('stage-host'));
+// the stage and the teller: a script of their own, fetched with the first tale opened
+let stage: Stage | null = null;
+let TellerOf: typeof Teller | null = null;
 let teller: Teller | null = null;
 let current: Story | null = null;
 let fastSpeed = 0;
@@ -335,7 +380,7 @@ const ui: TellerUi = {
   curtain(closed) {
     const c = $('curtain');
     c.classList.toggle('closed', closed);
-    return stage.wait(450);
+    return stage!.wait(450);
   },
 };
 
@@ -352,35 +397,56 @@ function drawPurses() {
 progress.onChange(drawPurses);
 // DEBUG=TRUE builds: the purse topped up to 100 000 on every start, to try the whole wardrobe
 if (__DEBUG__ && progress.coins() < 100000) progress.addCoins(100000 - progress.coins());
-initHeroes(STORIES);
-wireHeroes();
-const heroIds = heroesOf(STORIES).map((h) => h.id);
+const heroIds = heroesOf(TALE_LIST).map((h) => h.id);
 // saves from before the heroes' page: who was met isn't known, so it's worked out from the tales
 // heard — the heroes of the scenes heard (or of the whole tale, if only its endings were kept)
-for (const story of STORIES) {
+for (const story of TALE_LIST) {
   if (!found(story).length) continue;
   const heard = progress.heard(story.id);
-  for (const [name, steps] of Object.entries(story.scenes)) {
+  for (const [name, who] of Object.entries(story.shows)) {
     if (heard.length && heard.indexOf(name) < 0) continue;
-    for (const st of steps) if (st.kind === 'show' && heroIds.indexOf(st.actor) >= 0) progress.meet(st.actor);
+    for (const actor of who) if (heroIds.indexOf(actor) >= 0) progress.meet(actor);
   }
 }
-// a hero met in a tale goes on the heroes' shelves; a dressed one wears its things there too
-stage.onShow = (actor, g) => {
-  if (heroIds.indexOf(actor) < 0) return;
-  progress.meet(actor);
-  dress(g, actor, outfitOf(actor));
-};
+/** The stage and the teller (fetched once, with the first tale). */
+async function player(): Promise<Stage> {
+  if (stage) return stage;
+  const [st, en] = await Promise.all([import('./stage'), import('./engine')]);
+  if (stage) return stage;
+  TellerOf = en.Teller;
+  stage = new st.Stage($('stage-host'));
+  stage.speed = fastSpeed || 1;
+  // a hero met in a tale goes on the heroes' shelves; a dressed one wears its things there too
+  // (fetched with the tale: prepare)
+  stage.onShow = (actor, g) => {
+    if (heroIds.indexOf(actor) < 0) return;
+    progress.meet(actor);
+    dress(g, actor, outfitOf(actor));
+  };
+  return stage;
+}
+
+/** the heroes' page: a script of its own, fetched when first opened */
+let heroesPage: Promise<typeof import('./heroes-page')> | null = null;
+function loadHeroesPage() {
+  return (heroesPage ||= import('./heroes-page').then((hp) => {
+    hp.initHeroes(TALE_LIST);
+    hp.wireHeroes();
+    return hp;
+  }));
+}
 let heroesIntroSaid = false;
 $('btn-heroes').addEventListener('click', () => {
   unlockAudio();
   stopSpeech();
   show('heroes');
-  renderHeroes();
-  if (!heroesIntroSaid) {
-    heroesIntroSaid = true;
-    sayHeroesIntro(STORIES[0].voices.narrator);
-  }
+  void loadHeroesPage().then((hp) => {
+    void hp.renderHeroes();
+    if (!heroesIntroSaid) {
+      heroesIntroSaid = true;
+      hp.sayHeroesIntro(TALE_LIST[0].voices.narrator);
+    }
+  });
 });
 $('heroes-back').addEventListener('click', () => {
   stopSpeech();
@@ -391,14 +457,14 @@ $('heroes-back').addEventListener('click', () => {
 
 // ---------- the pause ----------
 function setPaused(on: boolean) {
-  stage.paused = on;
+  if (stage) stage.paused = on;
   $('paused').hidden = !on;
   $('btn-pause').textContent = on ? '▶' : '⏸';
   if (on) pauseSpeech();
   else resumeSpeech();
 }
 
-$('btn-pause').addEventListener('click', () => setPaused(!stage.paused));
+$('btn-pause').addEventListener('click', () => setPaused(!stage?.paused));
 
 // to the previous line: in a tale she has already heard to an ending (any one); to the next line:
 // only in a scene she has heard on a way to an ending — a new branch is listened to, not skipped.
@@ -433,7 +499,7 @@ async function openTale(story: Story, from?: string) {
   $('ending').hidden = true;
   $('btn-pause').hidden = false;
   show('play');
-  const t = new Teller(story, stage, ui);
+  const t = new TellerOf!(story, await player(), ui);
   t.fast = fastSpeed > 0;
   t.onScene = (scene) => showSkip(story, scene);
   teller = t;
@@ -478,7 +544,10 @@ function toLibrary() {
   setPaused(false);
   teller?.stop();
   teller = null;
+  current = null;
   stopSpeech();
+  // the tale and its recordings are let go
+  releaseTale();
   $('ending').hidden = true;
   renderShelf();
   show('library');
@@ -547,25 +616,28 @@ show('library');
 
 // ---------- debugging ----------
 (window as unknown as { tale: unknown }).tale = {
-  stage,
+  get stage() {
+    return stage;
+  },
   get teller() {
     return teller;
   },
-  stories: STORIES,
+  stories: TALE_LIST,
   /** start a tale (default: the first) from a scene; for a scene that doesn't set its backdrop, give one (the kolobok waits there) */
-  go(scene?: string, backdrop?: string, id = STORIES[0].id) {
-    const s = STORIES.find((x) => x.id === id)!;
+  async go(scene?: string, backdrop?: string, id = SHELF[0]) {
+    const s = await fetchStory(id);
+    const st = await player();
     if (backdrop) {
-      stage.setScene(backdrop);
+      st.setScene(backdrop);
       ui.scene(backdrop);
-      stage.show('kolobok', [560, 770]);
+      st.show('kolobok', [560, 770]);
     }
     return openTale(s, scene);
   },
   /** n× faster, no voice (0: back to normal) */
   fast(n = 4) {
     fastSpeed = n;
-    stage.speed = n || 1;
+    if (stage) stage.speed = n || 1;
     if (teller) teller.fast = n > 0;
   },
   /** how a line would be split into subtitle pages */

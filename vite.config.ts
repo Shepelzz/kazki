@@ -1,7 +1,8 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { defineConfig, loadEnv, type Plugin } from 'vite';
+import { defineConfig, loadEnv, runnerImport, type Plugin, type ViteDevServer } from 'vite';
 import YAML from 'yaml';
+import { parseStory, type TaleInfo } from './src/story.ts';
 
 // stories/*.yaml are imported as their data
 function yaml(): Plugin {
@@ -10,6 +11,86 @@ function yaml(): Plugin {
     transform(code, id) {
       if (!id.endsWith('.yaml')) return null;
       return { code: `export default ${JSON.stringify(YAML.parse(code))};`, map: null };
+    },
+  };
+}
+
+// virtual:tales — what the shelf needs of every tale (title, cover, what it is about, endings,
+// voices, which heroes come on in which scene), a few kilobytes. The tale itself (its scenes) is
+// a chunk of its own, fetched when its card is opened.
+function taleIndex(): Plugin {
+  const dir = resolve(__dirname, 'stories');
+  const ID = 'virtual:tales';
+  return {
+    name: 'tale-index',
+    resolveId: (id) => (id === ID ? '\0' + ID : null),
+    load(id) {
+      if (id !== '\0' + ID) return null;
+      const out: Record<string, TaleInfo> = {};
+      for (const f of readdirSync(dir).filter((f) => f.endsWith('.yaml'))) {
+        this.addWatchFile(resolve(dir, f));
+        const s = parseStory(f.replace(/\.yaml$/, ''), YAML.parse(readFileSync(resolve(dir, f), 'utf8')));
+        const shows: Record<string, string[]> = {};
+        for (const [name, steps] of Object.entries(s.scenes)) {
+          const who = [...new Set(steps.flatMap((st) => (st.kind === 'show' ? [st.actor] : [])))];
+          if (who.length) shows[name] = who;
+        }
+        out[s.id] = { id: s.id, title: s.title, cover: s.cover, about: s.about, sayTitle: s.sayTitle, voices: s.voices, endings: s.endings, shows };
+      }
+      return `export default ${JSON.stringify(out)};`;
+    },
+  };
+}
+
+// The wardrobe: src/wardrobe.ts (and src/items/) is run here, when the app is built, and every
+// thing drawn into a little module of its own — the app fetches only the things worn (or shown on
+// the heroes' page), never the ~500 drawings at once.
+//   virtual:wardrobe-art      thing → () => import(its module); in the main script (a line a thing)
+//   virtual:item/<id>         { id, slot, beard, svg }: the drawing
+//   virtual:wardrobe-catalog  names, prices, each hero's set: for the heroes' page only
+function wardrobeArt(): Plugin {
+  type W = typeof import('./src/wardrobe');
+  let w: Promise<W> | null = null;
+  let server: ViteDevServer | null = null;
+  const get = () =>
+    (w ||= runnerImport<W>('/src/wardrobe.ts', { root: __dirname, configFile: false, logLevel: 'error' }).then((r) => {
+      for (const it of r.module.ITEMS) if (!/^[a-z0-9_-]+$/.test(it.id)) throw new Error(`wardrobe: a thing's id "${it.id}" can't be a file name`);
+      return r.module;
+    }));
+  const ART = 'virtual:wardrobe-art';
+  const CAT = 'virtual:wardrobe-catalog';
+  const ITEM = 'virtual:item/';
+  return {
+    name: 'wardrobe-art',
+    configureServer(s) {
+      server = s;
+    },
+    resolveId: (id) => (id === ART || id === CAT || id.startsWith(ITEM) ? '\0' + id : null),
+    async load(id) {
+      if (!id.startsWith('\0virtual:')) return null;
+      const key = id.slice(1);
+      if (key !== ART && key !== CAT && !key.startsWith(ITEM)) return null;
+      const wr = await get();
+      if (key === ART) return `export default {${wr.ITEMS.map((i) => `${JSON.stringify(i.id)}: () => import(${JSON.stringify(ITEM + i.id)})`).join(',\n')}};`;
+      if (key === CAT) {
+        const items: Record<string, { slot: string; name: string; price: number }> = {};
+        for (const i of wr.ITEMS) items[i.id] = { slot: i.slot, name: i.name, price: i.price };
+        const sets: Record<string, string[]> = {};
+        for (const h of [...wr.FITTED_HEROES, ...Object.keys(wr.BODY)]) sets[h] = wr.itemsFor(h).map((i) => i.id);
+        // a hero with no set of its own may wear anything (itemsFor)
+        const any = wr.itemsFor('-').map((i) => i.id);
+        return `export default ${JSON.stringify({ items, sets, any })};`;
+      }
+      const it = wr.ITEMS.find((i) => i.id === key.slice(ITEM.length));
+      if (!it) throw new Error(`no thing ${key}`);
+      return `export default ${JSON.stringify({ id: it.id, slot: it.slot, beard: !!it.beard, svg: it.draw() })};`;
+    },
+    // a thing drawn anew (dev): run the wardrobe again
+    watchChange(file) {
+      if (!/src\/(items\/|wardrobe\.ts|wardrobe-edits\.json|characters\.ts|dress\.ts)/.test(file)) return;
+      w = null;
+      const graph = server?.environments.client.moduleGraph;
+      if (graph) for (const m of graph.idToModuleMap.values()) if (m.id && m.id.startsWith('\0virtual:') && !m.id.includes('tales')) graph.invalidateModule(m);
     },
   };
 }
@@ -85,7 +166,7 @@ function fitEditor(): Plugin {
 
 export default defineConfig(({ mode }) => ({
   base: '/',
-  plugins: [yaml(), fitEditor()],
+  plugins: [yaml(), taleIndex(), wardrobeArt(), fitEditor()],
   // DEBUG=TRUE (in .env.local, or the host's environment, e.g. on Render) shows the buttons that
   // skip to the next / previous line
   define: {

@@ -3,53 +3,47 @@
 // hats, glasses, a moustache, a scarf, bought with the coins for endings. The clothes are worn in the
 // tales too, unless the hero's checkbox takes them off.
 
+import CATALOG from 'virtual:wardrobe-catalog';
 import { el, makePuppet } from './characters';
+import { loadItems, loadOutfits, outfitIds, outfitOf, wearable } from './closet';
+import { dress, SLOTS, type Slot, type Wearable } from './dress';
+import { COIN, heroesOf, type Hero } from './heroes';
 import { progress } from './progress';
 import { say, stopSpeech, unlockAudio } from './speech';
 import { COMMON, type Story } from './story';
 import type { Voice } from './voiceKey';
-import { dress, itemById, itemsFor, SLOTS, type Item, type Slot } from './wardrobe';
 
-export interface Hero {
-  id: string;
-  name: string;
-  voice: Voice;
-  /** the narrator's voice of its home tale (for the page's own words) */
-  narrator: Voice;
-}
+/** a thing of the shop: what it is called and costs, and its drawing (fetched: loadItems) */
+type Item = Wearable & { name: string; price: number };
 
-const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+/** a hero's things (its set), by id: fetched when its card opens */
+const setOf = (hero: string): string[] => CATALOG.sets[hero] || CATALOG.any;
 
-/** the heroes: every character with a hello, in the order of the tales on the shelf */
-export function heroesOf(stories: Story[]): Hero[] {
-  const out: Hero[] = [];
-  for (const s of stories)
-    for (const [id, v] of Object.entries(s.voices))
-      if (v.hello && !out.some((h) => h.id === id)) out.push({ id, name: v.name, voice: v, narrator: s.voices.narrator });
+/** a hero's things, of those fetched */
+function itemsFor(hero: string): Item[] {
+  const out: Item[] = [];
+  for (const id of setOf(hero)) {
+    const w = wearable(id);
+    if (w) out.push({ ...w, name: CATALOG.items[id].name, price: CATALOG.items[id].price });
+  }
   return out;
 }
 
-/** what a hero has on in the tales (nothing while its checkbox is off) */
-export function outfitOf(hero: string): Item[] {
-  if (!progress.dressed(hero)) return [];
-  const w = progress.wearing(hero);
-  return Object.keys(w)
-    .map((slot) => itemById(w[slot]))
-    .filter((i): i is Item => !!i && progress.owns(i.id));
-}
 
-/** a gold coin with a star, for prices and the purse */
-export const COIN =
-  '<svg class="coin" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#ffc83d" stroke="#c98a12" stroke-width="3"/><circle cx="20" cy="20" r="12" fill="none" stroke="#eaa51c" stroke-width="2.5"/><path d="M20 12.5l2.3 4.7 5.2.8-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.8-3.6 5.2-.8z" fill="#fff3c4"/></svg>';
+const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+
+
 
 /** the biggest things of each slot: a hero's picture is framed for them, so trying on doesn't jump */
-const FRAME_FOR = ['shelom', 'boroda', 'sharf', 'okuliary'].map((id) => itemById(id)!);
+const FRAME_IDS = ['shelom', 'boroda', 'sharf', 'okuliary'];
+const frameFor = () => FRAME_IDS.map(wearable).filter((i): i is Wearable => !!i);
 
 /**
  * A puppet in its own little picture, cut to fit (it must be on screen to be measured): framed for
  * `frameFor` (what it wears, or the biggest things), then dressed in `items`.
  */
-function portrait(host: Element, hero: string, items: Item[], pad = 0.08, frameFor: Item[] = items) {
+function portrait(host: Element, hero: string, items: Wearable[], pad = 0.08, frameFor: Wearable[] = items) {
   host.innerHTML = '';
   const s = el('svg', { class: 'hero-svg' });
   host.appendChild(s);
@@ -76,11 +70,13 @@ function portrait(host: Element, hero: string, items: Item[], pad = 0.08, frameF
 
 let heroes: Hero[] = [];
 
-export function initHeroes(stories: Story[]) {
+export function initHeroes(stories: Pick<Story, 'voices'>[]) {
   heroes = heroesOf(stories);
 }
 
-export function renderHeroes() {
+export async function renderHeroes() {
+  // the drawings of what the met heroes wear
+  await Promise.all([loadOutfits(heroes.filter((h) => progress.met(h.id)).map((h) => h.id)), loadItems(FRAME_IDS)]);
   const grid = $('hero-grid');
   grid.innerHTML = '';
   const met = heroes.filter((h) => progress.met(h.id)).length;
@@ -100,11 +96,11 @@ export function renderHeroes() {
     portrait(art, h.id, known ? outfitOf(h.id) : []);
     tile.addEventListener('click', () => {
       unlockAudio();
-      if (known) openHero(h, tile);
+      if (known) void openHero(h, tile);
       else if (__DEBUG__) {
         // DEBUG=TRUE builds: a hidden hero is met at a tap
         progress.meet(h.id);
-        renderHeroes();
+        void renderHeroes();
       } else {
         tile.classList.remove('shake');
         void tile.offsetWidth;
@@ -121,19 +117,21 @@ let open: Hero | null = null;
 let from: HTMLElement | null = null;
 /** a thing tried on, not bought yet */
 let trying: Item | null = null;
+/** a card being opened: its hero's things are coming */
+let opening = false;
 let live: ReturnType<typeof portrait> | null = null;
 let hop = 0;
 let talking = false;
 let anim = 0;
 
-function look(): Item[] {
+function look(): Wearable[] {
   const items = outfitOf(open!.id).filter((i) => !trying || i.slot !== trying.slot);
   return trying ? items.concat(trying) : items;
 }
 
 function redraw() {
   if (!open) return;
-  live = portrait($('hero-view'), open.id, look(), 0.06, FRAME_FOR);
+  live = portrait($('hero-view'), open.id, look(), 0.06, frameFor());
   live.svg.addEventListener('click', () => greet());
   // the checkbox, the tabs, the things of the tab
   ($('hero-dressed') as HTMLInputElement).checked = progress.dressed(open.id);
@@ -260,7 +258,15 @@ function animate() {
   anim = requestAnimationFrame(step);
 }
 
-function openHero(h: Hero, tile: HTMLElement) {
+async function openHero(h: Hero, tile: HTMLElement) {
+  if (opening) return;
+  // its things, to try on: fetched first (a moment, the first time)
+  opening = true;
+  tile.classList.add('loading');
+  await loadItems(setOf(h.id).concat(outfitIds(h.id)));
+  tile.classList.remove('loading');
+  opening = false;
+  if ($('heroes').hidden) return;
   open = h;
   from = tile;
   const own = itemsFor(h.id);
@@ -285,7 +291,7 @@ function closeHero() {
   cancelAnimationFrame(anim);
   $('hero-card').hidden = true;
   $('heroes').classList.remove('locked');
-  renderHeroes();
+  void renderHeroes();
   from?.focus();
 }
 

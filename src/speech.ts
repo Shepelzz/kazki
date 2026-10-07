@@ -69,11 +69,17 @@ let fetching = 0;
 const KEEP_BYTES = 120;
 const KEEP_DECODED = 18;
 
-function touch<V>(m: Map<string, V>, k: string, v: V, keep: number) {
+/** the recordings of the tale that is open: all kept in memory until it is closed */
+const pinned = new Set<string>();
+/** grows when a tale is let go: its fetching still on the way stops */
+let taleGen = 0;
+
+function touch<V>(m: Map<string, V>, k: string, v: V, keep: number, spare = false) {
   m.delete(k);
   m.set(k, v);
   for (const old of m.keys()) {
     if (m.size <= keep) break;
+    if (spare && pinned.has(old)) continue;
     m.delete(old);
   }
 }
@@ -88,7 +94,7 @@ function fetchBytes(key: string): Promise<void> {
   const p = fetch(fileUrl(key))
     .then((r) => (r.ok ? r.arrayBuffer() : null))
     .then((b) => {
-      if (b) touch(bytes, key, b, KEEP_BYTES);
+      if (b) touch(bytes, key, b, KEEP_BYTES, true);
     })
     .catch(() => {})
     .then(() => {
@@ -153,6 +159,48 @@ function trim(buf: AudioBuffer) {
   while (z > a && Math.abs(d[z]) < LOUD) z--;
   const sr = buf.sampleRate;
   return { from: Math.max(0, a / sr - 0.03), to: Math.min(buf.duration, z / sr + 0.12) };
+}
+
+/**
+ * Every recording of a tale, fetched into memory before it starts (4 at a time); `onProgress` is
+ * told how many are in. Resolves true when all came, false when some didn't (no Wi-Fi: those are
+ * fetched when said). Held until releaseTale().
+ */
+export function loadTale(phrases: { voice: Voice; text: string }[], onProgress: (done: number, all: number) => void): Promise<boolean> {
+  releaseTale();
+  const gen = taleGen;
+  const keys = [...new Set(phrases.map((p) => voiceKey(p.voice, p.text)))].filter((k) => recorded.has(k));
+  for (const k of keys) pinned.add(k);
+  let done = 0;
+  let next = 0;
+  onProgress(0, keys.length);
+  return new Promise((resolve) => {
+    if (!keys.length) return resolve(true);
+    const one = (): void => {
+      if (gen !== taleGen) return resolve(false);
+      if (next >= keys.length) return;
+      const k = keys[next++];
+      void fetchBytes(k).then(() => {
+        if (gen !== taleGen) return resolve(false);
+        done++;
+        onProgress(done, keys.length);
+        if (done === keys.length) resolve(keys.every((x) => bytes.has(x)));
+        else one();
+      });
+    };
+    for (let i = 0; i < 4; i++) one();
+  });
+}
+
+/** The tale is closed: its recordings leave memory (the browser's cache keeps the files). */
+export function releaseTale() {
+  taleGen++;
+  queue.length = 0;
+  for (const k of pinned) {
+    bytes.delete(k);
+    decoded.delete(k);
+  }
+  pinned.clear();
 }
 
 /** Fetch these phrases ahead, in this order (first = needed soonest). */

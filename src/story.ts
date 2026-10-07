@@ -49,6 +49,12 @@ export interface Story {
   scenes: Record<string, Step[]>;
 }
 
+/** What the shelf knows of a tale before it is fetched (virtual:tales). */
+export type TaleInfo = Pick<Story, 'id' | 'title' | 'cover' | 'about' | 'sayTitle' | 'voices' | 'endings'> & {
+  /** scene → who comes on in it */
+  shows: Record<string, string[]>;
+};
+
 type Raw = Record<string, any>;
 
 /** Turns the YAML form (`- kolobok: "…"`, `- move: zayets`) into typed steps, checking links. */
@@ -130,4 +136,4 @@ export function spokenPhrases(story: Story): Phrase[] {
 export const optionPhrase = (o: ChoiceOption) => `${o.label.replace(/[!.]+$/, '')}?`;
 export const endingPhrase = (e: Ending) => `Кінцівка «${e.title}».`;
 /** said when the tale's card opens: its name, then what it is about */
-export const aboutPhrase = (s: Story) => `${s.sayTitle || s.title}. ${s.about}`;
+export const aboutPhrase = (s: Pick<Story, 'title' | 'sayTitle' | 'about'>) => `${s.sayTitle || s.title}. ${s.about}`;
