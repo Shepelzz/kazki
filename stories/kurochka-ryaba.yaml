@@ -1,0 +1,532 @@
+# Курочка Ряба — казка з вибором. Головна лінія — як у народній казці (знесла курочка золоте
+# яєчко, дід бив-бив — не розбив, баба била-била — не розбила, мишка бігла, хвостиком махнула…);
+# відгалуження — на виборах. Кроки ті самі, що в інших казках; сцени kurnyk / kurnyk-night —
+# подвір'я з курником; fx wag — мишка махає хвостиком; fx break на золотому яєчку лишає шкаралупку.
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Курочка Ряба
+cover: ryaba
+about: "Знесла курочка Ряба яєчко — не просте, а золоте! Дід його б'є, баба б'є... Що ж із ним станеться?"
+
+voices:
+  narrator: { name: "", pitch: 1.1, rate: 1 }
+  did:      { name: "Дід", pitch: 0.72, rate: 0.9 }
+  baba:     { name: "Баба", pitch: 1.0, rate: 0.95 }
+  ryaba:    { name: "Курочка Ряба", pitch: 1.3, rate: 1.05, hello: "Кудкудак! Я курочка Ряба. Хочеш, знесу тобі яєчко?" }
+  myshka:   { name: "Мишка", pitch: 1.7, rate: 1.15 }
+  kurcha:   { name: "Курчатко", pitch: 1.85, rate: 1.15 }
+
+endings:
+  canon: { title: "Яєчко просте", icon: "🥚" }
+  choco: { title: "Шоколадне яєчко", icon: "🍫" }
+  ball:  { title: "Яєчко-м'ячик", icon: "⚽" }
+  chick: { title: "Золоте курчатко", icon: "🐣" }
+
+start: start
+
+scenes:
+  start:
+    - scene: kurnyk
+    - show: kubelko
+      at: [1060, 770]
+    - show: did
+      at: [800, 770]
+    - show: baba
+      at: [1430, 770]
+    - show: ryaba
+      at: [272, 552]
+      flip: true
+    - narrator: "Привіт! Сьогодні — казка про курочку Рябу. А ти допомагатимеш вибирати, що буде далі!"
+    - narrator: "Жили-були дід та баба, і була в них курочка Ряба."
+    - move: ryaba
+      to: [620, 770]
+      flip: true
+      ms: 1600
+      wait: true
+    - ryaba: "Кудкудак! Доброго ранку, діду! Доброго ранку, бабо!"
+    - move: ryaba
+      to: [1060, 770]
+      flip: true
+      ms: 1500
+      wait: true
+    - fx: sit
+      on: ryaba
+    - narrator: "Сіла курочка в кубельце, посиділа-посиділа..."
+    - fx: bang
+      on: ryaba
+      word: "КО-КО-КО!"
+    - fx: stand
+      on: ryaba
+    - move: ryaba
+      to: [1230, 770]
+      ms: 700
+      wait: true
+    - show: zolote
+      at: [1060, 752]
+    - fx: sparkle
+      on: zolote
+    - narrator: "...та й знесла яєчко. Не просте, а золоте!"
+    - ryaba: "Кудкудак! Подивіться, яке яєчко я знесла!"
+    - did: "Ого! Золоте яєчко! Аж сяє!"
+    - baba: "Оце диво! Зроду такого не бачила."
+    - choice: "Що зроблять дід і баба із золотим яєчком?"
+      options:
+        - label: "Розбити яєчко"
+          icon: "🔨"
+          next: carry
+        - label: "Хай Ряба висидить"
+          icon: "🐣"
+          next: hatch
+
+  carry:
+    - did: "А розіб'ю-но я його та й з'їм! Золоте — то, мабуть, і смачне!"
+    - move: did
+      to: [960, 770]
+      ms: 900
+      wait: true
+    - carry: zolote
+      by: did
+    - narrator: "Узяв дід золоте яєчко, і пішли всі до хати."
+    - move: did
+      to: [1900, 770]
+      ms: 2400
+    - move: baba
+      to: [2000, 770]
+      ms: 2000
+    - move: ryaba
+      to: [1800, 770]
+      flip: true
+      ms: 2200
+      wait: true
+    - next: beat
+
+  beat:
+    - scene: pich
+    - show: zolote
+      at: [910, 600]
+    - show: did
+      at: [720, 770]
+    - show: baba
+      at: [1150, 770]
+    - show: ryaba
+      at: [480, 770]
+      flip: true
+    - narrator: "Поклав дід яєчко на стіл."
+    - did: "Ану, яєчко, розбивайся!"
+    - fx: hit
+      on: did
+      who: [zolote]
+      word: "ТУК!"
+    - narrator: "Дід бив-бив..."
+    - fx: hit
+      on: did
+      who: [zolote]
+      word: "ТУК-ТУК!"
+    - narrator: "...не розбив."
+    - did: "Ох, і міцне ж яєчко!"
+    - baba: "Ет, діду! Дай-но я!"
+    - fx: hit
+      on: baba
+      who: [zolote]
+      word: "БАМ!"
+    - narrator: "Баба била-била..."
+    - fx: hit
+      on: baba
+      who: [zolote]
+      word: "БАМ-БАМ!"
+    - narrator: "...не розбила."
+    - baba: "Ой, аж руки болять! Тверде, наче камінь."
+    - ryaba: "Кудкудак! Та воно ж золоте!"
+    - choice: "Не розбивається яєчко. Що ж тепер робити?"
+      options:
+        - label: "Покласти й відпочити"
+          icon: "😴"
+          next: rest
+        - label: "Пограти ним у м'ячик"
+          icon: "⚽"
+          next: ball
+
+  rest:
+    - narrator: "Залишили дід та баба яєчко на столі, сіли на лаву та й задрімали."
+    - move: did
+      to: [1240, 770]
+      ms: 1400
+    - move: baba
+      to: [1440, 770]
+      ms: 1200
+      wait: true
+    - fx: sleep
+      on: did
+    - fx: sleep
+      on: baba
+    - fx: sleep
+      on: ryaba
+    - narrator: "Аж тут — мишка бігла..."
+    - show: myshka
+      at: [-200, 770]
+      flip: true
+    - move: myshka
+      to: [660, 770]
+      flip: true
+      hop: true
+      ms: 1500
+      wait: true
+    - move: myshka
+      to: [790, 600]
+      flip: true
+      hop: true
+      ms: 600
+      wait: true
+    - move: myshka
+      to: [1010, 600]
+      flip: true
+      ms: 900
+      wait: true
+    - myshka: "Пі-пі! Ой, що це тут блищить?"
+    - narrator: "Мишка бігла, хвостиком махнула..."
+    - fx: wag
+      on: myshka
+    - move: zolote
+      to: [770, 600]
+      ms: 1000
+      wait: true
+    - choice: "Котиться яєчко до краю столу! Що буде?"
+      options:
+        - label: "Впаде на підлогу"
+          icon: "💥"
+          next: fall
+        - label: "Ряба його впіймає"
+          icon: "🐔"
+          next: catch
+
+  fall:
+    - move: zolote
+      to: [700, 770]
+      hop: true
+      ms: 500
+      wait: true
+    - fx: bang
+      on: zolote
+      word: "ДЗЕНЬ!"
+    - fx: break
+      on: zolote
+    - narrator: "...яєчко впало й розбилося!"
+    - fx: wake
+      on: ryaba
+    - fx: wake
+      on: did
+    - fx: wake
+      on: baba
+    - move: myshka
+      to: [1700, 770]
+      hop: true
+      ms: 900
+    - narrator: "А мишка — шмиг та й утекла."
+    - move: did
+      to: [900, 770]
+      ms: 1300
+    - move: baba
+      to: [1110, 770]
+      ms: 1300
+      wait: true
+    - fx: tears
+      on: did
+    - fx: tears
+      on: baba
+    - narrator: "Дід плаче, баба плаче, а курочка кудкудаче:"
+    - ryaba: "Не плач, діду, не плач, бабо! Я знесу вам яєчко не золоте, а просте!"
+    - next: plain
+
+  plain:
+    - scene: kurnyk
+    - show: kubelko
+      at: [1060, 770]
+    - show: ryaba
+      at: [1060, 770]
+    - show: did
+      at: [780, 770]
+    - show: baba
+      at: [1420, 770]
+    - fx: sit
+      on: ryaba
+    - narrator: "Сіла курочка в кубельце..."
+    - fx: bang
+      on: ryaba
+      word: "КО-КО!"
+    - fx: stand
+      on: ryaba
+    - move: ryaba
+      to: [1230, 770]
+      ms: 700
+      wait: true
+    - show: yaiechko
+      at: [1060, 752]
+    - fx: sparkle
+      on: yaiechko
+    - narrator: "...і знесла яєчко — не золоте, а просте!"
+    - ryaba: "Кудкудак! Ось вам просте яєчко — на здоров'я!"
+    - baba: "Ото добре! А з простого яєчка я яєчню засмажу!"
+    - next: breakfast
+
+  breakfast:
+    - scene: pich
+    - show: yaieshnia
+      at: [890, 600]
+    - show: did
+      at: [700, 770]
+    - show: baba
+      at: [1130, 770]
+    - show: ryaba
+      at: [1340, 770]
+    - fx: sit
+      on: did
+    - fx: sit
+      on: baba
+    - narrator: "Засмажила баба яєчню, і сіли всі снідати."
+    - fx: munch
+      on: did
+    - show: myshka
+      at: [-200, 770]
+      flip: true
+    - move: myshka
+      to: [480, 770]
+      flip: true
+      hop: true
+      ms: 1500
+      wait: true
+    - myshka: "Пі-пі... Пробачте мені за золоте яєчко! Я ненавмисно."
+    - did: "Та нічого, мишко! Сідай із нами. Просте яєчко — ще й смачніше!"
+    - fx: hearts
+      on: myshka
+    - fx: munch
+      on: myshka
+    - narrator: "Отак і живуть собі дід, баба та курочка Ряба. А мишка до них у гості забігає — на яєчню!"
+    - ending: canon
+
+  catch:
+    - fx: wake
+      on: ryaba
+    - ryaba: "Кудкудак! Ловлю!"
+    - move: ryaba
+      to: [690, 770]
+      flip: true
+      ms: 500
+    - fx: whoosh
+      on: ryaba
+    - pause: 250
+    - put: zolote
+      to: [660, 644]
+      ms: 500
+    - carry: zolote
+      by: ryaba
+    - fx: squash
+      on: ryaba
+    - narrator: "Скотилося яєчко зі столу — та прямісінько курочці на спинку! Ціле!"
+    - fx: wake
+      on: did
+    - fx: wake
+      on: baba
+    - did: "Ох! Ряба, та ти ж у нас спритниця!"
+    - myshka: "Ой, пробачте! Я ненавмисно хвостиком махнула!"
+    - baba: "Нічого, мишко. Тільки що ж робити з яєчком, коли воно не б'ється?"
+    - myshka: "А дайте-но я! У мене зубки гостренькі!"
+    - put: zolote
+      to: [790, 770]
+      ms: 500
+    - move: ryaba
+      to: [560, 770]
+      ms: 700
+    - move: myshka
+      to: [900, 770]
+      flip: false
+      hop: true
+      ms: 700
+      wait: true
+    - fx: hit
+      on: myshka
+      who: [zolote]
+      word: "ХРУМ!"
+    - fx: hit
+      on: myshka
+      who: [zolote]
+      word: "ШУРХ!"
+    - hide: zolote
+    - show: shokolad
+      at: [790, 770]
+    - fx: sparkle
+      on: shokolad
+    - narrator: "Хрум — і золото зашурхотіло! Бо то було не золото, а золотий папірець. А під ним — шоколадне яєчко!"
+    - move: did
+      to: [1080, 770]
+      ms: 1000
+    - move: baba
+      to: [1290, 770]
+      ms: 1000
+      wait: true
+    - myshka: "Пі! Шоколадне! Пригощайтеся!"
+    - baba: "Ото так диво! Ну, ділімо на всіх!"
+    - fx: munch
+      on: did
+    - fx: munch
+      on: myshka
+    - fx: hearts
+      on: ryaba
+    - narrator: "Поділили шоколадне яєчко на всіх: і дідові, і бабі, і Рябі, і мишці. Бо мишка зуміла те, чого ніхто не зміг!"
+    - ending: choco
+
+  ball:
+    - did: "А як не б'ється — то хай буде м'ячик! Ходімо на подвір'я!"
+    - next: yard
+
+  yard:
+    - scene: kurnyk
+    - show: kubelko
+      at: [1560, 770]
+    - show: did
+      at: [600, 770]
+    - show: zolote
+      at: [760, 770]
+    - show: baba
+      at: [1040, 770]
+    - fx: hit
+      on: did
+      who: [zolote]
+      word: "БУЦ!"
+    - move: zolote
+      to: [880, 770]
+      hop: true
+      ms: 700
+      wait: true
+    - fx: hit
+      on: baba
+      who: [zolote]
+      word: "ГОП!"
+    - move: zolote
+      to: [760, 770]
+      hop: true
+      ms: 700
+      wait: true
+    - narrator: "Заходилися дід із бабою грати золотим яєчком у м'яча! Стрибає яєчко, мов м'ячик, — і не б'ється!"
+    - show: ryaba
+      at: [1800, 770]
+    - move: ryaba
+      to: [1330, 770]
+      hop: true
+      ms: 1300
+      wait: true
+    - ryaba: "Кудкудак! І я, і я хочу!"
+    - did: "Лови, Рябо!"
+    - fx: hit
+      on: did
+      who: [zolote]
+      word: "БУЦ!"
+    - move: zolote
+      to: [1450, 770]
+      hop: true
+      ms: 1100
+      wait: true
+    - fx: hit
+      on: ryaba
+      who: [zolote]
+      word: "КО!"
+    - move: zolote
+      to: [1560, 752]
+      hop: true
+      ms: 700
+      wait: true
+    - fx: bang
+      on: kubelko
+      word: "ГОЛ!"
+    - fx: tumble
+      on: ryaba
+    - show: myshka
+      at: [-200, 770]
+      flip: true
+    - move: myshka
+      to: [380, 770]
+      flip: true
+      hop: true
+      ms: 1400
+      wait: true
+    - myshka: "Пі-пі! Гол! Гол! Молодчина, Рябо!"
+    - fx: hearts
+      on: ryaba
+    - baba: "Ну й Ряба! Справжня футболістка!"
+    - narrator: "Відтоді щовечора грають дід, баба й курочка Ряба золотим м'ячиком. А мишка — уболіває!"
+    - ending: ball
+
+  hatch:
+    - did: "А нехай Ряба його висидить! Може, з нього щось чудове вилупиться?"
+    - ryaba: "Кудкудак! Висиджу!"
+    - move: ryaba
+      to: [1060, 770]
+      ms: 900
+      wait: true
+    - hide: zolote
+    - fx: sit
+      on: ryaba
+    - narrator: "Сіла курочка на золоте яєчко. Сидить день, сидить другий..."
+    - next: night
+
+  night:
+    - scene: kurnyk-night
+    - show: kubelko
+      at: [1060, 770]
+    - show: ryaba
+      at: [1060, 770]
+    - fx: sleep
+      on: ryaba
+    - narrator: "...сидить Ряба і вночі, гріє яєчко. А в яєчку щось — тук-тук! — постукує."
+    - fx: bang
+      on: ryaba
+      word: "ТУК-ТУК!"
+    - pause: 600
+    - next: hatched
+
+  hatched:
+    - scene: kurnyk
+    - show: kubelko
+      at: [1000, 770]
+    - show: ryaba
+      at: [1000, 770]
+    - show: did
+      at: [640, 770]
+    - show: baba
+      at: [1420, 770]
+    - fx: sit
+      on: ryaba
+    - narrator: "А вранці..."
+    - fx: stand
+      on: ryaba
+    - move: ryaba
+      to: [1190, 770]
+      ms: 700
+      wait: true
+    - show: zolote
+      at: [1000, 752]
+    - fx: rock
+      on: zolote
+    - fx: bang
+      on: zolote
+      word: "ТРІСЬ!"
+    - fx: break
+      on: zolote
+    - show: kurcha
+      at: [1000, 740]
+      size: 1.3
+    - fx: sparkle
+      on: kurcha
+    - move: kurcha
+      to: [830, 770]
+      hop: true
+      ms: 600
+      wait: true
+    - kurcha: "Пі-пі! Мамо! Доброго ранку!"
+    - ryaba: "Кудкудак! Моє золоте курчатко!"
+    - fx: hearts
+      on: ryaba
+    - did: "Оце так! Із золотого яєчка — золоте курчатко!"
+    - baba: "Та воно ж світиться, наче сонечко!"
+    - narrator: "Виросло курчатко веселе й золоте. І відтоді в дідовому курнику навіть уночі світло, як удень!"
+    - ending: chick

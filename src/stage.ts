@@ -149,9 +149,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko'];
 /**
  * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
  * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
@@ -238,6 +238,8 @@ const REACTIONS: Record<string, string[]> = {
   pastushok: ['hop', 'scratch', 'dance'],
   hryfon: ['crow', 'shiver', 'stretch'],
   zmiy: ['crow', 'sneeze', 'scratch'],
+  ryaba: ['bow', 'wiggle', 'dance', 'flip'],
+  kurcha: ['hops', 'shiver', 'spin'],
 };
 
 /** one heave-ho of pulling (seconds) */
@@ -681,6 +683,60 @@ function snowGround(seed: number, path = true) {
   return s;
 }
 
+/** the hen-house on stilts: a thatched roof, a round door, a ramp of slats down to the yard */
+function henHouse(x: number) {
+  let planks = '';
+  for (let i = 0; i < 9; i++) planks += `<path d="M${x + 22 + i * 42} 392 V560" stroke="#a96f3a" stroke-width="4"/>`;
+  // the slats across the ramp (it runs from the door down to the right)
+  let slats = '';
+  for (let i = 1; i < 9; i++) {
+    const px = x + 130 + 340 * (i / 9);
+    const py = 548 + 228 * (i / 9);
+    slats += `<path d="M${(px - 9).toFixed(0)} ${(py + 13).toFixed(0)} L${(px + 9).toFixed(0)} ${(py - 13).toFixed(0)}" stroke="#6d4426" stroke-width="6" stroke-linecap="round"/>`;
+  }
+  let roof = '';
+  for (let i = 0; i < 12; i++) roof += `<path d="M${x - 10 + i * 40} 392 L${x + 200 + (i - 5.5) * 8} 250" stroke="#c99a3e" stroke-width="4" stroke-linecap="round"/>`;
+  return `
+  <g>
+    <rect x="${x + 30}" y="560" width="22" height="${GROUND - 552}" fill="#7a4e28" stroke="#5a3a22" stroke-width="4"/>
+    <rect x="${x + 330}" y="560" width="22" height="${GROUND - 552}" fill="#7a4e28" stroke="#5a3a22" stroke-width="4"/>
+    <rect x="${x}" y="384" width="400" height="184" fill="#c98a4b" stroke="#5a3a22" stroke-width="6"/>${planks}
+    <ellipse cx="${x + 110}" cy="500" rx="42" ry="52" fill="#3a2418" stroke="#5a3a22" stroke-width="6"/>
+    <path d="M${x + 70} 548 h80" stroke="#5a3a22" stroke-width="8"/>
+    <rect x="${x + 238}" y="430" width="100" height="70" fill="#9fd3f0" stroke="#3b6aa0" stroke-width="7"/>
+    <path d="M${x + 288} 430 v70 M${x + 238} 465 h100" stroke="#3b6aa0" stroke-width="5"/>
+    <path d="M${x + 244} 494 q20 -16 44 -6 q24 -12 44 6 z" fill="#e2b45a"/>
+    <path d="M${x - 40} 396 L${x + 200} 236 L${x + 440} 396 Z" fill="#e2b45a" stroke="#b78630" stroke-width="6" stroke-linejoin="round"/>${roof}
+    <path d="M${x - 46} 396 Q${x + 200} 416 ${x + 446} 396 L${x + 440} 410 Q${x + 200} 430 ${x - 40} 410 Z" fill="#cf9d45"/>
+    <path d="M${x + 130} 548 L${x + 470} ${GROUND + 6}" stroke="#5a3a22" stroke-width="30" stroke-linecap="round"/>
+    <path d="M${x + 130} 548 L${x + 470} ${GROUND + 6}" stroke="#a87444" stroke-width="20" stroke-linecap="round"/>${slats}
+  </g>`;
+}
+
+/** the hens' yard: the hen-house on the left, the wattle fence, sunflowers, grain on the ground */
+function kurnyk(night: boolean) {
+  let grain = '';
+  for (let i = 0; i < 40; i++) grain += `<ellipse cx="${(i * 89) % 1500 + 60}" cy="${GROUND - 4 + ((i * 37) % 90)}" rx="5" ry="3.5" fill="#f2c94c"/>`;
+  return (
+    (night
+      ? sky('#14204a', '#3d4f8a') +
+        `<circle cx="1320" cy="230" r="64" fill="#fff6c8"/><circle cx="1296" cy="214" r="12" fill="#e9dfa8"/>` +
+        Array.from({ length: 40 }, (_, i) => `<circle cx="${(i * 137) % 2400 - 400}" cy="${-300 + ((i * 89) % 700)}" r="${i % 3 ? 2.5 : 4}" fill="#fff"/>`).join('')
+      : sky('#7cc4f2', '#d6f0ff') + sun(1380, 230) + clouds(17)) +
+    [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#9ccc65', GROUND - 120, 60, 18)}</g>`).join('') +
+    ground('#7cb342', '#c9a77a') +
+    wattleFence(640, 1580) +
+    sunflower(700, 310) +
+    sunflower(1480, 290) +
+    henHouse(160) +
+    grain +
+    // a trough of water under the hen-house
+    `<path d="M300 ${GROUND + 70} L316 ${GROUND + 20} L484 ${GROUND + 20} L500 ${GROUND + 70} Z" fill="#8b5a2b" stroke="#5a3a22" stroke-width="5"/><path d="M320 ${GROUND + 26} H480" stroke="#7ec8f0" stroke-width="10"/>` +
+    `<g>${verge(19, false)}</g>` +
+    (night ? `<rect x="-1600" y="-1200" width="4800" height="8000" fill="#0a1030" opacity=".38"/>` : '')
+  );
+}
+
 function stump(x: number) {
   return `<g transform="translate(${x} ${GROUND - 10})"><path d="M-46 0 L-40 -70 L40 -70 L46 0 Z" fill="#7a5232" stroke="#5a3a22" stroke-width="5"/>
     <ellipse cx="0" cy="-74" rx="48" ry="16" fill="#f7fbff" stroke="#c9dcee" stroke-width="4"/></g>`;
@@ -698,6 +754,8 @@ interface Backdrop {
 }
 
 const BACKDROPS: Record<string, () => Backdrop> = {
+  kurnyk: () => ({ still: kurnyk(false), layers: [] }),
+  'kurnyk-night': () => ({ still: kurnyk(true), layers: [] }),
   luh: () => ({
     still:
       sky('#7cc4f2', '#e0f4ff') +
@@ -1581,11 +1639,14 @@ export class Stage {
         // smashed to pieces: chips fly, the broken pieces stay
         if (!a) return this.wait(300);
         const [x, y] = [a.x, a.y - 40];
-        for (let i = 0; i < 14; i++) this.wool(x, y, i % 2 ? '#b07e55' : '#6d4426');
         const id = a.id;
+        const gold = id === 'zolote';
+        for (let i = 0; i < 14; i++) this.wool(x, y, gold ? (i % 2 ? '#ffc928' : '#f0a000') : i % 2 ? '#b07e55' : '#6d4426');
         this.hide(id);
-        // the sledge leaves its broken pieces; torn hides are replaced by the next stack
+        // the sledge leaves its broken pieces; torn hides are replaced by the next stack; the golden
+        // egg leaves its shell
         if (id === 'sanky') this.show('lamani', [x, GROUND]);
+        else if (gold) this.show('shkarlupa', [x, a.y]);
         else if (id === 'kozhi') this.later(0.6, () => this.show(id, [x, a.y]));
         return this.wait(700);
       }
@@ -1594,6 +1655,15 @@ export class Stage {
         if (!a) return this.wait(300);
         for (let i = 0; i < 7; i++) this.later(i * 0.3, () => this.flyingFish(a.x - 60 + i * 20, a.y - 110));
         return this.wait(2400);
+      }
+      case 'wag': {
+        // a wave of the back end (the mouse's tail): a quick wiggle, a swish of air behind
+        if (!a) return this.wait(300);
+        a.act = 'wiggle';
+        a.actT = 0;
+        a.actDur = ACTS.wiggle.dur;
+        for (let i = 0; i < 4; i++) this.later(i * 0.1, () => this.dustAt(a.x + (a.flip ? -1 : 1) * (70 + i * 14), a.y - 30));
+        return this.wait(900);
       }
       case 'rock':
         // rocked (the cradle), shaken (the maple the snake gnaws)

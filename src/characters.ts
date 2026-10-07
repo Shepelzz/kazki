@@ -18,6 +18,7 @@ import { chovnyk, gusenia, gusy, koval, kovadlo, kolyska, lopata, olenka, pyrohy
 import { bychok, drova, lunka, lysytsia_tisto, pastushok, pyrizhok, sanky, sanky_lamani, viz, vudka } from './puppets-lysychka';
 import { dytyna, halushky, knyazivna, nevista, sirko, snip, stil, vnuchka } from './puppets-sirko';
 import { hriadka, ripka } from './puppets-ripka';
+import { kubelko, kurcha, ryaba, shkarlupa, shokolad, yaieshnia, yaiechko, zolote } from './puppets-ryaba';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
@@ -477,6 +478,14 @@ export const PUPPETS: Record<string, () => string> = {
   zhuchka: () => sobaka().replace(/#c08a52/g, '#3a3a3e').replace(/#a8743f/g, '#2a2a2e').replace(/#7a4e28/g, '#1c1c1f').replace(/#c62828/g, '#1e88e5'),
   // the cat of Ripka: ginger and white (the tomcat Kotskyi is grey)
   kishka: () => kit().replace(/#9e9e9e/g, '#f0a04b').replace(/#616161/g, '#c46a1c').replace(/#bdbdbd/g, '#f6c48a'),
+  ryaba,
+  kubelko,
+  zolote,
+  yaiechko,
+  shkarlupa,
+  shokolad,
+  kurcha,
+  yaieshnia,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -599,5 +608,13 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   vnuchka: { mouth: [0, -258], top: -330 },
   zhuchka: { mouth: [-80, -90], top: -150 },
   kishka: { mouth: [0, -142], top: -232, hands: [-46, -60] },
-
+  // hands: the hen carries the egg on her back
+  ryaba: { mouth: [-66, -142], top: -205, hands: [30, -126] },
+  kubelko: { mouth: [0, -30], top: -60 },
+  zolote: { mouth: [0, -44], top: -96 },
+  yaiechko: { mouth: [0, -44], top: -90 },
+  shkarlupa: { mouth: [0, -20], top: -60 },
+  shokolad: { mouth: [0, -44], top: -90 },
+  kurcha: { mouth: [-24, -34], top: -84 },
+  yaieshnia: { mouth: [0, -24], top: -50 },
 };
