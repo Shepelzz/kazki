@@ -17,6 +17,7 @@ import * as groupE from './items/e';
 import * as groupF from './items/f';
 import * as groupG from './items/g';
 import * as groupH from './items/h';
+import * as groupZmiy from './items/zmiy';
 
 export * from './dress';
 
@@ -320,7 +321,7 @@ export const ITEMS: Item[] = [
 ];
 
 // the heroes' own things (src/items/*.ts)
-for (const g of [groupA, groupB, groupC, groupD, groupE, groupF, groupG, groupH]) ITEMS.push(...g.ITEMS);
+for (const g of [groupA, groupB, groupC, groupD, groupE, groupF, groupG, groupH, groupZmiy]) ITEMS.push(...g.ITEMS);
 
 /**
  * Changes made on fit.html (dev server, src/wardrobe-edits.json): things taken away from the
@@ -389,14 +390,14 @@ const HERO_ITEMS: Record<string, string> = {
   pivnyk: SETS.bird,
   zhuravel: SETS.bird,
   gusenia: SETS.bird,
-  // new things for him are to come
+  // his own things only (items/zmiy.ts)
   zmiy: '',
   zmiyuchka: SETS.dragon,
 };
 
 for (const g of [groupA, groupB, groupC, groupD]) Object.assign(HERO_ITEMS, g.SETS);
 // the later groups add to the sets
-for (const g of [groupE, groupF, groupG, groupH])
+for (const g of [groupE, groupF, groupG, groupH, groupZmiy])
   for (const h of Object.keys(g.SETS)) HERO_ITEMS[h] = ((HERO_ITEMS[h] || '') + ' ' + g.SETS[h]).trim();
 
 export const FITTED_HEROES = Object.keys(HERO_ITEMS);

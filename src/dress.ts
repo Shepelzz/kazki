@@ -102,7 +102,8 @@ export const BODY: Record<string, Body> = {
   zhuravel: { view: 'side', slots: { face: { dx: -0.15 }, neck: { dx: 0.3 } } },
   hryfon: { view: 'side', slots: { neck: { dx: 0.35 } }, never: ['monokl', 'piratska'] },
   solombychok: { slots: { neck: { dx: 0.3 } }, items: { bant: { dx: 0.3 } } },
-  zmiy: { view: 'side' },
+  // the head drawn as a path (a sideways snout); the bow goes on the tail's tip
+  zmiy: { view: 'side', head: { x: -190, y: -352, rx: 78, ry: 46 }, slots: { mouth: { k: 1.7 } }, items: { zmiy_bant: { dx: 4.02, dy: 0.86 } } },
 };
 
 /**

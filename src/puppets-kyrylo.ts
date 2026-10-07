@@ -61,6 +61,8 @@ export const zmiy = () => `
   <ellipse cx="30" cy="-140" rx="140" ry="86" fill="#4caf50" ${stroke}/>
   <path d="M-60 -110 Q30 -60 120 -110" fill="none" stroke="#c5e1a5" stroke-width="30" stroke-linecap="round"/>
   <path d="M-40 -220 l20 -24 l16 22 l20 -26 l16 24 l20 -24 l16 24" fill="none" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+  <g data-dress="legs"></g>
+  <g data-dress="torso"></g>
   <!-- neck and head to the left -->
   <path d="M-80 -170 Q-150 -240 -150 -330" fill="none" stroke="${INK}" stroke-width="64" stroke-linecap="round"/>
   <path d="M-80 -170 Q-150 -240 -150 -330" fill="none" stroke="#4caf50" stroke-width="52" stroke-linecap="round"/>

@@ -59,7 +59,23 @@ function portrait(host: Element, hero: string, items: Wearable[], pad = 0.08, fr
   } catch {
     // not measurable (hidden): the default frame
   }
-  if (frameFor !== items) dress(g, hero, items);
+  if (frameFor !== items) {
+    dress(g, hero, items);
+    // a thing sticking out further than the frame's (a toothbrush out of the dragon's snout): the
+    // frame grows round it, not cut off
+    try {
+      const bb = g.getBBox();
+      if (bb.width > 0) {
+        const x1 = Math.max(b.x + b.width, bb.x + bb.width);
+        const y1 = Math.max(b.y + b.height, bb.y + bb.height);
+        b = { x: Math.min(b.x, bb.x), y: Math.min(b.y, bb.y), width: 0, height: 0 };
+        b.width = x1 - b.x;
+        b.height = y1 - b.y;
+      }
+    } catch {
+      // not measurable: the frame as it was
+    }
+  }
   // a square around it, standing on the bottom edge
   const side = Math.max(b.width, b.height) * (1 + pad * 2);
   s.setAttribute('viewBox', `${(b.x + b.width / 2 - side / 2).toFixed(0)} ${(b.y + b.height + side * pad * 0.5 - side).toFixed(0)} ${side.toFixed(0)} ${side.toFixed(0)}`);

@@ -573,6 +573,33 @@
       "k": 1
     }
   },
+  "zmiy": {
+    "zmiy_vulkan": {
+      "dx": 0,
+      "dy": -0.1,
+      "k": 0.794
+    },
+    "zmiy_zefir": {
+      "dx": 0.011,
+      "dy": 0.007,
+      "k": 1
+    },
+    "zmiy_dush": {
+      "dx": 0.002,
+      "dy": 0.009,
+      "k": 1
+    },
+    "zmiy_vusa": {
+      "dx": 0.176,
+      "dy": 0.021,
+      "k": 1.7
+    },
+    "zmiy_bochka": {
+      "dx": -0.253,
+      "dy": -0.268,
+      "k": 1.469
+    }
+  },
   "zmiyuchka": {
     "zmiyuchka_shkarpetka": {
       "dx": 0.162,
