@@ -177,7 +177,7 @@ export class Teller {
     const stage = this.stage;
     switch (s.kind) {
       case 'say':
-        return this.speak(s.who, s.text, s.sing);
+        return this.speak(s.who, s.text, s.sing, s.speak);
       case 'scene':
         if (stage.scene) await this.ui.curtain(true);
         this.check(run);
@@ -225,14 +225,14 @@ export class Teller {
     }
   }
 
-  private async speak(who: string, text: string, sing = false) {
+  private async speak(who: string, text: string, sing = false, spoken = text) {
     // a skip forward ends here, at the next line
     this.stage.rush = 1;
     const voice = this.story.voices[who];
     this.ui.caption(who, voice.name, text);
     this.stage.setTalking(who === 'narrator' ? null : who, sing);
     if (this.fast) await this.stage.wait(250);
-    else await say(voice, text);
+    else await say(voice, spoken);
     this.stage.setTalking(null);
   }
 
@@ -277,7 +277,7 @@ export class Teller {
     const lines = (scene: string) => {
       const out: { voice: (typeof v)[string]; text: string }[] = [];
       for (const s of this.story.scenes[scene]) {
-        if (s.kind === 'say') out.push({ voice: v[s.who], text: s.text });
+        if (s.kind === 'say') out.push({ voice: v[s.who], text: s.speak || s.text });
         if (s.kind === 'choice') {
           out.push({ voice: v.narrator, text: s.question });
           for (const o of s.options) out.push({ voice: v.narrator, text: optionPhrase(o) });

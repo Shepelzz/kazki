@@ -3,6 +3,7 @@
 # fx fallback — усі падають навзнак, коли ріпка піддалася.
 #
 # Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+# {мишку|мышку} — у субтитрах «мишку», а голосу дається «мышку» (ElevenLabs читає «и» як «і»).
 
 title: Ріпка
 cover: ripka
@@ -455,7 +456,7 @@ scenes:
     - ending: bear
 
   catch:
-    - kishka: "Мишку? Та я її краще зловлю!"
+    - kishka: "{Мишку|Мышку}? Та я її краще зловлю!"
     - show: myshka
       at: [300, 770]
       flip: true

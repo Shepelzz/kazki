@@ -11,7 +11,8 @@ export type Point = [number, number];
  * delay: ms — such a step starts that much later (rolling off near the end of the line)
  */
 export type Step = { along?: boolean; delay?: number } & (
-  | { kind: 'say'; who: string; text: string; sing?: boolean }
+  /** speak: what the voice is given, when it is spelled otherwise than shown (see spelled()) */
+  | { kind: 'say'; who: string; text: string; speak?: string; sing?: boolean }
   | { kind: 'scene'; scene: string }
   | { kind: 'show'; actor: string; at: Point; flip?: boolean; eyes?: 'open' | 'closed'; raw?: boolean; look?: string; size?: number }
   | { kind: 'resize'; actor: string; to: number; ms: number }
@@ -63,6 +64,17 @@ export type TaleInfo = Pick<Story, 'id' | 'title' | 'cover' | 'about' | 'sayTitl
 type Raw = Record<string, any>;
 
 /** Turns the YAML form (`- kolobok: "…"`, `- move: zayets`) into typed steps, checking links. */
+/**
+ * A line may spell a word for the voice otherwise than for the eyes: {мишку|мышку} — the
+ * subtitle shows «мишку», the voice is given «мышку» (ElevenLabs reads the Ukrainian «и» as «і»
+ * in some words).
+ */
+export function spelled(line: string): { text: string; speak?: string } {
+  const text = line.replace(/\{([^|{}]*)\|([^{}]*)\}/g, '$1');
+  const speak = line.replace(/\{([^|{}]*)\|([^{}]*)\}/g, '$2');
+  return speak === text ? { text } : { text, speak };
+}
+
 export function parseStory(id: string, raw: Raw): Story {
   const voices = raw.voices as Record<string, Voice>;
   const scenes: Record<string, Step[]> = {};
@@ -73,7 +85,7 @@ export function parseStory(id: string, raw: Raw): Story {
     scenes[name] = steps.map((s, i): Step => ({ ...parseStep(s, i), ...(s.along ? { along: true, delay: s.delay || 0 } : {}) }) as Step);
     function parseStep(s: Raw, i: number): Step {
       const who = Object.keys(s).find((k) => k in voices);
-      if (who) return { kind: 'say', who, text: String(s[who]), sing: !!s.sing };
+      if (who) return { kind: 'say', who, ...spelled(String(s[who])), sing: !!s.sing };
       if ('scene' in s) return { kind: 'scene', scene: s.scene };
       if ('show' in s) return { kind: 'show', actor: s.show, at: s.at ?? fail(name, i, 'show needs at'), flip: s.flip, eyes: s.eyes, raw: s.raw, look: s.look, size: s.size };
       if ('resize' in s) return { kind: 'resize', actor: s.resize, to: s.to ?? fail(name, i, 'resize needs to'), ms: s.ms ?? 800 };
@@ -126,7 +138,7 @@ export function spokenPhrases(story: Story): Phrase[] {
   const out: Phrase[] = [];
   for (const steps of Object.values(story.scenes))
     for (const s of steps) {
-      if (s.kind === 'say') out.push({ who: s.who, text: s.text });
+      if (s.kind === 'say') out.push({ who: s.who, text: s.speak || s.text });
       if (s.kind === 'choice') {
         out.push({ who: 'narrator', text: s.question });
         for (const o of s.options) out.push({ who: 'narrator', text: optionPhrase(o) });
