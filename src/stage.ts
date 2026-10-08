@@ -11,6 +11,7 @@
 
 import { ANCHORS, el, makePuppet, svg } from './characters';
 import type { Point } from './story';
+import { sfx } from './sfx';
 
 export const GROUND = 770;
 
@@ -2158,11 +2159,10 @@ export class Stage {
         return this.wait(1900);
       }
       case 'bang': {
-        // a comic-book blow: a burst star with a word, a shock ring, dust, the picture shakes
-        const [x, y] = at || (a ? [a.x, a.y + ANCHORS[a.id].top * a.size * 0.5] : [800, 500]);
-        this.burst(x, y, word || 'БАХ!');
+        // a blow: its sound (the word picks it: sfx.ts), dust, the picture shakes
+        const [x] = at || (a ? [a.x, a.y + ANCHORS[a.id].top * a.size * 0.5] : [800, 500]);
+        sfx(word, 'boom');
         for (let i = 0; i < 8; i++) this.dustAt(x + (Math.random() - 0.5) * 200, GROUND);
-        for (let i = 0; i < 10; i++) this.star(x, y, (i / 10) * Math.PI * 2);
         this.shake = 0.45;
         return this.wait(700);
       }
@@ -2247,7 +2247,7 @@ export class Stage {
         return this.wait(1600);
       case 'hit': {
         // a blow: the one hitting (on) lunges at the others (who) and swings; they are thrown back
-        // with a comic-book burst and stars, and come back to their place
+        // with its sound and some dust, and come back to their place
         if (!a) return this.wait(300);
         const targets = who.map((id) => this.actors.get(id)).filter((t): t is Actor => !!t);
         const t0 = targets[0];
@@ -2258,6 +2258,7 @@ export class Stage {
         a.jabDx = t0 ? dir * Math.min(420, Math.max(60, Math.abs(t0.x - a.x) - 280 * Math.max(a.size, t0.size))) : dir * 120;
         for (let i = 0; i < 6; i++) this.later(i * 0.03, () => this.speedLine(a));
         this.later(HIT * 0.4, () => {
+          sfx(word, 'thud');
           for (const t of targets) {
             const d = t.x >= a.x ? 1 : -1;
             // the kolobok being bitten stays where the mouth is
@@ -2266,12 +2267,8 @@ export class Stage {
               t.knockDx = d * (t.prop ? 30 : 110);
             }
             t.asleep = false;
-            const [x, y] = at || [t.x - d * 30, t.y + ANCHORS[t.id].top * t.size * 0.5];
-            this.burst(x, y, word || 'БАХ!');
-            for (let i = 0; i < 10; i++) this.star(x, y, (i / 10) * Math.PI * 2);
             for (let i = 0; i < 5; i++) this.dustAt(t.x + (Math.random() - 0.5) * 160, GROUND);
           }
-          if (!targets.length && at) this.burst(at[0], at[1], word || 'БАХ!');
           this.shake = 0.4;
         });
         return this.wait(HIT * 1000 + 250);
@@ -2606,30 +2603,6 @@ export class Stage {
       c.setAttribute('cx', String(x + vx * k));
       c.setAttribute('cy', String(y + vy * k + 700 * k * k));
       c.setAttribute('opacity', String(1 - k * k));
-    });
-  }
-
-  /** a jagged comic burst with a word on it, popping out and fading */
-  private burst(x: number, y: number, text: string) {
-    let pts = '';
-    for (let i = 0; i < 18; i++) {
-      const r = i % 2 ? 70 : 130;
-      const ang = (i / 18) * Math.PI * 2;
-      pts += `${(Math.cos(ang) * r).toFixed(0)},${(Math.sin(ang) * r * 0.75).toFixed(0)} `;
-    }
-    const g = svg(`<g><polygon points="${pts}" fill="#ffd600" stroke="#d84315" stroke-width="10" stroke-linejoin="round"/>
-      <polygon points="${pts}" fill="#ff7043" transform="scale(0.62)"/>
-      <text x="0" y="16" font-size="54" font-weight="900" text-anchor="middle" fill="#fff" stroke="#b71c1c" stroke-width="5" paint-order="stroke" font-family="Nunito, Arial, sans-serif">${text}</text></g>`);
-    const ring = el('ellipse', { cx: x, cy: y, rx: 10, ry: 8, fill: 'none', stroke: '#fff', 'stroke-width': 10 });
-    this.particle(ring, 0.5, (p, k) => {
-      ring.setAttribute('rx', String(10 + k * 260));
-      ring.setAttribute('ry', String(8 + k * 180));
-      ring.setAttribute('opacity', String(1 - k));
-    });
-    this.particle(g, 0.9, (p, k) => {
-      const sc = k < 0.25 ? 0.3 + (k / 0.25) * 0.9 : 1.2 - (k - 0.25) * 0.2;
-      g.setAttribute('transform', `translate(${x} ${y}) rotate(${-8 + k * 6}) scale(${sc.toFixed(3)})`);
-      g.setAttribute('opacity', String(k < 0.7 ? 1 : (1 - k) / 0.3));
     });
   }
 

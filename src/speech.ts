@@ -381,6 +381,9 @@ export function setSpeechEnabled(on: boolean) {
 
 export const speechEnabled = () => enabled;
 
+/** the audio context once a tap has started it (sfx.ts plays its sounds there too) */
+export const audioContext = (): AudioContext | null => (ctx && ctx.state === 'running' ? ctx : null);
+
 /**
  * Say a phrase in a character's voice; resolves when it has been said (or was stopped). Muted, it
  * resolves after about the time reading the subtitle takes.
