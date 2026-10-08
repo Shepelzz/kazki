@@ -1,0 +1,952 @@
+# Червона Шапочка — казка з вибором (Шарль Перро, брати Грімм). Головна лінія — як у відомій казці
+# (дівчинку всі любили, бабуся подарувала їй червону шапочку — відтоді її звуть Червона Шапочка; мама
+# спекла пиріжки й дала горщичок масла: «Віднеси бабусі, вона хворіє. Не барися дорогою і не звертай
+# зі стежки!»; у лісі — вовк: «Куди йдеш, Червона Шапочко?» — «До бабусі, несу пиріжки й горщичок
+# масла». — «А далеко живе бабуся?» — «За млином, у першій хатинці»; «Піду я цією дорогою, а ти тією —
+# подивимось, хто швидше»; Шапочка збирає квіти, ловить метеликів; вовк прибігає першим: «Тук-тук!» —
+# «Хто там?» — «Це я, ваша онучка, Червона Шапочка» — «Смикни за мотузочок — двері й відчиняться»;
+# вовк проковтнув бабусю, ліг у ліжко в її чепчику; «Бабусю, чому у вас такі великі руки?» — «Щоб
+# міцніше тебе обійняти», вуха — «щоб краще тебе чути», очі — «щоб краще тебе бачити», зуби — «А це
+# щоб швидше тебе з'їсти!» — і проковтнув Шапочку; заснув і хропе; мисливець із дроворубом почули
+# хропіння, розпороли вовкові живіт — бабуся й Шапочка вискочили живі-здорові; набили вовкові живіт
+# камінням — вовк прокинувся, хотів утекти, впав і більше не підвівся; бабуся з'їла пиріжки,
+# Шапочка пообіцяла більше не звертати зі стежки); відгалуження — на виборах. Кроки ті самі, що в
+# інших казках.
+#
+# Бабуся — та сама baba з «Колобка» (look: chepets — у ліжку, в нічному чепчику й окулярах); вовк —
+# vovk (look: babusia — у бабусиному чепчику й окулярах, великі лапи поверх ковдри). Шапочка: look bez
+# — ще без шапочки, bez_koshyka — шапочка є, кошика ще нема, kvity — ще й букет квітів. Хатинка
+# бабусі (khatynka_babusi) — річ: двері (x − 90) — її «рот», туди входять (enter) і звідти виходять;
+# віконце на x + 120, y − 230. Ліжко — дві речі на одному місці: lizhko_babusi (узголів'я й подушка,
+# позаду) і kovdra (ковдра, спереду: хто в ліжку — стоїть на x + 60, видно від плечей). Хвіст khvist —
+# спереду, з-під ковдри. fx chomp on: вовк who: [хто] — ковтає цілком (хто — всередині); fx popout
+# on: вовк who: [...] — вискакують живі. fx doze — засинає, не сідаючи (у ліжку). Нові фони: uzlissia
+# (узлісся за млином: млин далеко на пагорбі, ліс праворуч) і khata-babusi (у бабусиній хатинці: двері
+# з мотузочком ліворуч на x 66..244, віконце з геранню, годинник із зозулею, рушник над ліжком).
+# Звуки за словами (sfx.ts): «ХР-Р-Р!» — хропіння, «ЧИК-ЧИК!» — ножиці.
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Червона Шапочка
+cover: chervona_shapochka_cover
+about: "Понесла Червона Шапочка бабусі пиріжки й горщичок масла. Та в лісі на стежці чекав на неї сірий вовк…"
+
+voices:
+  narrator:           { name: "", pitch: 1.1, rate: 1 }
+  chervona_shapochka: { name: "Червона Шапочка", pitch: 1.45, rate: 1.05, hello: "Привіт! Я Червона Шапочка! Несу бабусі пиріжки. Ходімо разом — тільки стежкою, гаразд?" }
+  mama:               { name: "Мама", pitch: 1.05, rate: 1 }
+  baba:               { name: "Бабуся", pitch: 1.0, rate: 0.95 }
+  vovk:               { name: "Вовк", pitch: 0.68, rate: 0.95 }
+  myslyvets:          { name: "Мисливець", pitch: 0.75, rate: 0.95, hello: "Здоров був! Я мисливець. Вовків не боюся, а от бабусині пиріжки — ой, як люблю!" }
+  drovorub:           { name: "Дроворуб", pitch: 0.62, rate: 0.9 }
+
+endings:
+  stezhka:  { title: "Стежкою до бабусі", icon: "🧺" }
+  rozumna:  { title: "Розумна Шапочка", icon: "🤫" }
+  zub:      { title: "Бабусин пиріжок", icon: "🦷" }
+  khvist:   { title: "Вовчий хвіст", icon: "🐺" }
+
+start: start
+
+scenes:
+  start:
+    - scene: hata
+    - show: chervona_shapochka
+      at: [700, 770]
+      look: bez
+    - show: baba
+      at: [1050, 770]
+    - narrator: "Привіт! Сьогодні — казка про Червону Шапочку. А ти допомагатимеш їй вибирати, що робити далі!"
+    - narrator: "Жила-була в одному селі маленька дівчинка — така гарна та привітна, що всі її любили. А найдужче — бабуся."
+    - baba: "Онученько, серденько! Подивися, що я тобі пошила — червону шапочку!"
+    - move: baba
+      to: [860, 770]
+      ms: 1000
+      wait: true
+    - hide: chervona_shapochka
+    - show: chervona_shapochka
+      at: [700, 770]
+      look: bez_koshyka
+    - fx: sparkle
+      on: chervona_shapochka
+    - chervona_shapochka: "Ой, яка гарна! Дякую, бабусю!"
+    - fx: tumble
+      on: chervona_shapochka
+    - narrator: "Так пасувала дівчинці та червона шапочка, що вона ніде її не знімала. Відтоді всі й стали звати її — Червона Шапочка."
+    - fx: hearts
+      on: baba
+    - baba: "Ну, а мені вже час додому, до лісу. Приходь у гості, онученько!"
+    - move: baba
+      to: [2000, 770]
+      flip: true
+      ms: 2600
+      wait: true
+    - next: pyrizhky
+
+  pyrizhky:
+    - scene: pich
+    - show: mama
+      at: [700, 770]
+    - show: koshyk_pyrizhky
+      at: [960, 600]
+    - show: chervona_shapochka
+      at: [1260, 770]
+      look: bez_koshyka
+    - narrator: "Якось уранці мама розпалила піч і спекла пиріжків — рум'яних, пахучих."
+    - fx: flour
+      on: mama
+    - fx: bake
+    - mama: "Червона Шапочко, бабуся захворіла. Віднеси їй пиріжків і оцей горщичок масла."
+    - move: mama
+      to: [900, 770]
+      ms: 900
+      wait: true
+    - carry: koshyk_pyrizhky
+      by: mama
+    - move: mama
+      to: [1100, 770]
+      flip: true
+      ms: 900
+      wait: true
+    - hide: koshyk_pyrizhky
+    - hide: chervona_shapochka
+    - show: chervona_shapochka
+      at: [1260, 770]
+    - mama: "Та гляди ж: не барися дорогою і не звертай зі стежки! Бо в лісі всяке буває."
+    - chervona_shapochka: "Добре, матусю! Я швиденько!"
+    - move: chervona_shapochka
+      to: [2000, 770]
+      flip: true
+      ms: 1600
+      wait: true
+    - next: lis
+
+  lis:
+    - scene: forest
+    - show: bush
+      at: [1300, 770]
+    - show: chervona_shapochka
+      at: [-250, 770]
+      flip: true
+    - move: chervona_shapochka
+      to: [560, 770]
+      ms: 2400
+    - narrator: "Пішла Червона Шапочка до бабусі. А бабуся жила далеко — за лісом, за млином. Іде дівчинка стежкою, наспівує:"
+    - chervona_shapochka: "Ля-ля-ля! Несу бабусі пиріжечки, несу бабусі масла горщичок!"
+      sing: true
+    - fx: rustle
+      on: bush
+    - show: vovk
+      at: [1300, 770]
+    - move: vovk
+      to: [960, 770]
+      ms: 1200
+      wait: true
+    - narrator: "Аж раптом із-за куща — сірий вовк! Хотів він одразу дівчинку з'їсти, та не посмів: неподалік у лісі стукали сокирами дроворуби."
+    - fx: bang
+      at: [1500, 500]
+      word: "ТУК-ТУК!"
+    - vovk: "Добридень, Червона Шапочко! А куди це ти йдеш?"
+    - choice: "Вовк питає, куди вона йде. Що ж робити Червоній Шапочці?"
+      options:
+        - label: "Розповісти вовкові все"
+          icon: "🧺"
+          next: rozmova
+        - label: "Не розмовляти з незнайомцем"
+          icon: "🤫"
+          next: movchky
+
+  rozmova:
+    - chervona_shapochka: "До бабусі. Несу їй пиріжки й горщичок масла."
+    - vovk: "А далеко живе твоя бабуся?"
+    - chervona_shapochka: "Далеко! Он за тим млином, у першій хатинці на краю лісу."
+    - narrator: "А вовк собі думає: «От і добре! З'їм я і бабусю, і онучку!»"
+    - fx: wag
+      on: vovk
+    - vovk: "Знаєш що, Червона Шапочко? Піду я цією дорогою, а ти — тією. Подивимось, хто швидше до бабусі прийде!"
+    - move: vovk
+      to: [2100, 770]
+      flip: true
+      ms: 1300
+    - fx: whoosh
+      on: vovk
+    - fx: dust
+      on: vovk
+    - narrator: "Сказав — та й чкурнув найкоротшою дорогою. А Червона Шапочка роззирнулася — а довкола квіти цвітуть, метелики пурхають..."
+    - choice: "Що ж робитиме Червона Шапочка?"
+      options:
+        - label: "Збирати квіти й ловити метеликів"
+          icon: "🌼"
+          next: kvity
+        - label: "Не звертати зі стежки й поспішати"
+          icon: "🏃"
+          next: stezhka
+
+  kvity:
+    - scene: glade
+    - show: kvity
+      at: [380, 770]
+    - show: kvity2
+      at: [1250, 770]
+    - show: metelyky
+      at: [860, 520]
+      size: 1.7
+    - show: chervona_shapochka
+      at: [-250, 770]
+      flip: true
+    - move: chervona_shapochka
+      to: [700, 770]
+      ms: 2200
+      wait: true
+    - narrator: "Звернула Червона Шапочка зі стежки. Зірве квіточку — а далі ще краща. Зірве другу — а там ще кращі!"
+    - move: chervona_shapochka
+      to: [500, 770]
+      flip: false
+      ms: 700
+      wait: true
+    - fx: sparkle
+      on: kvity
+    - hide: kvity
+    - hide: chervona_shapochka
+    - show: chervona_shapochka
+      at: [500, 770]
+      look: kvity
+    - chervona_shapochka: "Назбираю бабусі букет! Ото вона зрадіє!"
+    - move: chervona_shapochka
+      to: [1120, 770]
+      flip: true
+      ms: 1300
+      wait: true
+    - fx: sparkle
+      on: kvity2
+    - hide: kvity2
+    - narrator: "А тут метелики — пурх, пурх! Кинулася Червона Шапочка їх ловити."
+    - move: metelyky
+      to: [1250, 360]
+      ms: 1000
+    - move: chervona_shapochka
+      to: [1250, 770]
+      hop: true
+      ms: 900
+      wait: true
+    - move: metelyky
+      to: [520, 420]
+      ms: 1300
+    - move: chervona_shapochka
+      to: [620, 770]
+      flip: false
+      hop: true
+      ms: 1300
+      wait: true
+    - chervona_shapochka: "Метелику, метелику, сідай мені на долоньку! Хі-хі!"
+    - fx: tumble
+      on: chervona_shapochka
+    - narrator: "Так і забарилася дівчинка в лісі..."
+    - move: metelyky
+      to: [-300, 300]
+      ms: 1800
+    - pause: 500
+    - next: mlyn
+
+  mlyn:
+    - scene: mlyn
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [700, 770]
+      ms: 1300
+      wait: true
+    - vovk: "Хе-хе! Поки дівчинка квіточки збирає, я вже буду в бабусі!"
+    - move: vovk
+      to: [2100, 770]
+      ms: 1500
+    - fx: whoosh
+      on: vovk
+    - fx: dust
+      on: vovk
+    - narrator: "Мчить вовк найкоротшою дорогою — повз поле, повз млин... Аж курява стоїть!"
+    - next: khatynka
+
+  khatynka:
+    - scene: uzlissia
+    - show: khatynka_babusi
+      at: [1050, 770]
+    - fx: tuck
+      on: khatynka_babusi
+      who: [baba]
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [860, 770]
+      ms: 1800
+      wait: true
+    - narrator: "Прибіг вовк до бабусиної хатинки — та й постукав у двері."
+    - fx: hit
+      on: vovk
+      who: [khatynka_babusi]
+      word: "ТУК-ТУК!"
+    - baba: "Хто там?"
+    - narrator: "А вовк тоненьким голоском:"
+    - vovk: "Це я, ваша онучка, Червона Шапочка. Пиріжків вам принесла і горщичок масла."
+    - narrator: "А бабуся була хвора, лежала в ліжку. Тож і гукнула:"
+    - baba: "Смикни за мотузочок, дитинко, — двері й відчиняться!"
+    - narrator: "Смикнув вовк за мотузочок — двері й відчинилися."
+    - fx: bang
+      at: [960, 640]
+      word: "КЛАЦ!"
+    - enter: vovk
+      into: khatynka_babusi
+    - next: babusia
+
+  babusia:
+    - scene: khata-babusi
+    - show: lizhko_babusi
+      at: [1000, 770]
+    - show: baba
+      at: [1060, 770]
+      look: chepets
+    - show: kovdra
+      at: [1000, 770]
+    - show: vovk
+      at: [150, 770]
+      flip: true
+    - move: vovk
+      to: [560, 770]
+      ms: 1400
+      wait: true
+    - baba: "Ой, онученько, це ти? Ой! Та це ж вовк!"
+    - fx: shiver
+      on: baba
+    - narrator: "Кинувся вовк до ліжка..."
+    - move: vovk
+      to: [690, 770]
+      hop: true
+      ms: 500
+      wait: true
+    - fx: chomp
+      on: vovk
+      who: [baba]
+    - narrator: "...та й проковтнув бабусю! Бо три дні вже нічого не їв."
+    - fx: munch
+      on: vovk
+    - narrator: "А тоді вдягнув бабусин чепчик, начепив бабусині окуляри, ліг у ліжко й накрився ковдрою."
+    - hide: vovk
+    - show: vovk
+      at: [690, 770]
+      flip: true
+      look: babusia
+    - fx: sparkle
+      on: vovk
+    - move: vovk
+      to: [1060, 770]
+      hop: true
+      ms: 700
+      wait: true
+    - move: vovk
+      to: [1060, 770]
+      flip: false
+      ms: 100
+      wait: true
+    - vovk: "Хе-хе! А тепер почекаю Червону Шапочку..."
+    - next: prykhid
+
+  prykhid:
+    - scene: uzlissia
+    - show: khatynka_babusi
+      at: [1050, 770]
+    - fx: tuck
+      on: khatynka_babusi
+      who: [vovk]
+    - show: chervona_shapochka
+      at: [-250, 770]
+      flip: true
+      look: kvity
+    - move: chervona_shapochka
+      to: [860, 770]
+      ms: 2200
+      wait: true
+    - narrator: "А Червона Шапочка назбирала стільки квітів, що більше й нести не могла. Згадала вона про бабусю — та й поспішила до хатинки."
+    - fx: hit
+      on: chervona_shapochka
+      who: [khatynka_babusi]
+      word: "ТУК-ТУК!"
+    - vovk: "Хто там?"
+    - narrator: "Почула Червона Шапочка грубий голос — і злякалася було. Та подумала: мабуть, бабуся застудилася, от і захрипла."
+    - chervona_shapochka: "Це я, ваша онучка, Червона Шапочка! Пиріжків вам принесла і горщичок масла."
+    - narrator: "А вовк — якомога лагідніше:"
+    - vovk: "Смикни за мотузочок, дитинко, — двері й відчиняться!"
+    - fx: bang
+      at: [960, 640]
+      word: "КЛАЦ!"
+    - enter: chervona_shapochka
+      into: khatynka_babusi
+    - next: lizhko
+
+  lizhko:
+    - scene: khata-babusi
+    - show: lizhko_babusi
+      at: [1000, 770]
+    - show: vovk
+      at: [1060, 770]
+      look: babusia
+    - show: kovdra
+      at: [1000, 770]
+    - show: chervona_shapochka
+      at: [150, 770]
+      flip: true
+      look: kvity
+    - move: chervona_shapochka
+      to: [500, 770]
+      ms: 1500
+      wait: true
+    - narrator: "Увійшла Червона Шапочка до хати. А бабуся лежить у ліжку, чепчик насунула на самі очі. І якась вона дивна-предивна..."
+    - chervona_shapochka: "Бабусю, чому у вас такі великі руки?"
+    - resize: vovk
+      to: 1.06
+      ms: 500
+    - vovk: "Щоб міцніше тебе обійняти, онученько!"
+    - chervona_shapochka: "Бабусю, а чому у вас такі великі вуха?"
+    - resize: vovk
+      to: 1.12
+      ms: 500
+    - vovk: "Щоб краще тебе чути, онученько!"
+    - chervona_shapochka: "Бабусю, а чому у вас такі великі очі?"
+    - resize: vovk
+      to: 1.18
+      ms: 500
+    - vovk: "Щоб краще тебе бачити, онученько!"
+    - choice: "Ой, щось тут не так! Про що ж іще спитає Червона Шапочка?"
+      options:
+        - label: "Про великі зуби"
+          icon: "🦷"
+          next: zuby
+        - label: "Про сірий хвіст"
+          icon: "🐺"
+          next: khvist
+
+  zuby:
+    - chervona_shapochka: "Бабусю, а чому у вас такі великі зуби?"
+    - resize: vovk
+      to: 1.25
+      ms: 400
+    - vovk: "А це — щоб швидше тебе з'їсти!"
+    - narrator: "Вистрибнув вовк із ліжка..."
+    - move: vovk
+      to: [680, 770]
+      hop: true
+      ms: 500
+      wait: true
+    - fx: chomp
+      on: vovk
+      who: [chervona_shapochka]
+    - narrator: "...та й проковтнув Червону Шапочку!"
+    - fx: munch
+      on: vovk
+    - narrator: "Наївся вовк досхочу, ліг знову в ліжко — та й заснув. А тоді як захропе — аж шибки у вікнах задеренчали!"
+    - move: vovk
+      to: [1060, 770]
+      hop: true
+      ms: 700
+      wait: true
+    - fx: doze
+      on: vovk
+    - fx: bang
+      on: vovk
+      word: "ХР-Р-Р!"
+    - pause: 800
+    - next: myslyvtsi
+
+  myslyvtsi:
+    - scene: uzlissia
+    - show: khatynka_babusi
+      at: [1050, 770]
+    - fx: tuck
+      on: khatynka_babusi
+      who: [vovk]
+    - show: myslyvets
+      at: [-250, 770]
+      flip: true
+    - show: drovorub
+      at: [-460, 770]
+      flip: true
+    - move: myslyvets
+      to: [660, 770]
+      ms: 2200
+    - move: drovorub
+      to: [420, 770]
+      ms: 2200
+      wait: true
+    - narrator: "Саме тоді повз бабусину хатинку йшли мисливець із дроворубом."
+    - fx: rock
+      on: khatynka_babusi
+    - fx: bang
+      on: khatynka_babusi
+      word: "ХР-Р-Р!"
+    - drovorub: "Чуєш, як бабуся хропе? Аж хатинка трясеться!"
+    - myslyvets: "Щось тут не так. Старенька так ніколи не хропла. Треба глянути, чи не сталося чого!"
+    - enter: myslyvets
+      into: khatynka_babusi
+    - enter: drovorub
+      into: khatynka_babusi
+    - next: poriatunok
+
+  poriatunok:
+    - scene: khata-babusi
+    - show: lizhko_babusi
+      at: [1000, 770]
+    - show: vovk
+      at: [1060, 770]
+      look: babusia
+      eyes: closed
+      size: 1.25
+    - show: kovdra
+      at: [1000, 770]
+    - fx: doze
+      on: vovk
+    - show: myslyvets
+      at: [150, 770]
+      flip: true
+    - show: drovorub
+      at: [-60, 770]
+      flip: true
+    - move: myslyvets
+      to: [620, 770]
+      ms: 1700
+    - move: drovorub
+      to: [380, 770]
+      ms: 1900
+      wait: true
+    - narrator: "Зайшли вони до хати — а в бабусиному ліжку спить вовк!"
+    - myslyvets: "Ось де ти, старий вовцюга! Давно я тебе шукаю!"
+    - narrator: "Хотів був мисливець вистрілити — та подумав:"
+    - myslyvets: "Ні, стріляти не можна. Він же, мабуть, бабусю проковтнув! Треба її рятувати."
+    - narrator: "Узяв мисливець великі ножиці — та як чикне вовкові по животу!"
+    - fx: hit
+      on: myslyvets
+      who: [vovk]
+      word: "ЧИК-ЧИК!"
+    - fx: doze
+      on: vovk
+    - fx: sparkle
+      on: vovk
+    - fx: popout
+      on: vovk
+      who: [chervona_shapochka, baba]
+    - narrator: "Чик-чик! — і вискочила звідти Червона Шапочка. А за нею — й бабуся. Обидві живі-здорові!"
+    - chervona_shapochka: "Ой, як я налякалася! Як темно було у вовка в животі!"
+    - baba: "Ох, ледве жива! Спасибі вам, добрі люди!"
+    - narrator: "А Червона Шапочка мерщій притягла великого каміння, і дроворуб теж."
+    - show: kamin
+      at: [150, 770]
+      size: 0.45
+    - show: kaminnia
+      at: [-60, 770]
+      size: 0.6
+    - move: chervona_shapochka
+      to: [260, 770]
+      flip: false
+      ms: 1500
+    - move: drovorub
+      to: [90, 770]
+      flip: false
+      ms: 800
+      wait: true
+    - carry: kamin
+      by: chervona_shapochka
+    - carry: kaminnia
+      by: drovorub
+    - move: chervona_shapochka
+      to: [740, 770]
+      flip: true
+      ms: 1100
+    - move: drovorub
+      to: [560, 770]
+      flip: true
+      ms: 1100
+      wait: true
+    - hide: kamin
+    - hide: kaminnia
+    - fx: dust
+      on: vovk
+    - fx: bang
+      on: vovk
+      word: "ГУП!"
+    - narrator: "Набили вони вовкові живіт камінням... а вовк спить собі, нічого й не чує."
+    - move: chervona_shapochka
+      to: [1340, 770]
+      ms: 1200
+    - move: drovorub
+      to: [80, 770]
+      flip: false
+      ms: 1000
+    - move: myslyvets
+      to: [270, 770]
+      flip: true
+      ms: 900
+      wait: true
+    - fx: wake
+      on: vovk
+    - narrator: "Аж ось прокинувся вовк, побачив мисливця — та й кинувся тікати."
+    - move: vovk
+      to: [560, 770]
+      flip: false
+      hop: true
+      ms: 900
+      wait: true
+    - fx: fallback
+      on: vovk
+    - fx: bang
+      on: vovk
+      word: "БУБУХ!"
+    - narrator: "Та каміння було таке важке, що гепнувся вовк на підлогу — і більше вже не підвівся."
+    - pause: 800
+    - next: kinets
+
+  kinets:
+    - scene: khata-babusi
+    - show: stil
+      at: [800, 860]
+    - show: koshyk_pyrizhky
+      at: [1010, 650]
+    - show: baba
+      at: [880, 770]
+    - show: chervona_shapochka
+      at: [620, 770]
+      look: bez_koshyka
+    - show: myslyvets
+      at: [1250, 770]
+    - show: drovorub
+      at: [1440, 770]
+    - narrator: "Сіла бабуся до столу, з'їла пиріжки, поласувала маслом — та й одразу одужала."
+    - fx: munch
+      on: baba
+    - baba: "Ох, які смачні пиріжки! Подякуй мамі, онученько. Мені вже й легше стало!"
+    - myslyvets: "А ти, Червона Шапочко, запам'ятай: у лісі зі стежки не звертай і з вовками не розмовляй!"
+    - chervona_shapochka: "Ніколи-ніколи більше не звертатиму зі стежки! І з вовком розмовляти не буду. Обіцяю!"
+    - fx: hearts
+      on: chervona_shapochka
+    - narrator: "Відтоді Червона Шапочка завжди слухалася маму. І до бабусі ходила тільки стежкою — ніде не звертаючи."
+    - ending: stezhka
+
+  # ---------- відгалуження: не розмовляти з незнайомцем ----------
+
+  movchky:
+    - chervona_shapochka: "Мама казала: з незнайомцями не розмовляй! До побачення, пане вовче!"
+    - move: chervona_shapochka
+      to: [2000, 770]
+      flip: true
+      ms: 2200
+    - narrator: "І пішла собі далі, навіть не озирнулася."
+    - fx: shiver
+      on: vovk
+    - vovk: "Ач яка! Ну нічого. Піду я за нею тихенько — однаково дізнаюся, куди вона йде."
+    - move: vovk
+      to: [2100, 770]
+      flip: true
+      ms: 2600
+      wait: true
+    - next: mlyn_myslyvets
+
+  mlyn_myslyvets:
+    - scene: mlyn
+    - show: myslyvets
+      at: [1050, 770]
+    - fx: sit
+      on: myslyvets
+    - show: chervona_shapochka
+      at: [-250, 770]
+      flip: true
+    - move: chervona_shapochka
+      to: [760, 770]
+      ms: 2200
+      wait: true
+    - narrator: "Дійшла Червона Шапочка до млина. А під млином сидить, відпочиває мисливець."
+    - chervona_shapochka: "Добридень, пане мисливцю! Ой, а за мною вовк крадеться!"
+    - fx: stand
+      on: myslyvets
+    - myslyvets: "Вовк, кажеш? А ну, де він?"
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [300, 770]
+      ms: 1800
+      wait: true
+    - narrator: "А вовк і справді вже тут — підкрадається."
+    - myslyvets: "Ось я тебе, сірий розбійнику! А ну, геть звідси!"
+    - fx: bang
+      on: myslyvets
+      word: "БАХ!"
+    - narrator: "Бахнув мисливець із рушниці вгору — для страху."
+    - fx: shiver
+      on: vovk
+    - vovk: "Ой-ой-ой! Мисливець! Тікаю!"
+    - move: vovk
+      to: [-400, 770]
+      flip: false
+      ms: 1200
+    - fx: whoosh
+      on: vovk
+    - fx: dust
+      on: vovk
+    - narrator: "Тільки вовка й бачили! Утік він у найглухіші хащі — і більше звідти не виходив."
+    - myslyvets: "Розумниця, що з вовком не розмовляла! Ходімо, я тебе до бабусі проведу."
+    - move: chervona_shapochka
+      to: [2000, 770]
+      ms: 2400
+    - move: myslyvets
+      to: [2200, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - next: movchky_kinets
+
+  movchky_kinets:
+    - scene: khata-babusi
+    - show: lizhko_babusi
+      at: [1000, 770]
+    - show: baba
+      at: [1060, 770]
+      look: chepets
+    - show: kovdra
+      at: [1000, 770]
+    - show: chervona_shapochka
+      at: [150, 770]
+      flip: true
+    - show: myslyvets
+      at: [-60, 770]
+      flip: true
+    - move: chervona_shapochka
+      to: [620, 770]
+      ms: 1600
+    - move: myslyvets
+      to: [380, 770]
+      ms: 1700
+      wait: true
+    - narrator: "Прийшли вони до бабусі. А бабуся лежить у ліжку — така рада гостям!"
+    - baba: "Онученько! Та ще й з мисливцем! Заходьте, заходьте!"
+    - chervona_shapochka: "Бабусю, ось вам пиріжки й горщичок масла. А з вовком я не розмовляла — і мисливець його прогнав!"
+    - fx: munch
+      on: baba
+    - baba: "Ох, які смачні пиріжки! Мені вже й легше. Яка ж ти в мене розумниця!"
+    - fx: hearts
+      on: baba
+    - narrator: "Пригостила бабуся мисливця пиріжками, і пили вони втрьох чай з малиною. А Червона Шапочка відтоді знала: з незнайомцями в лісі не розмовляють!"
+    - ending: rozumna
+
+  # ---------- відгалуження: стежкою — найпершою ----------
+
+  stezhka:
+    - chervona_shapochka: "Ні-ні! Мама казала не баритися й не звертати зі стежки. Біжу до бабусі!"
+    - move: chervona_shapochka
+      to: [2000, 770]
+      flip: true
+      hop: true
+      ms: 1600
+    - fx: whoosh
+      on: chervona_shapochka
+    - pause: 1200
+    - next: pershoyu
+
+  pershoyu:
+    - scene: uzlissia
+    - show: khatynka_babusi
+      at: [1050, 770]
+    - fx: tuck
+      on: khatynka_babusi
+      who: [baba]
+    - show: chervona_shapochka
+      at: [-250, 770]
+      flip: true
+    - move: chervona_shapochka
+      to: [860, 770]
+      hop: true
+      ms: 1600
+      wait: true
+    - narrator: "Бігла Червона Шапочка стежкою, ніде не звертала — і прибігла до бабусиної хатинки найпершою! А вовка ще й не видно."
+    - fx: hit
+      on: chervona_shapochka
+      who: [khatynka_babusi]
+      word: "ТУК-ТУК!"
+    - baba: "Хто там?"
+    - chervona_shapochka: "Це я, бабусю, Червона Шапочка!"
+    - baba: "Смикни за мотузочок, онученько, — двері й відчиняться!"
+    - fx: bang
+      at: [960, 640]
+      word: "КЛАЦ!"
+    - enter: chervona_shapochka
+      into: khatynka_babusi
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [700, 770]
+      ms: 1600
+      wait: true
+    - narrator: "Тільки зачинилися двері — аж ось і вовк прибіг. Язик висолопив, ледве дихає."
+    - vovk: "Ух... Ух... Ну, де ж та дівчинка? Мабуть, ще квіточки збирає. Хе-хе!"
+    - move: vovk
+      to: [860, 770]
+      ms: 500
+      wait: true
+    - fx: hit
+      on: vovk
+      who: [khatynka_babusi]
+      word: "ТУК-ТУК!"
+    - baba: "Хто там?"
+    - vovk: "Це я, ваша онучка, Червона Шапочка!"
+    - chervona_shapochka: "Неправда! Червона Шапочка — це я! А ти — сірий вовк!"
+    - fx: rock
+      on: khatynka_babusi
+    - fx: bang
+      on: khatynka_babusi
+      word: "ХА-ХА-ХА!"
+    - narrator: "Засміялися бабуся з онучкою — аж хатинка затрусилася."
+    - vovk: "Ой... Ну то хоч пиріжка дайте! Я ж такий голодний!"
+    - baba: "Тримай, вовче, мого пиріжка! Я його ще минулого тижня спекла."
+    - show: pyrizhok
+      at: [1170, 540]
+      size: 2
+    - narrator: "Відчинила бабуся віконце — та й кинула вовкові пиріжка."
+    - move: pyrizhok
+      to: [800, 640]
+      hop: true
+      ms: 700
+      wait: true
+    - hide: pyrizhok
+    - fx: bang
+      on: vovk
+      word: "ТРІСЬ!"
+    - narrator: "Хапнув вовк пиріжка — а той твердий, як камінь! Тріськ — і зуб зламався."
+    - vovk: "Ой-ой-ой! Мій зуб! Ой, болить!"
+    - fx: tears
+      on: vovk
+    - narrator: "Схопився вовк за щоку — та й побіг до лісу, до дятла, зуба лікувати."
+    - move: vovk
+      to: [-400, 770]
+      flip: false
+      ms: 1500
+    - fx: whoosh
+      on: vovk
+    - fx: dust
+      on: vovk
+    - pause: 600
+    - fx: popout
+      on: khatynka_babusi
+      who: [chervona_shapochka, baba]
+    - narrator: "Вийшли бабуся з онучкою на ґанок."
+    - chervona_shapochka: "Бабусю, а ось вам свіжі пиріжки й горщичок масла — м'якенькі, мама щойно спекла!"
+    - fx: munch
+      on: baba
+    - baba: "От тепер у мене і пиріжки свіжі, і вовк без зуба! Ха-ха!"
+    - fx: hearts
+      on: baba
+    - narrator: "Відтоді вовк і близько не підходить до бабусиної хатинки. А як побачить пиріжок — хапається за щоку!"
+    - ending: zub
+
+  # ---------- відгалуження: сірий хвіст ----------
+
+  khvist:
+    - show: khvist
+      at: [780, 700]
+    - fx: rock
+      on: khvist
+    - narrator: "Аж тут дивиться Червона Шапочка — а з-під ковдри стирчить сірий хвіст! Та ще й ворушиться."
+    - fx: rock
+      on: khvist
+    - chervona_shapochka: "Бабусю... а чому у вас... хвіст?"
+    - vovk: "Е-е... Це... це в мене шаль така! Пухнаста!"
+    - narrator: "Та Червона Шапочка вже все зрозуміла: це ж не бабуся — це вовк! Але й виду не подала."
+    - chervona_shapochka: "Ой, бабусю, я ж квіточки на ґанку забула! Зараз принесу!"
+    - move: chervona_shapochka
+      to: [150, 770]
+      flip: false
+      ms: 1200
+      wait: true
+    - hide: chervona_shapochka
+    - vovk: "Біжи, біжи, онученько... Хе-хе! Однаково ж повернешся."
+    - next: klyche
+
+  klyche:
+    - scene: uzlissia
+    - show: khatynka_babusi
+      at: [1050, 770]
+    - fx: tuck
+      on: khatynka_babusi
+      who: [vovk]
+    - show: chervona_shapochka
+      at: [960, 770]
+    - move: chervona_shapochka
+      to: [560, 770]
+      ms: 1000
+      wait: true
+    - chervona_shapochka: "Рятуйте! Мисливці! У бабусиній хатинці — вовк!"
+    - fx: bang
+      on: chervona_shapochka
+      word: "РЯТУЙТЕ!"
+    - show: myslyvets
+      at: [-250, 770]
+      flip: true
+    - move: myslyvets
+      to: [320, 770]
+      ms: 1400
+      wait: true
+    - myslyvets: "Вовк, кажеш? Ану, сховайся за мене!"
+    - enter: myslyvets
+      into: khatynka_babusi
+    - fx: bang
+      on: khatynka_babusi
+      word: "БАХ!"
+    - next: hykavka
+
+  hykavka:
+    - scene: khata-babusi
+    - show: lizhko_babusi
+      at: [1000, 770]
+    - show: vovk
+      at: [1060, 770]
+      look: babusia
+      size: 1.18
+    - show: kovdra
+      at: [1000, 770]
+    - show: myslyvets
+      at: [400, 770]
+      flip: true
+    - narrator: "Як бахне мисливець із рушниці у стелю — для страху! Підскочив вовк у ліжку..."
+    - fx: wake
+      on: vovk
+    - vovk: "Ой! Мисливець! Ой-ой-ой... Ік!"
+    - fx: bang
+      on: vovk
+      word: "ГОП!"
+    - fx: popout
+      on: vovk
+      who: [baba]
+    - narrator: "Так перелякався вовк, що аж гикнув — та так сильно, що бабуся з нього й вискочила, жива-здорова!"
+    - baba: "Ох! Де це я була? Темно, тісно... Ну й вовчисько!"
+    - vovk: "Ік! Ік! Не стріляйте! Я більше не буду! Ік!"
+    - move: vovk
+      to: [-400, 770]
+      flip: false
+      hop: true
+      ms: 1600
+    - fx: whoosh
+      on: vovk
+    - narrator: "Вистрибнув вовк із ліжка та й у двері — тільки його й бачили. А гикавка, кажуть, у нього й досі не минула."
+    - show: chervona_shapochka
+      at: [150, 770]
+      flip: true
+    - move: chervona_shapochka
+      to: [620, 770]
+      ms: 1300
+      wait: true
+    - chervona_shapochka: "Бабусю! Ви жива!"
+    - baba: "Жива, онученько! Це ж ти мене врятувала — по хвосту вовка впізнала!"
+    - fx: hearts
+      on: baba
+    - fx: munch
+      on: baba
+    - narrator: "Пригостила бабуся всіх маминими пиріжками. А Червону Шапочку відтоді звуть ще й Хитрою Шапочкою — бо вона вовка по хвосту впізнала!"
+    - ending: khvist

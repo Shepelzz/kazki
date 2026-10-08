@@ -15,7 +15,7 @@ import { COIN, heroesOf } from './heroes';
 import TALES from 'virtual:tales';
 
 /** the shelf, in this order */
-const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid', 'kit-u-chobotyakh', 'try-vedmedi', 'duimovochka', 'troie-porosiat'];
+const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid', 'kit-u-chobotyakh', 'try-vedmedi', 'duimovochka', 'troie-porosiat', 'chervona-shapochka'];
 /** what the shelf knows of each tale (a few kilobytes); the tale itself is fetched when its card opens */
 const TALE_LIST: TaleInfo[] = SHELF.map((id) => TALES[id]);
 /** each tale's scenes: a chunk of its own, fetched on demand */
@@ -61,6 +61,7 @@ const COVER_VIEW: Record<string, string> = {
   try_vedmedi: '-200 -250 410 260',
   duimovochka_cover: '-175 -480 350 490',
   troie_porosiat: '-228 -258 456 270',
+  chervona_shapochka_cover: '-215 -560 450 580',
 };
 
 function cover(story: Pick<TaleInfo, 'cover'>) {

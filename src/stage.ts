@@ -181,9 +181,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'tsehla', 'kelma', 'soloma', 'khmyz', 'kazan', 'opudalo'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'tsehla', 'kelma', 'soloma', 'khmyz', 'kazan', 'opudalo', 'khatynka_babusi', 'lizhko_babusi', 'kovdra', 'khvist', 'kvity', 'kvity2', 'metelyky', 'kaminnia', 'koshyk_pyrizhky'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv', 'promin', 'kovdrochka', 'kazan', 'opudalo'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv', 'promin', 'kovdrochka', 'kazan', 'opudalo', 'kovdra', 'khvist'];
 /**
  * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
  * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
@@ -289,6 +289,10 @@ const REACTIONS: Record<string, string[]> = {
   nifnif: ['hops', 'giggle', 'spin', 'wiggle'],
   nufnuf: ['dance', 'sneeze', 'flip', 'hop'],
   nafnaf: ['flex', 'bow', 'no', 'stretch'],
+  chervona_shapochka: ['spin', 'giggle', 'hop', 'bow'],
+  myslyvets: ['flex', 'no', 'stretch', 'sneeze'],
+  mama: ['bow', 'dance', 'giggle'],
+  drovorub: ['flex', 'scratch', 'hops'],
 };
 
 /** one heave-ho of pulling (seconds) */
@@ -298,7 +302,7 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
-const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri', 'tarilka_vody', 'lopukh', 'norka', 'kvitka_bila', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova'];
+const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri', 'tarilka_vody', 'lopukh', 'norka', 'kvitka_bila', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'khatynka_babusi', 'lizhko_babusi'];
 /**
  * What the wolf's blowing (fx blow) knocks apart, and the bits that fly off it: straw, twigs,
  * feathers out of the pillows. Anything else (the brick house) only shakes.
@@ -1277,7 +1281,97 @@ function kamianytsia() {
   <ellipse cx="1050" cy="${GROUND + 70}" rx="240" ry="26" fill="none" stroke="#4fc3f7" stroke-width="10"/>`;
 }
 
+// ---------- «Червона Шапочка» ----------
+
+/**
+ * The edge of the forest past the mill, where grandma lives: the windmill small on a far hill to the
+ * left, the forest coming down on the right, a path. Her cottage (khatynka_babusi) is a prop.
+ */
+function uzlissia() {
+  const far = `<g transform="translate(220 ${GROUND - 150}) scale(.42) translate(0 ${-(GROUND - 40)})">${windmill(0)}</g>`;
+  // the forest: only from the middle to the right (and on past the edge)
+  const r = rand(83);
+  let woods = '';
+  for (let i = 0; i < 22; i++) {
+    const x = 620 + i * 105 + r() * 50;
+    const y = GROUND - 30 - r() * 20;
+    woods += r() < 0.55 ? fir(x, y, 0.8 + r() * 0.5) : tree(x, y, 0.8 + r() * 0.4, true);
+  }
+  return (
+    sky('#86cdf5', '#eaf8ff') +
+    sun(1420, 210) +
+    clouds(81) +
+    [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#aed581', GROUND - 150, 60, 82)}</g>`).join('') +
+    far +
+    woods +
+    ground('#7cb342', '#c9a77a') +
+    `<g>${verge(84, false)}</g>`
+  );
+}
+
+/**
+ * Inside grandma's cottage: whitewashed walls with a blue band at the bottom, a beam; the door on
+ * the left (x 60..250) with its wooden latch and the string; a window with lace curtains and red
+ * geraniums (x 520..760); a cuckoo clock; a little picture of the girl in her red hood; an
+ * embroidered towel over where the bed stands (the bed is a prop: lizhko_babusi + kovdra at x ≈ 1100);
+ * a shelf of jars of jam; a round rag rug.
+ */
+function babusynaKhata() {
+  const F = GROUND - 40;
+  let planks = '';
+  for (let x = -1600; x < 3200; x += 120) planks += `<path d="M${x} ${F} L${x - 300} 6000" stroke="#8a5e34" stroke-width="3"/>`;
+  return `
+  <rect x="-1600" y="-1200" width="4800" height="${F + 1200}" fill="#fbf3e2"/>
+  <rect x="-1600" y="${F - 60}" width="4800" height="60" fill="#7aa6d8"/>
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#b07a45"/>${planks}
+  <rect x="-1600" y="-3000" width="4800" height="2960" fill="#b98a5a"/>
+  ${Array.from({ length: 40 }, (_, i) => `<path d="M${-1600 + i * 120} -3000 V-40" stroke="#9c7044" stroke-width="4"/>`).join('')}
+  <rect x="-1600" y="-40" width="4800" height="70" fill="#7a5232"/>
+  <!-- the door, the latch, the string -->
+  <rect x="50" y="${F - 420}" width="210" height="420" fill="#6d4426"/>
+  <rect x="66" y="${F - 404}" width="178" height="404" fill="#8b5a2b" stroke="#5a3a22" stroke-width="5"/>
+  ${[110, 155, 200].map((x) => `<path d="M${x} ${F - 400} V${F}" stroke="#6d4426" stroke-width="4"/>`).join('')}
+  <path d="M66 ${F - 340} h178 M66 ${F - 80} h178" stroke="#5d4037" stroke-width="12"/>
+  <rect x="200" y="${F - 230}" width="56" height="16" rx="5" fill="#c8955a" stroke="#5a3a22" stroke-width="3"/>
+  <path d="M232 ${F - 214} Q236 ${F - 180} 228 ${F - 150}" stroke="#efe6cf" stroke-width="5" fill="none"/><circle cx="228" cy="${F - 148}" r="7" fill="#e53935"/>
+  <!-- the window -->
+  <rect x="520" y="260" width="240" height="230" fill="#9fd3f0" stroke="#5a3a22" stroke-width="10"/>
+  <path d="M640 260 v230 M520 375 h240" stroke="#5a3a22" stroke-width="7"/>
+  <circle cx="700" cy="310" r="24" fill="#ffd54f"/><path d="M540 470 q40 -60 80 0 M600 470 q50 -80 100 0 M670 470 q40 -50 80 0" fill="#4c9a44"/>
+  <path d="M510 250 Q560 330 530 500 L500 500 V250 Z M770 250 Q720 330 750 500 L780 500 V250 Z" fill="#fff" stroke="#e0dacb" stroke-width="3"/>
+  ${[518, 532, 546, 760, 746].map((x) => `<circle cx="${x}" cy="400" r="3" fill="#e0dacb"/>`).join('')}
+  <rect x="500" y="490" width="280" height="18" rx="5" fill="#a0703c" stroke="#5a3a22" stroke-width="4"/>
+  ${[560, 640, 720].map((x) => `<path d="M${x - 22} 490 l6 -34 h32 l6 34 z" fill="#c0542e" stroke="#7a3a1e" stroke-width="3"/><circle cx="${x - 10}" cy="440" r="14" fill="#e53935"/><circle cx="${x + 10}" cy="434" r="14" fill="#ef5350"/><circle cx="${x}" cy="422" r="13" fill="#e53935"/><path d="M${x - 18} 452 q-10 -6 -14 4 M${x + 18} 452 q10 -6 14 4" stroke="#43a047" stroke-width="7" fill="none"/>`).join('')}
+  <!-- a little picture of the girl in her red hood -->
+  <rect x="340" y="240" width="110" height="130" rx="8" fill="#ffe0b2" stroke="#8b5a2b" stroke-width="10"/>
+  <path d="M362 350 Q356 270 395 266 Q434 270 428 350 Z" fill="#d62828"/>
+  <circle cx="395" cy="310" r="24" fill="#f2c4a0"/><path d="M372 300 q23 -26 46 0 q-23 -10 -46 0z" fill="#e8b04a"/>
+  <circle cx="386" cy="312" r="3" fill="#2b1a10"/><circle cx="404" cy="312" r="3" fill="#2b1a10"/><path d="M388 324 q7 6 14 0" stroke="#5a3a22" stroke-width="3" fill="none"/>
+  <!-- the cuckoo clock -->
+  <path d="M880 210 l60 -50 l60 50 Z" fill="#6d4426" stroke="#5a3a22" stroke-width="4"/>
+  <rect x="890" y="210" width="100" height="110" fill="#a0703c" stroke="#5a3a22" stroke-width="4"/>
+  <circle cx="940" cy="270" r="30" fill="#fff8e1" stroke="#5a3a22" stroke-width="4"/>
+  <path d="M940 270 V250 M940 270 h16" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
+  <rect x="926" y="214" width="28" height="22" fill="#3e2723"/><circle cx="936" cy="226" r="7" fill="#fdd835"/>
+  <path d="M920 320 v80 M960 320 v120" stroke="#5a3a22" stroke-width="3"/><path d="M912 400 h16 v26 h-16z M952 440 h16 v26 h-16z" fill="#8d6e63"/>
+  <!-- the embroidered towel over where the bed stands -->
+  <circle cx="1170" cy="150" r="8" fill="#7a5232"/>
+  <path d="M1020 170 Q1170 240 1320 170" fill="none" stroke="#e5ddc9" stroke-width="34" stroke-linecap="round"/>
+  <path d="M1020 170 Q1170 240 1320 170" fill="none" stroke="#fff" stroke-width="28" stroke-linecap="round"/>
+  <path d="M1012 166 L1000 300 L1042 304 L1040 176 Z M1328 166 L1340 300 L1298 304 L1300 176 Z" fill="#fff" stroke="#e5ddc9" stroke-width="3"/>
+  ${stitchBand(1000, 270, 42)}${stitchBand(1298, 270, 42)}
+  <!-- a shelf of jam jars -->
+  <rect x="1430" y="380" width="200" height="14" rx="5" fill="#6d4426"/>
+  ${[[1450, '#e53935'], [1500, '#8e24aa'], [1550, '#fbc02d'], [1600, '#e53935']].map(([x, c]) => `<rect x="${x}" y="330" width="36" height="50" rx="7" fill="${c}" stroke="#5a3a22" stroke-width="3"/><rect x="${Number(x) - 3}" y="322" width="42" height="12" rx="3" fill="#fff" stroke="#5a3a22" stroke-width="2"/>`).join('')}
+  <!-- a round rag rug -->
+  <ellipse cx="560" cy="${GROUND + 70}" rx="380" ry="50" fill="#ef9a9a" opacity=".9"/>
+  <ellipse cx="560" cy="${GROUND + 70}" rx="290" ry="36" fill="none" stroke="#81d4fa" stroke-width="10"/>
+  <ellipse cx="560" cy="${GROUND + 70}" rx="190" ry="22" fill="none" stroke="#fff59d" stroke-width="10"/>`;
+}
+
 const BACKDROPS: Record<string, () => Backdrop> = {
+  uzlissia: () => ({ still: uzlissia(), layers: [] }),
+  'khata-babusi': () => ({ still: babusynaKhata(), layers: [] }),
   kamianytsia: () => ({ still: kamianytsia(), layers: [] }),
   'stil-zblyzka': () => ({ still: stilZblyzka(false), layers: [] }),
   'stil-nich': () => ({ still: stilZblyzka(true), layers: [] }),
@@ -2261,8 +2355,9 @@ export class Stage {
           sfx(word, 'thud');
           for (const t of targets) {
             const d = t.x >= a.x ? 1 : -1;
-            // the kolobok being bitten stays where the mouth is
-            if (t.id !== 'kolobok') {
+            // a house knocked on only shakes; the kolobok being bitten stays where the mouth is
+            if (BACK.indexOf(t.id) >= 0) t.wobble = 1;
+            else if (t.id !== 'kolobok') {
               t.knock = KNOCK;
               t.knockDx = d * (t.prop ? 30 : 110);
             }
@@ -2318,6 +2413,13 @@ export class Stage {
         // falls asleep: sits down (unless lying already), eyes shut, nods, z-z-z
         if (!a) return this.wait(300);
         if (!a.pose) a.pose = 'sit';
+        this.setEyes(a.id, false);
+        a.asleep = true;
+        a.zIn = 0;
+        return this.wait(900);
+      case 'doze':
+        // falls asleep where it is, without sitting down (sitting up in bed, under the quilt)
+        if (!a) return this.wait(300);
         this.setEyes(a.id, false);
         a.asleep = true;
         a.zIn = 0;
@@ -2500,7 +2602,8 @@ export class Stage {
         return this.wait(1600);
       }
       case 'chomp':
-        return this.chomp(a);
+        // gobbled up (the kolobok, or who[0]): gone into the mouth whole, and inside (popout: out again)
+        return this.chomp(a, who[0]);
     }
     throw new Error(`no effect "${name}"`);
   }
@@ -2776,8 +2879,8 @@ export class Stage {
   }
 
   /** the fox: mouth wide open, the kolobok vanishes into it, crumbs fly */
-  private chomp(fox?: Actor): Promise<void> {
-    const k = this.actors.get('kolobok');
+  private chomp(fox?: Actor, victim = 'kolobok'): Promise<void> {
+    const k = this.actors.get(victim);
     if (!fox || !k) return this.wait(500);
     const [mx, my] = this.anchor(fox, 'mouth');
     this.mouth(fox, true);
@@ -2790,9 +2893,18 @@ export class Stage {
       k.scale = 1 - p;
       if (p < 1) this.later(0, shrink);
       else {
-        this.hide('kolobok');
+        this.hide(victim);
+        if (victim !== 'kolobok') {
+          this.sizeWhenIn[victim] = k.size;
+          this.inside[victim] = fox.id;
+        }
         this.mouth(fox, false);
-        for (let i = 0; i < 10; i++) this.crumb(mx, my);
+        if (victim === 'kolobok') for (let i = 0; i < 10; i++) this.crumb(mx, my);
+        else {
+          // someone swallowed whole: a snap of the jaws, the picture jolts
+          sfx('ГАМ!', 'snap');
+          this.shake = 0.3;
+        }
         fox.bounce = 1;
       }
     };

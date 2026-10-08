@@ -26,6 +26,7 @@ import { charivnytsia, duimovochka, duimovochka_cover, duimovochka_koroleva, elf
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { hata_khmyzova, hata_podushkova, hata_solomiana, hata_tsehlyana, kazan, kazan_kryshka, kelma, khmyz, nafnaf, nifnif, nufnuf, opudalo, soloma, troie_porosiat, tsehla, vovk_kaska, vovk_pirya } from './puppets-porosiata';
+import { baba_chepets, chervona_shapochka, chervona_shapochka_bez, chervona_shapochka_bez_koshyka, chervona_shapochka_cover, chervona_shapochka_kvity, drovorub, kaminnia, khatynka_babusi, khvist, koshyk_pyrizhky, kovdra, kvity, kvity2, lizhko_babusi, mama, metelyky, myslyvets, vovk_babusia } from './puppets-shapochka';
 import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -133,7 +134,7 @@ const did = () => `
   </g>
 </g>`;
 
-const baba = () => `
+export const baba = () => `
 <g data-part="body">
   <!-- skirt (plakhta) with bands -->
   <path d="M-58 -170 L-86 -6 L86 -6 L58 -170 Z" fill="#8e1b1b" ${stroke}/>
@@ -591,6 +592,26 @@ export const PUPPETS: Record<string, () => string> = {
   vovk_kaska,
   // the cover of «Троє поросят»: the three brothers
   troie_porosiat,
+  chervona_shapochka,
+  chervona_shapochka_bez,
+  chervona_shapochka_bez_koshyka,
+  chervona_shapochka_kvity,
+  mama,
+  myslyvets,
+  drovorub,
+  baba_chepets,
+  vovk_babusia,
+  lizhko_babusi,
+  kovdra,
+  khvist,
+  khatynka_babusi,
+  kvity,
+  kvity2,
+  metelyky,
+  kaminnia,
+  koshyk_pyrizhky,
+  // the cover of «Червона Шапочка»: she on the path, the wolf behind an oak
+  chervona_shapochka_cover,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -819,4 +840,19 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   khmyz: { mouth: [0, -60], top: -110 },
   kazan: { mouth: [0, -150], top: -260 },
   opudalo: { mouth: [0, -300], top: -420 },
+  // «Червона Шапочка»: hands — the basket on her arm, what the others carry in front
+  chervona_shapochka: { mouth: [0, -226], top: -330, hands: [60, -150] },
+  mama: { mouth: [0, -268], top: -360, hands: [0, -140] },
+  myslyvets: { mouth: [0, -276], top: -410, hands: [0, -130] },
+  drovorub: { mouth: [0, -280], top: -420, hands: [0, -130] },
+  // mouth = the door (who comes in or out goes there); the bed: who lies in it stands at x + 60
+  khatynka_babusi: { mouth: [-90, -20], top: -520 },
+  lizhko_babusi: { mouth: [60, -100], top: -420 },
+  kovdra: { mouth: [0, -120], top: -230 },
+  khvist: { mouth: [-70, -30], top: -70 },
+  kvity: { mouth: [0, -60], top: -120 },
+  kvity2: { mouth: [0, -60], top: -120 },
+  metelyky: { mouth: [0, -60], top: -110 },
+  kaminnia: { mouth: [0, -50], top: -115 },
+  koshyk_pyrizhky: { mouth: [0, -50], top: -120 },
 };

@@ -29,13 +29,17 @@ type Kind =
   | 'call'
   | 'clatter'
   | 'splash'
-  | 'sneeze';
+  | 'sneeze'
+  | 'snore'
+  | 'snip';
 
 /** the words of the tales → their sound (the first that matches; checked without the "!") */
 const BY_WORD: [RegExp, Kind][] = [
   [/^ТУК|^ТИЦЬ|^КЛЮЄ/, 'knock'],
   [/^ТРІСЬ|^ХРЯСЬ/, 'crack'],
   [/^ХРУМ/, 'crunch'],
+  [/^ХР-Р|^ХРР/, 'snore'],
+  [/^ЧИК/, 'snip'],
   [/^ХАП|^ЦАП|^ГАМ|^ЛИП/, 'snap'],
   [/^ДЗЕНЬ/, 'ding'],
   [/^Р-Р|^ГУР|^ФРР/, 'growl'],
@@ -234,6 +238,41 @@ const SOUNDS: Record<Kind, (c: AudioContext, o: AudioNode, t: number, n: number)
     hiss(c, o, t, 'bandpass', 600, 1400, 0.4, 0.25, 1.2, 0.3);
     hiss(c, o, t + 0.45, 'highpass', 2500, 1500, 0.3, 0.9, 0.7, 0.003);
     tone(c, o, t + 0.45, 'sawtooth', 420, 200, 0.12, 0.2, 0.003);
+  },
+  snore: (c, o, t) => {
+    // a long rumbling breath in through the nose, then a whistle out
+    const len = 1.1;
+    const s = c.createOscillator();
+    s.type = 'sawtooth';
+    s.frequency.setValueAtTime(60, t);
+    s.frequency.linearRampToValueAtTime(48, t + len);
+    const lp = c.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 380;
+    const trem = c.createGain();
+    trem.gain.value = 0.5;
+    const lfo = c.createOscillator();
+    lfo.frequency.value = 13;
+    const depth = c.createGain();
+    depth.gain.value = 0.5;
+    lfo.connect(depth);
+    depth.connect(trem.gain);
+    s.connect(lp);
+    lp.connect(trem);
+    trem.connect(env(c, o, t, 0.9, 0.4, len));
+    s.start(t);
+    lfo.start(t);
+    s.stop(t + len + 0.05);
+    lfo.stop(t + len + 0.05);
+    hiss(c, o, t + len - 0.1, 'bandpass', 1800, 2600, 0.45, 0.25, 6, 0.08);
+  },
+  snip: (c, o, t, n) => {
+    // the blades of big scissors: a bright click, twice for «ЧИК-ЧИК»
+    for (let i = 0; i < n; i++) {
+      const at = t + i * 0.18;
+      hiss(c, o, at, 'highpass', 5000, 3500, 0.06, 0.6, 1, 0.002);
+      tone(c, o, at, 'triangle', 2400, 1600, 0.05, 0.25, 0.002);
+    }
   },
   clatter: (c, o, t) => {
     for (let i = 0; i < 5; i++) {
