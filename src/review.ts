@@ -291,10 +291,12 @@ function episodeBox() {
   box.append(h('div', { cls: 'rv-ep-title' }, h('b', { textContent: info?.title || tale }), ' › ', h('code', { textContent: scene })));
   box.append(h('div', { cls: 'rv-status', id: 'rv-status', textContent: waiting ? (nextScene ? `■ кінець епізоду. Далі: ${nextScene}` : '■ кінець епізоду (кінцівка)') : '' }));
   const ctl = h('div', { cls: 'rv-ctl' });
-  ctl.append(
+  // the card's ✕: the scene stops, back to the shelf and the list of tales
+  box.append(
     h('button', {
-      textContent: '← До списку',
-      title: 'Закрити епізод і повернутися до списку казок',
+      cls: 'rv-close',
+      textContent: '✕',
+      title: 'Закрити епізод',
       onclick: () => {
         waiting?.(false);
         waiting = null;
@@ -305,6 +307,8 @@ function episodeBox() {
         render();
       },
     }),
+  );
+  ctl.append(
     h('button', {
       textContent: '⏯ пауза',
       onclick: () => api().setPaused(!api().paused),
@@ -459,13 +463,16 @@ body.review .screen { left: 380px; }
 .rv-b.open { background: #ffe0b2; color: #a14a00; }
 .rv-b.done { background: #d7f0d9; color: #2a7a36; }
 .rv-b.new { background: #2e9d43; color: #fff; }
-#rv-panel button.rv-newsbtn { border: 0; padding: 1px 8px; border-radius: 999px; font-size: 12px; }
+#rv-panel button.rv-newsbtn { border: 0; padding: 1px 8px; border-radius: 999px; font-size: 12px; background: #2e9d43; color: #fff; font-weight: 800; }
 .rv-note.fresh { border: 2px solid #2e9d43; box-shadow: 0 0 0 3px #d7f0d9; }
 .rv-newtag { font-size: 11px; font-weight: 800; color: #2e9d43; margin-bottom: 2px; }
 .rv-older { margin-top: 6px; }
 .rv-older summary { cursor: pointer; font-size: 12px; color: #6b8a6e; font-weight: 700; }
 .rv-episode { margin: 0 10px 8px; padding: 10px; border-radius: 12px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.1); max-height: 55vh; overflow-y: auto; }
 .rv-episode.empty { color: #8a7a68; }
+.rv-episode { position: relative; }
+#rv-panel button.rv-close { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; padding: 0; border-radius: 50%; font-size: 18px; line-height: 1; font-weight: 800; color: #6b5a48; }
+.rv-ep-title { padding-right: 40px; }
 .rv-ep-title { font-size: 15px; margin-bottom: 4px; }
 .rv-status { font-size: 13px; color: #6b5a48; min-height: 18px; }
 .rv-ctl { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
