@@ -35,6 +35,8 @@ interface Note {
   created: string;
   status: 'open' | 'done';
   reply?: string;
+  /** when it was marked done */
+  doneAt?: string;
 }
 interface TaleApi {
   story(id: string): Promise<FullStory>;
@@ -54,6 +56,8 @@ let open: { tale: string; scene: string } | null = null;
 let waiting: ((go: boolean) => void) | null = null;
 let nextScene: string | null = null;
 let onlyNotes = false;
+/** the list of what was done since last looked, instead of the tales */
+let showNews = false;
 /** the note being written: kept through every redraw of the panel (a scene ending redraws it) */
 const drafts: Record<string, string> = {};
 
@@ -83,11 +87,58 @@ async function saveNote(action: 'add' | 'update' | 'delete', note: Partial<Note>
   render();
 }
 
+// ---------- done since last looked ----------
+// A note marked done is "new" until its scene has been opened once after that (kept in this
+// browser). The first time, the ones done before this existed count as seen.
+
+const SEEN_KEY = 'kazky:review-seen';
+let seen: Record<string, string> = {};
+function loadSeen() {
+  try {
+    const raw = localStorage.getItem(SEEN_KEY);
+    if (raw) seen = JSON.parse(raw) as Record<string, string>;
+    else {
+      for (const n of notes) if (n.status === 'done' && !n.doneAt) seen[n.id] = 'before';
+      saveSeen();
+    }
+  } catch {
+    seen = {};
+  }
+}
+function saveSeen() {
+  try {
+    localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+  } catch {
+    // private window: new ones stay new
+  }
+}
+/** done, and not looked at since */
+const fresh = (n: Note) => n.status === 'done' && seen[n.id] !== (n.doneAt || 'before') && seen[n.id] !== 'before';
+/** the notes of a scene are being looked at: their news is seen (shown as new this time still) */
+function markSeen(tale: string, scene: string) {
+  let changed = false;
+  for (const n of notes)
+    if (n.tale === tale && n.scene === scene && fresh(n)) {
+      seen[n.id] = n.doneAt || 'before';
+      changed = true;
+    }
+  if (changed) saveSeen();
+}
+/** what this view showed as new: kept new on screen until the episode changes */
+let shownFresh = new Set<string>();
+
 const notesOf = (tale: string, scene?: string) => notes.filter((n) => n.tale === tale && (scene === undefined || n.scene === scene));
 const count = (list: Note[]) => ({ open: list.filter((n) => n.status === 'open').length, done: list.filter((n) => n.status === 'done').length });
 const badges = (list: Note[]) => {
   const c = count(list);
-  return h('span', { cls: 'rv-badges' }, c.open ? h('span', { cls: 'rv-b open', textContent: `💬 ${c.open}` }) : '', c.done ? h('span', { cls: 'rv-b done', textContent: `✓ ${c.done}` }) : '');
+  const nw = list.filter(fresh).length;
+  return h(
+    'span',
+    { cls: 'rv-badges' },
+    c.open ? h('span', { cls: 'rv-b open', textContent: `💬 ${c.open}` }) : '',
+    nw ? h('span', { cls: 'rv-b new', textContent: `✓ ${nw} нов.` }) : '',
+    c.done - nw ? h('span', { cls: 'rv-b done', textContent: `✓ ${c.done - nw}` }) : '',
+  );
 };
 
 // ---------- the scenes of a tale ----------
@@ -151,6 +202,8 @@ function status(text: string) {
 }
 
 async function play(tale: string, scene: string) {
+  shownFresh = new Set(notes.filter((n) => n.tale === tale && n.scene === scene && fresh(n)).map((n) => n.id));
+  markSeen(tale, scene);
   // the scene shown before, if it was waiting at its end, is let go
   waiting?.(false);
   waiting = null;
@@ -188,11 +241,19 @@ function lineOnScreen() {
 
 // ---------- the panel ----------
 
+const when = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${d.getDate()}.${String(d.getMonth() + 1).padStart(2, '0')} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+
 function noteView(n: Note) {
-  const box = h('div', { cls: `rv-note ${n.status}` });
+  const isNew = n.status === 'done' && shownFresh.has(n.id);
+  const box = h('div', { cls: `rv-note ${n.status}${isNew ? ' fresh' : ''}` });
+  if (isNew) box.append(h('div', { cls: 'rv-newtag', textContent: '🆕 щойно виконано' }));
   if (n.line) box.append(h('div', { cls: 'rv-line', textContent: `«${n.line}»` }));
   box.append(h('div', { cls: 'rv-text', textContent: n.text }));
-  if (n.status === 'done') box.append(h('div', { cls: 'rv-reply', textContent: `✓ Виконано${n.reply ? ': ' + n.reply : ''}` }));
+  if (n.status === 'done') box.append(h('div', { cls: 'rv-reply', textContent: `✓ Виконано${n.doneAt ? ' ' + when(n.doneAt) : ''}${n.reply ? ': ' + n.reply : ''}` }));
   const tools = h('div', { cls: 'rv-tools' });
   if (n.status === 'done') tools.append(h('button', { textContent: '↺ відкрити знову', onclick: () => void saveNote('update', { id: n.id, status: 'open' }) }));
   tools.append(
@@ -239,9 +300,18 @@ function episodeBox() {
     if (l.length) box.append(h('div', { cls: 'rv-leads', textContent: l.join(' · ') }));
   }
   const list = notesOf(tale, scene);
+  // open first, then the ones just done (newest first), the older done ones folded away
   const notesBox = h('div', { cls: 'rv-notes' });
   for (const n of list.filter((x) => x.status === 'open')) notesBox.append(noteView(n));
-  for (const n of list.filter((x) => x.status === 'done')) notesBox.append(noteView(n));
+  const done = list.filter((x) => x.status === 'done').sort((a, b) => (b.doneAt || '').localeCompare(a.doneAt || ''));
+  for (const n of done.filter((x) => shownFresh.has(x.id))) notesBox.append(noteView(n));
+  const older = done.filter((x) => !shownFresh.has(x.id));
+  if (older.length) {
+    const det = h('details', { cls: 'rv-older' });
+    det.append(h('summary', { textContent: `Виконані раніше (${older.length})` }));
+    for (const n of older) det.append(noteView(n));
+    notesBox.append(det);
+  }
   box.append(notesBox);
   const ta = h('textarea', { placeholder: 'Коментар до епізоду (озвучка, модель, рух, текст…)', rows: 3, value: drafts[`${tale}/${scene}`] || '' });
   ta.addEventListener('input', () => (drafts[`${tale}/${scene}`] = ta.value));
@@ -259,6 +329,31 @@ function episodeBox() {
   });
   box.append(ta, lineHint, add);
   return box;
+}
+
+/** what was done since last looked, by tale and scene: a tap opens the scene */
+function newsList(news: Note[]) {
+  const wrap = h('div', { cls: 'rv-tales' });
+  wrap.append(h('div', { cls: 'rv-hint', textContent: 'Нові виконані. Тап — відкрити епізод (там вони стануть переглянутими).' }));
+  for (const t of tales) {
+    const mine = news.filter((n) => n.tale === t.id);
+    if (!mine.length) continue;
+    const det = h('details', { cls: 'rv-tale' });
+    det.open = true;
+    det.append(h('summary', {}, h('span', { textContent: t.title }), h('span', { cls: 'rv-badges' }, h('span', { cls: 'rv-b new', textContent: `✓ ${mine.length}` }))));
+    for (const scene of [...new Set(mine.map((n) => n.scene))]) {
+      const row = h('button', { cls: 'rv-scene' });
+      const first = mine.find((n) => n.scene === scene)!;
+      row.append(h('span', { cls: 'rv-sc' }, h('code', { textContent: scene }), h('small', { textContent: first.text.slice(0, 70) })), h('span', { cls: 'rv-badges' }, h('span', { cls: 'rv-b new', textContent: `✓ ${mine.filter((n) => n.scene === scene).length}` })));
+      row.addEventListener('click', () => {
+        showNews = false;
+        void storyOf(t.id).then(() => play(t.id, scene));
+      });
+      det.append(row);
+    }
+    wrap.append(det);
+  }
+  return wrap;
 }
 
 function taleList() {
@@ -296,7 +391,19 @@ function render() {
   const focus = old && document.activeElement === old ? { start: old.selectionStart, end: old.selectionEnd } : null;
   panel.innerHTML = '';
   const c = count(notes);
-  const head = h('div', { cls: 'rv-head' }, h('b', { textContent: 'Огляд казок' }), h('span', { cls: 'rv-badges' }, h('span', { cls: 'rv-b open', textContent: `💬 ${c.open}` }), h('span', { cls: 'rv-b done', textContent: `✓ ${c.done}` })));
+  const news = notes.filter(fresh);
+  const head = h(
+    'div',
+    { cls: 'rv-head' },
+    h('b', { textContent: 'Огляд казок' }),
+    h(
+      'span',
+      { cls: 'rv-badges' },
+      h('span', { cls: 'rv-b open', textContent: `💬 ${c.open}` }),
+      news.length ? h('button', { cls: 'rv-b new rv-newsbtn', textContent: `✓ ${news.length} нових`, onclick: () => ((showNews = !showNews), render()) }) : '',
+      h('span', { cls: 'rv-b done', textContent: `✓ ${c.done}` }),
+    ),
+  );
   const filter = h('label', { cls: 'rv-filter' });
   const cb = h('input', { type: 'checkbox', checked: onlyNotes });
   cb.addEventListener('change', () => {
@@ -306,7 +413,7 @@ function render() {
     else render();
   });
   filter.append(cb, ' лише з коментарями');
-  const list = h('div', { cls: 'rv-list' }, taleList());
+  const list = h('div', { cls: 'rv-list' }, showNews && news.length ? newsList(news) : taleList());
   panel.append(head, filter, episodeBox(), list);
   list.scrollTop = scroll;
   const ta = panel.querySelector('textarea');
@@ -328,6 +435,12 @@ body.review .screen { left: 380px; }
 .rv-b { font-size: 12px; font-weight: 800; border-radius: 999px; padding: 1px 7px; }
 .rv-b.open { background: #ffe0b2; color: #a14a00; }
 .rv-b.done { background: #d7f0d9; color: #2a7a36; }
+.rv-b.new { background: #2e9d43; color: #fff; }
+#rv-panel button.rv-newsbtn { border: 0; padding: 1px 8px; border-radius: 999px; font-size: 12px; }
+.rv-note.fresh { border: 2px solid #2e9d43; box-shadow: 0 0 0 3px #d7f0d9; }
+.rv-newtag { font-size: 11px; font-weight: 800; color: #2e9d43; margin-bottom: 2px; }
+.rv-older { margin-top: 6px; }
+.rv-older summary { cursor: pointer; font-size: 12px; color: #6b8a6e; font-weight: 700; }
 .rv-episode { margin: 0 10px 8px; padding: 10px; border-radius: 12px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.1); max-height: 55vh; overflow-y: auto; }
 .rv-episode.empty { color: #8a7a68; }
 .rv-ep-title { font-size: 15px; margin-bottom: 4px; }
@@ -361,6 +474,7 @@ export async function startReview(list: TaleInfo[]) {
   document.body.append(h('aside', { id: 'rv-panel' }));
   document.title = 'Огляд казок';
   await loadNotes();
+  loadSeen();
   // the tales with notes: their scenes at hand
   await Promise.all([...new Set(notes.map((n) => n.tale))].filter((id) => list.some((t) => t.id === id)).map(storyOf));
   render();

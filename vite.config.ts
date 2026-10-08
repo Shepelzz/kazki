@@ -107,6 +107,8 @@ interface Note {
   status: 'open' | 'done';
   /** what was done about it */
   reply?: string;
+  /** when it was marked done */
+  doneAt?: string;
 }
 
 // fit.html (dev only): where a thing sits on a hero, dragged into place by hand, is saved into
@@ -152,7 +154,8 @@ function fitEditor(): Plugin {
             const { action, note } = JSON.parse(body) as { action: 'add' | 'update' | 'delete'; note: Note };
             let all = read();
             if (action === 'add') all.push({ ...note, id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, created: new Date().toISOString(), status: 'open' });
-            if (action === 'update') all = all.map((n) => (n.id === note.id ? { ...n, ...note } : n));
+            // opened again: no longer done
+            if (action === 'update') all = all.map((n) => (n.id === note.id ? { ...n, ...note, ...(note.status === 'open' ? { doneAt: undefined } : {}) } : n));
             if (action === 'delete') all = all.filter((n) => n.id !== note.id);
             mkdirSync(dirname(notes), { recursive: true });
             writeFileSync(notes, JSON.stringify(all, null, 2) + '\n');
