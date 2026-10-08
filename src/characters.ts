@@ -101,14 +101,18 @@ const did = () => `
   ${stitch(-7, -250, 14, 70, true)}
   <rect x="-74" y="-170" width="148" height="16" rx="5" fill="#b71c1c" ${st(4)}/>
   <path d="M40 -156 l10 34 M52 -156 l14 30" fill="none" stroke="#b71c1c" stroke-width="5" stroke-linecap="round"/>
-  <!-- arms -->
+  <!-- arms (hidden while they reach out to pull: stage.ts PULL_ARMS) -->
+  <g data-arm="-1">
   <path d="M-60 -250 Q-98 -200 -92 -140" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round"/>
   <path d="M-60 -250 Q-98 -200 -92 -140" fill="none" stroke="#fbf7ee" stroke-width="24" stroke-linecap="round"/>
+  </g>
+  <g data-arm="1">
   <path d="M60 -250 Q98 -200 92 -140" fill="none" stroke="${INK}" stroke-width="34" stroke-linecap="round"/>
   <path d="M60 -250 Q98 -200 92 -140" fill="none" stroke="#fbf7ee" stroke-width="24" stroke-linecap="round"/>
+  </g>
   <g data-dress="torso"></g>
-  <circle cx="-92" cy="-130" r="14" fill="#f2c4a0" ${st(4)}/>
-  <circle cx="92" cy="-130" r="14" fill="#f2c4a0" ${st(4)}/>
+  <g data-arm="-1"><circle cx="-92" cy="-130" r="14" fill="#f2c4a0" ${st(4)}/></g>
+  <g data-arm="1"><circle cx="92" cy="-130" r="14" fill="#f2c4a0" ${st(4)}/></g>
   <!-- head -->
   <ellipse cx="0" cy="-310" rx="44" ry="48" fill="#f2c4a0" ${stroke}/>
   <circle cx="-44" cy="-305" r="10" fill="#f2c4a0" ${st(4)}/>
@@ -149,16 +153,20 @@ export const baba = () => `
   <path d="M-54 -238 Q-66 -200 -58 -165 L58 -165 Q66 -200 54 -238 Q0 -256 -54 -238 Z" fill="#fbf7ee" ${stroke}/>
   ${stitch(-7, -236, 14, 60, true)}
   <rect x="-60" y="-176" width="120" height="14" rx="5" fill="#2e5e3e" ${st(4)}/>
-  <!-- arms (folded in front) -->
+  <!-- arms (folded in front; hidden while they reach out to pull) -->
+  <g data-arm="-1">
   <path d="M-52 -232 Q-86 -190 -40 -170" fill="none" stroke="${INK}" stroke-width="32" stroke-linecap="round"/>
   <path d="M-52 -232 Q-86 -190 -40 -170" fill="none" stroke="#fbf7ee" stroke-width="22" stroke-linecap="round"/>
+  ${stitch(-80, -200, 28)}
+  </g>
+  <g data-arm="1">
   <path d="M52 -232 Q86 -190 40 -170" fill="none" stroke="${INK}" stroke-width="32" stroke-linecap="round"/>
   <path d="M52 -232 Q86 -190 40 -170" fill="none" stroke="#fbf7ee" stroke-width="22" stroke-linecap="round"/>
-  ${stitch(-80, -200, 28)}
   ${stitch(52, -200, 28)}
+  </g>
   <g data-dress="torso"></g>
-  <circle cx="-30" cy="-172" r="13" fill="#f2c4a0" ${st(4)}/>
-  <circle cx="30" cy="-172" r="13" fill="#f2c4a0" ${st(4)}/>
+  <g data-arm="-1"><circle cx="-30" cy="-172" r="13" fill="#f2c4a0" ${st(4)}/></g>
+  <g data-arm="1"><circle cx="30" cy="-172" r="13" fill="#f2c4a0" ${st(4)}/></g>
   <!-- head in a red headscarf tied under the chin -->
   <path d="M-58 -262 Q-64 -340 0 -350 Q64 -340 58 -262 Q50 -238 0 -232 Q-50 -238 -58 -262 Z" fill="#d32f2f" ${stroke}/>
   <ellipse cx="0" cy="-286" rx="40" ry="44" fill="#f2c4a0" ${stroke}/>
@@ -280,10 +288,12 @@ const vedmid = () => `
   <ellipse cx="0" cy="-150" rx="96" ry="120" fill="#7b4b2a" ${stroke}/>
   <ellipse cx="-6" cy="-128" rx="56" ry="76" fill="#b07c52"/>
   <g data-dress="legs"></g>
+  <g>
   <path d="M-86 -220 Q-130 -170 -110 -110" fill="none" stroke="${INK}" stroke-width="46" stroke-linecap="round"/>
   <path d="M-86 -220 Q-130 -170 -110 -110" fill="none" stroke="#7b4b2a" stroke-width="35" stroke-linecap="round"/>
   <path d="M86 -220 Q130 -170 110 -110" fill="none" stroke="${INK}" stroke-width="46" stroke-linecap="round"/>
   <path d="M86 -220 Q130 -170 110 -110" fill="none" stroke="#7b4b2a" stroke-width="35" stroke-linecap="round"/>
+  </g>
   <g data-dress="torso"></g>
   <circle cx="-48" cy="-360" r="24" fill="#7b4b2a" ${stroke}/>
   <circle cx="-48" cy="-360" r="11" fill="#b07c52"/>

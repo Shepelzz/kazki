@@ -8860,7 +8860,23 @@
     "3b6404b4": {
       "voice": "XB0fDUnXU5powFXDhCwa",
       "chars": 3
+    },
+    "bfdd1ca2": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 1
+    },
+    "cb2ccd5b": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 2
+    },
+    "9c222394": {
+      "voice": "9BWtsMINqrJLrRacOk9x",
+      "chars": 3
+    },
+    "4003ed4e": {
+      "voice": "cgSgspJ2msm6clMCkdW9",
+      "chars": 7
     }
   },
-  "charsSpent": 15586
+  "charsSpent": 15599
 }

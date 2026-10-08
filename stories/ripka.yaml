@@ -49,16 +49,25 @@ scenes:
     - fx: stand
       on: did
     - did: "Рости, ріпко, солодка! Рости, ріпко, міцна!"
+    # it grows while the narrator says so
     - resize: ripka
       to: 1
-      ms: 2600
+      ms: 3200
+      along: true
+    - narrator: "Виросла ріпка солодка, міцна, велика-превелика!"
     - fx: sparkle
       on: ripka
-    - narrator: "Виросла ріпка солодка, міцна, велика-превелика!"
-    - narrator: "Пішов дід ріпку рвати. Тягне-потягне — витягти не може."
+    # he pulls while the narrator says so: heave-ho, and again
     - fx: pull
       on: ripka
       who: [did]
+      along: true
+    - fx: pull
+      on: ripka
+      who: [did]
+      along: true
+      delay: 1900
+    - narrator: "Пішов дід ріпку рвати. Тягне-потягне — витягти не може."
     - did: "Ох, і міцно ж сидить!"
     - choice: "Що зробить дід?"
       options:
@@ -79,10 +88,16 @@ scenes:
       flip: true
       ms: 2400
       wait: true
-    - narrator: "Баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - fx: pull
       on: ripka
       who: [did, baba]
+      along: true
+    - fx: pull
+      on: ripka
+      who: [did, baba]
+      along: true
+      delay: 1900
+    - narrator: "Баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - narrator: "Покликала баба онучку."
     - baba: "Онучко, біжи до нас!"
     - show: vnuchka
@@ -95,10 +110,16 @@ scenes:
       ms: 2000
       wait: true
     - vnuchka: "Біжу, бабусю!"
-    - narrator: "Онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - fx: pull
       on: ripka
       who: [did, baba, vnuchka]
+      along: true
+    - fx: pull
+      on: ripka
+      who: [did, baba, vnuchka]
+      along: true
+      delay: 1900
+    - narrator: "Онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - narrator: "Покликала онучка Жучку."
     - vnuchka: "Жучко, Жучко, ходи сюди!"
     - show: zhuchka
@@ -111,13 +132,19 @@ scenes:
       ms: 1600
       wait: true
     - zhuchka: "Гав-гав! Біжу!"
-    - narrator: "Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - fx: pull
       on: ripka
       who: [did, baba, vnuchka, zhuchka]
+      along: true
+    - fx: pull
+      on: ripka
+      who: [did, baba, vnuchka, zhuchka]
+      along: true
+      delay: 1900
+    - narrator: "Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - choice: "Кого покличе Жучка?"
       options:
-        - label: "Кішку"
+        - label: "Кицю-мурку"
           icon: "🐱"
           next: kishka
         - label: "Ведмедя з лісу"
@@ -126,7 +153,7 @@ scenes:
 
   kishka:
     - narrator: "Покликала Жучка кішку."
-    - zhuchka: "Кішко, допомагай!"
+    - zhuchka: "Киць-киць, кицю, допомагай!"
     - show: kishka
       at: [-250, 770]
       flip: true
@@ -136,13 +163,19 @@ scenes:
       ms: 1800
       wait: true
     - kishka: "Мур-мяу! Іду!"
-    - narrator: "Кішка за Жучку, Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - fx: pull
       on: ripka
       who: [did, baba, vnuchka, zhuchka, kishka]
+      along: true
+    - fx: pull
+      on: ripka
+      who: [did, baba, vnuchka, zhuchka, kishka]
+      along: true
+      delay: 1900
+    - narrator: "Кішка за Жучку, Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть, витягти не можуть."
     - choice: "Кого покличе кішка?"
       options:
-        - label: "Мишку"
+        - label: "Мишку-шкряботушку"
           icon: "🐭"
           next: myshka
         - label: "Зловити мишку"
@@ -162,10 +195,16 @@ scenes:
       ms: 1600
       wait: true
     - myshka: "Пі-пі! Біжу-біжу!"
-    - narrator: "Мишка за кішку, кішка за Жучку, Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть..."
     - fx: pull
       on: ripka
       who: [did, baba, vnuchka, zhuchka, kishka, myshka]
+      along: true
+    - fx: pull
+      on: ripka
+      who: [did, baba, vnuchka, zhuchka, kishka, myshka]
+      along: true
+      delay: 1900
+    - narrator: "Мишка за кішку, кішка за Жучку, Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть..."
     - next: pulled
 
   pulled:
@@ -183,8 +222,27 @@ scenes:
     - narrator: "...і витягли ріпку!"
     - fx: sparkle
       on: ripka
+    - fx: stand
+      on: did
     - did: "Ой! Оце так ріпка!"
+    - fx: stand
+      on: myshka
     - myshka: "Пі! А це я допомогла!"
+    - fx: stand
+      on: baba
+      along: true
+    - fx: stand
+      on: vnuchka
+      along: true
+      delay: 600
+    - fx: stand
+      on: zhuchka
+      along: true
+      delay: 1200
+    - fx: stand
+      on: kishka
+      along: true
+      delay: 1800
     - narrator: "Отак гуртом і витягли ріпку. А мишка хоч і найменша, а без неї — ніяк!"
     - next: supper
 
@@ -253,6 +311,7 @@ scenes:
     - fx: bang
       on: ripka
       word: "БУХ!"
+    - hide: lopata
     - fx: fallback
       on: did
     - narrator: "Вискочила ріпка — а дід бух! — та й сів на землю."
@@ -277,6 +336,7 @@ scenes:
     - zhuchka: "Гав! Побіжу до лісу, ведмедя покличу! Він найдужчий!"
     - move: zhuchka
       to: [-250, 770]
+      flip: false
       hop: true
       ms: 1200
       wait: true
@@ -308,16 +368,23 @@ scenes:
     - fx: bang
       on: ripka
       word: "ФРРР!"
-    - move: ripka
-      to: [2200, 120]
-      hop: true
-      ms: 1400
-    - fx: whoosh
-      on: ripka
     - fx: fallback
       on: did
       who: [baba, vnuchka, zhuchka, vedmid]
+    - fx: whoosh
+      on: ripka
+      along: true
+    # over the fence and the house, away to the forest beyond it
+    - move: ripka
+      to: [380, 250]
+      ms: 3600
+      along: true
+    - resize: ripka
+      to: 0.06
+      ms: 3600
+      along: true
     - narrator: "Ріпка — фррр! — перелетіла через тин, через хату й покотилася аж до лісу!"
+    - hide: ripka
     - fx: stand
       on: vedmid
     - vedmid: "Ой... Перестарався я. Зараз принесу!"
@@ -379,7 +446,7 @@ scenes:
       hop: true
       ms: 900
     - narrator: "Кинулася кішка ловити мишку, а мишка — шмиг у нірку!"
-    - vnuchka: "Кішко, так не можна! Мишка ж маленька, а допомогти може."
+    - vnuchka: "Кицю, так не можна! Мишка ж маленька, а допомогти може."
     - kishka: "Мяу... Пробач мені, мишко! Допоможи нам, будь ласка!"
     - show: myshka
       at: [-200, 770]
@@ -391,10 +458,16 @@ scenes:
       ms: 1600
       wait: true
     - myshka: "Пі! Як ти по-доброму — то й я допоможу!"
-    - narrator: "Мишка за кішку, кішка за Жучку, Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть..."
     - fx: pull
       on: ripka
       who: [did, baba, vnuchka, zhuchka, kishka, myshka]
+      along: true
+    - fx: pull
+      on: ripka
+      who: [did, baba, vnuchka, zhuchka, kishka, myshka]
+      along: true
+      delay: 1900
+    - narrator: "Мишка за кішку, кішка за Жучку, Жучка за онучку, онучка за бабу, баба за діда, дід за ріпку — тягнуть-потягнуть..."
     - hide: hriadka
     - move: ripka
       to: [1260, 770]

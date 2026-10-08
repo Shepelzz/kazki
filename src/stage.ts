@@ -177,6 +177,8 @@ interface Actor {
   munch: number;
   /** pulling (seconds left): leans back and forth, heaving at the one in front */
   tug: number;
+  /** pulled at (the turnip): which way it gives a little, towards the ones pulling (+1: right) */
+  tugTo?: number;
   /** a reaction to a tap (see ACTS): which, seconds gone, how long */
   act: string;
   actT: number;
@@ -310,6 +312,17 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 let sitIds = 0;
+
+/**
+ * People pulling reach out with the arm in front (fx pull): its shoulders in the drawing (the one
+ * on the side of what it holds is used, and its own arm there, data-arm, hides), sleeve and hand
+ * colours. Animals hold on as they are.
+ */
+const PULL_ARMS: Record<string, { sh: Point[]; sleeve: string; hand: string; w: number }> = {
+  did: { sh: [[-56, -246], [56, -246]], sleeve: '#fbf7ee', hand: '#f2c4a0', w: 24 },
+  baba: { sh: [[-50, -228], [50, -228]], sleeve: '#fbf7ee', hand: '#f2c4a0', w: 22 },
+  vnuchka: { sh: [[-40, -212], [40, -212]], sleeve: '#fbf7ee', hand: '#f2c4a0', w: 18 },
+};
 /** things to sit on: sitting by one of them, a puppet gets no stool */
 const SEATS = /stil|stilets|lav|penok|lizhko|koloda|tron|kamin|skrynia|zasik|vozyk|viz|sanky|kareta|chovnyk/;
 
@@ -1979,6 +1992,7 @@ export class Stage {
     for (const id of [...this.actors.keys()]) this.hide(id);
     for (const p of this.particles) p.el.remove();
     this.particles = [];
+    this.stopPullArms();
     // the life of this place: each kind starts after a little while
     this.ambient = (AMBIENT[name] || []).map((kind, i) => ({ kind, next: this.time + 1 + i * 1.3 + Math.random() * 2 }));
     this.rolling = false;
@@ -2417,27 +2431,52 @@ export class Stage {
         return this.wait(HIT * 1000 + 250);
       }
       case 'pull': {
-        // they pull (who, one holding the next), at it (on): heave-ho, twice — it doesn't give
+        // they pull (who, one holding the next), at it (on): heave-ho together, twice — it only
+        // leans towards them. Each one reaches out with both arms: the first to it, the others
+        // to the back of the one in front (pullArms).
         const pullers = who.map((id) => this.actors.get(id)).filter((t): t is Actor => !!t);
-        for (const p of pullers) p.tug = PULL;
-        if (a) a.wobble = 1;
+        for (const p of pullers) {
+          p.tug = PULL;
+          // everyone faces it (the cat that was chasing the mouse turns round)
+          if (a) p.flip = a.x > p.x;
+        }
+        if (a) {
+          a.wobble = 1;
+          a.tug = PULL;
+          a.tugTo = pullers.length && pullers[0].x < a.x ? -1 : 1;
+        }
         this.later(PULL / 2, () => {
           if (a) a.wobble = 1;
         });
+        this.startPullArms(pullers, a || null);
         return this.wait(PULL * 1000 + 100);
       }
       case 'fallback': {
         // (the turnip gave way) they all fall over backwards in a heap: stars, dust, a bump
         const all = [a, ...who.map((id) => this.actors.get(id))].filter((t): t is Actor => !!t);
-        for (const t of all) {
-          t.pose = 'back';
-          t.bounce = 1;
-          const [x, y] = this.anchor(t, 'top');
-          for (let i = 0; i < 5; i++) this.star(x, y + 40, (i / 5) * Math.PI * 2);
-          this.dustAt(t.x, GROUND);
+        // a chain of them flies apart, each lying where it doesn't cover the next (a little
+        // higher or lower, at odds), the one in front first
+        if (all.length > 2) {
+          const back = all[1].x < all[0].x ? -1 : 1;
+          const len = (t: Actor) => Math.abs(ANCHORS[t.id] ? ANCHORS[t.id].top : 200) * t.size;
+          let x = all[0].x + back * 40;
+          all.forEach((t, i) => {
+            if (i) x += back * (len(all[i - 1]) * 0.42 + len(t) * 0.42);
+            const to: Point = [x + (Math.random() - 0.5) * 30, t.y + (i % 2 ? 26 : -18)];
+            void this.moveTo(t.id, to, 380 + i * 60, { hop: true });
+          });
         }
-        this.shake = 0.4;
-        return this.wait(900);
+        this.later(all.length > 2 ? 0.45 : 0, () => {
+          for (const t of all) {
+            t.pose = 'back';
+            t.bounce = 1;
+            const [x, y] = this.anchor(t, 'top');
+            for (let i = 0; i < 5; i++) this.star(x, y + 40, (i / 5) * Math.PI * 2);
+            this.dustAt(t.x, GROUND);
+          }
+          this.shake = 0.4;
+        });
+        return this.wait(all.length > 2 ? 1300 : 900);
       }
       case 'shiver':
         // shivers with cold (or fright)
@@ -3109,6 +3148,70 @@ export class Stage {
     }
   }
 
+  // ---------- pulling: arms reaching out ----------
+
+  private pullArms: { pullers: Actor[]; target: Actor | null; g: SVGGElement; arms: { from: Actor; sh: Point; out: SVGElement; fill: SVGElement; hand: SVGElement }[] } | null = null;
+
+  private startPullArms(pullers: Actor[], target: Actor | null) {
+    this.stopPullArms();
+    const g = el('g') as SVGGElement;
+    this.fxLayer.appendChild(g);
+    const arms: NonNullable<typeof this.pullArms>['arms'] = [];
+    pullers.forEach((p, i) => {
+      const rig = PULL_ARMS[p.id];
+      const held = i === 0 ? target : pullers[i - 1];
+      if (!rig || !held) return;
+      // the arm on the side of what it holds (in the drawing: flipped puppets have it mirrored)
+      const side = (held.x >= p.x ? 1 : -1) * (p.flip ? -1 : 1);
+      for (const l of Array.from(p.g.querySelectorAll<SVGGElement>(`[data-arm="${side}"]`))) l.style.display = 'none';
+      for (const sh of rig.sh.filter((q) => Math.sign(q[0]) === side)) {
+        const out = el('path', { fill: 'none', stroke: INK, 'stroke-width': rig.w + 10, 'stroke-linecap': 'round' });
+        const fill = el('path', { fill: 'none', stroke: rig.sleeve, 'stroke-width': rig.w, 'stroke-linecap': 'round' });
+        const hand = el('circle', { r: rig.w * 0.55, fill: rig.hand, stroke: INK, 'stroke-width': 4 });
+        g.append(out, fill, hand);
+        arms.push({ from: p, sh, out, fill, hand });
+      }
+    });
+    this.pullArms = { pullers, target, g, arms };
+  }
+
+  private stopPullArms() {
+    const pa = this.pullArms;
+    if (!pa) return;
+    pa.g.remove();
+    for (const p of pa.pullers) for (const l of Array.from(p.g.querySelectorAll<SVGGElement>('[data-arm]'))) l.style.display = '';
+    this.pullArms = null;
+  }
+
+  /** every frame while they pull: each arm from the shoulder to what it holds */
+  private tickPullArms() {
+    const pa = this.pullArms;
+    if (!pa) return;
+    if (!pa.pullers.some((p) => p.tug > 0)) return this.stopPullArms();
+    const k = (a: Actor) => a.scale * a.size;
+    for (const arm of pa.arms) {
+      const p = arm.from;
+      const i = pa.pullers.indexOf(p);
+      const held = i === 0 ? pa.target : pa.pullers[i - 1];
+      if (!held) continue;
+      const dir = held.x >= p.x ? 1 : -1;
+      const f = p.flip ? -1 : 1;
+      const sx = p.x + p.ox + arm.sh[0] * f * k(p);
+      const sy = p.y + arm.sh[1] * k(p);
+      // the turnip by its top, under the leaves; a person by the back, at the waist
+      const top = ANCHORS[held.id] ? ANCHORS[held.id].top : -200;
+      const gx = held.x + held.ox - dir * (i === 0 ? 40 : 34) * k(held);
+      const gy = held.y + top * (i === 0 ? 0.62 : 0.42) * k(held) + (arm.sh[0] * f < 0 ? -10 : 10);
+      const mx = (sx + gx) / 2;
+      const my = Math.max(sy, gy) + 18;
+      const d = `M${sx.toFixed(0)} ${sy.toFixed(0)} Q${mx.toFixed(0)} ${my.toFixed(0)} ${gx.toFixed(0)} ${gy.toFixed(0)}`;
+      arm.out.setAttribute('d', d);
+      arm.fill.setAttribute('d', d);
+      arm.hand.setAttribute('cx', gx.toFixed(0));
+      arm.hand.setAttribute('cy', gy.toFixed(0));
+    }
+  }
+
   // ---------- life in the background ----------
 
   private spawnAmbient(kind: Ambient) {
@@ -3333,6 +3436,7 @@ export class Stage {
     // carried puppets last: they follow where their carrier has just moved
     for (const a of this.actors.values()) if (!a.carriedBy) this.tickActor(a, dt, slide);
     for (const a of this.actors.values()) if (a.carriedBy) this.tickActor(a, dt, slide);
+    this.tickPullArms();
     this.camera(dt);
 
     this.flames.forEach((f, i) => {
@@ -3417,11 +3521,18 @@ export class Stage {
       blow += (holder.flip ? 1 : -1) * (a.flip ? -1 : 1) * 75 * out;
     }
     if (a.tug > 0) {
-      // heaving back (away from where it faces), twice
       a.tug = Math.max(0, a.tug - dt);
       const h = Math.abs(Math.sin((1 - a.tug / PULL) * Math.PI * 2));
-      a.ox += (a.flip ? -1 : 1) * 26 * h;
-      blow += 14 * h;
+      if (a.tugTo) {
+        // pulled at: gives a little towards them and leans their way
+        a.ox += a.tugTo * 22 * h;
+        blow += a.tugTo * 7 * h;
+        if (!a.tug) a.tugTo = 0;
+      } else {
+        // heaving back (away from where it faces), twice
+        a.ox += (a.flip ? -1 : 1) * 26 * h;
+        blow += 14 * h;
+      }
     }
     if (a.knock > 0) {
       a.knock = Math.max(0, a.knock - dt);
