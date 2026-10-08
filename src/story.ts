@@ -6,8 +6,11 @@ import type { Voice } from './voiceKey';
 
 export type Point = [number, number];
 
-/** along: true — the step starts and the next one goes on at once (an action during a line) */
-export type Step = { along?: boolean } & (
+/**
+ * along: true — the step starts and the next one goes on at once (an action during a line);
+ * delay: ms — such a step starts that much later (rolling off near the end of the line)
+ */
+export type Step = { along?: boolean; delay?: number } & (
   | { kind: 'say'; who: string; text: string; sing?: boolean }
   | { kind: 'scene'; scene: string }
   | { kind: 'show'; actor: string; at: Point; flip?: boolean; eyes?: 'open' | 'closed'; raw?: boolean; look?: string; size?: number }
@@ -67,7 +70,7 @@ export function parseStory(id: string, raw: Raw): Story {
     throw new Error(`${id}.yaml, scene "${scene}", step ${i + 1}: ${msg}`);
   };
   for (const [name, steps] of Object.entries(raw.scenes as Record<string, Raw[]>)) {
-    scenes[name] = steps.map((s, i): Step => ({ ...parseStep(s, i), ...(s.along ? { along: true } : {}) }) as Step);
+    scenes[name] = steps.map((s, i): Step => ({ ...parseStep(s, i), ...(s.along ? { along: true, delay: s.delay || 0 } : {}) }) as Step);
     function parseStep(s: Raw, i: number): Step {
       const who = Object.keys(s).find((k) => k in voices);
       if (who) return { kind: 'say', who, text: String(s[who]), sing: !!s.sing };

@@ -216,8 +216,10 @@ const zayets = () => `
   <ellipse cx="34" cy="-60" rx="18" ry="16" fill="#fff" ${st(4)}/>
   <ellipse cx="0" cy="-70" rx="46" ry="58" fill="#b9b4ad" ${stroke}/>
   <ellipse cx="-6" cy="-60" rx="26" ry="38" fill="#f1ede6"/>
-  <ellipse cx="-34" cy="-8" rx="30" ry="11" fill="#b9b4ad" ${st(4)}/>
-  <ellipse cx="16" cy="-8" rx="26" ry="10" fill="#b9b4ad" ${st(4)}/>
+  <g data-part="legs">
+    <ellipse cx="-34" cy="-8" rx="30" ry="11" fill="#b9b4ad" ${st(4)}/>
+    <ellipse cx="16" cy="-8" rx="26" ry="10" fill="#b9b4ad" ${st(4)}/>
+  </g>
   <g data-dress="legs"></g>
   <path d="M-32 -104 q-20 26 -8 40" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/>
   <path d="M-32 -104 q-20 26 -8 40" fill="none" stroke="#b9b4ad" stroke-width="13" stroke-linecap="round"/>

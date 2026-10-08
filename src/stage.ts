@@ -2627,12 +2627,15 @@ export class Stage {
         ).firstChild as SVGGElement;
         a.body.appendChild(g);
         a.whirl = g;
+        // its own legs are the blur now
+        for (const l of Array.from(a.g.querySelectorAll<SVGGElement>('[data-part="legs"]'))) l.style.display = 'none';
         return this.wait(100);
       }
       case 'whirl-stop':
         if (a && a.whirl) {
           a.whirl.remove();
           a.whirl = null;
+          for (const l of Array.from(a.g.querySelectorAll<SVGGElement>('[data-part="legs"]'))) l.style.display = '';
         }
         return this.wait(100);
       case 'knead': {
@@ -3222,13 +3225,15 @@ export class Stage {
           segs.push(seg);
         }
         for (const seg of segs.slice().reverse()) c.appendChild(seg);
+        // it is on the ground: the road rolling carries it back with the grass
+        const scroll0 = this.scroll;
         const face = svg(`<g><circle cx="4" cy="-3" r="2" fill="${INK}"/><path d="M2 -10 l4 -10 M-4 -10 l-2 -10" stroke="${INK}" stroke-width="2"/></g>`).firstChild as SVGGElement;
         c.appendChild(face);
         this.particle(
           c,
           34,
           (p, k) => {
-            const head = ltr ? -80 + k * 1760 : 1680 - k * 1760;
+            const head = (ltr ? -80 + k * 1760 : 1680 - k * 1760) - (this.scroll - scroll0);
             const dir = ltr ? 1 : -1;
             segs.forEach((seg, i) => {
               seg.setAttribute('cx', (head - dir * i * 15).toFixed(1));
@@ -3361,9 +3366,10 @@ export class Stage {
   private tickActor(a: Actor, dt: number, slide: number) {
     a.phase += dt;
     if (a.whirl) {
-      const hipY = Math.round((ANCHORS[a.id] ? ANCHORS[a.id].top : -200) * 0.14);
+      const hipY = Math.round((ANCHORS[a.id] ? ANCHORS[a.id].top : -200) * 0.11);
       a.whirl.setAttribute('transform', `translate(0 ${hipY})`);
-      (a.whirl.lastChild as SVGGElement).setAttribute('transform', `rotate(${((a.phase * 1400) % 360).toFixed(0)})`);
+      // the way it runs: a puppet faces left in its own drawing, so forward is anticlockwise there
+      (a.whirl.lastChild as SVGGElement).setAttribute('transform', `rotate(${(-(a.phase * 1400) % 360).toFixed(0)})`);
     }
     if (a.carriedBy) {
       const c = a.carriedBy;

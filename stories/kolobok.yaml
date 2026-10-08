@@ -185,13 +185,15 @@ scenes:
       hop: true
       ms: 700
       wait: true
-    # he rolls off while the narrator says so
+    # he rolls off in the middle of the line, out of sight by its end
     - move: kolobok
-      to: [1800, 770]
+      to: [2100, 770]
       roll: true
-      ms: 4200
+      ms: 3200
+      delay: 2200
       along: true
     - narrator: "Та й покотився колобок: з віконця на призьбу, з призьби на травичку, з травички на стежечку..."
+    - hide: kolobok
     - did: "Куди ж ти, колобку?"
     - next: road
 
@@ -397,7 +399,6 @@ scenes:
       word: "ГУП!"
     - fx: lie
       on: zayets
-    - narrator: "А зайчик зачепився за камінь — гуп! — та й упав."
     - zayets: "Ох, і швидкий же ти, колобку! Котися вже, не буду тебе їсти."
     - next: river
 

@@ -160,7 +160,10 @@ export class Teller {
       if (this.rushing && s.kind === 'say') continue;
       // an action along with what follows (walking off while the narrator says so): not waited for
       if (s.along && !this.rushing) {
-        void this.step(s, run).catch(() => {});
+        void this.stage
+          .wait(s.delay || 0)
+          .then(() => (run === this.run ? this.step(s, run) : undefined))
+          .catch(() => {});
         continue;
       }
       const out = await this.step(s, run);
