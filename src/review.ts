@@ -396,6 +396,8 @@ function render() {
     'div',
     { cls: 'rv-head' },
     h('b', { textContent: 'Огляд казок' }),
+    // back to the app as it is, without the panel
+    h('a', { cls: 'rv-exit', href: location.pathname, textContent: '✕ Вийти', title: 'Вийти з огляду' }),
     h(
       'span',
       { cls: 'rv-badges' },
@@ -431,6 +433,7 @@ body.review .screen { left: 380px; }
 #rv-panel button.go { background: #3fa34d; border-color: #2a7a36; color: #fff; font-weight: 800; }
 .rv-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px 4px; font-size: 17px; }
 .rv-filter { padding: 0 12px 8px; font-size: 13px; }
+.rv-exit { margin-left: 8px; font-size: 13px; font-weight: 800; color: #8a5a2b; text-decoration: none; border: 1px solid #d8c9b0; border-radius: 8px; padding: 2px 8px; background: #fff; }
 .rv-badges { display: inline-flex; gap: 4px; margin-left: auto; }
 .rv-b { font-size: 12px; font-weight: 800; border-radius: 999px; padding: 1px 7px; }
 .rv-b.open { background: #ffe0b2; color: #a14a00; }
