@@ -371,7 +371,20 @@ const bush = () => `
   <circle cx="-30" cy="-110" r="7" fill="#e53935"/><circle cx="22" cy="-70" r="7" fill="#e53935"/><circle cx="66" cy="-80" r="7" fill="#e53935"/><circle cx="-70" cy="-60" r="7" fill="#e53935"/>
 </g>`;
 
+/** the flour bin (засік): a wooden chest with its lid open, flour inside — the kolobok's flour */
+const zasik = () => `
+<g data-part="body">
+  <path d="M-96 -132 L-118 -238 L96 -238 L96 -132 Z" fill="#9a6535" ${stroke}/>
+  <path d="M-104 -176 L92 -176 M-110 -208 L94 -208" stroke="#7a4c24" stroke-width="5"/>
+  <rect x="-100" y="-138" width="200" height="138" rx="8" fill="#b07a45" ${stroke}/>
+  <path d="M-100 -92 H100 M-100 -46 H100" stroke="#8d5a2b" stroke-width="5"/>
+  <path d="M-62 -138 V0 M62 -138 V0" stroke="#8d5a2b" stroke-width="4" opacity=".6"/>
+  <path d="M-88 -136 Q-40 -170 0 -160 Q48 -176 88 -136 Z" fill="#fffaf0" ${st(4)}/>
+  <circle cx="-30" cy="-150" r="4" fill="#efe6d4"/><circle cx="26" cy="-156" r="5" fill="#efe6d4"/>
+</g>`;
+
 export const PUPPETS: Record<string, () => string> = {
+  zasik,
   did,
   baba,
   kolobok,
@@ -625,11 +638,13 @@ export function makePuppet(id: string, actor = id): SVGGElement {
 
 /** Where on a puppet things come from: the mouth (notes, chomp), the top (sparkles), the hands (carrying). */
 /** behind: what it carries rides behind it (on the bear's back), not in front */
-export const ANCHORS: Record<string, { mouth: [number, number]; top: number; hands?: [number, number]; behind?: boolean }> = {
+/** hip: where the legs begin (sitting folds the body there; a guess from `top` when not given) */
+export const ANCHORS: Record<string, { mouth: [number, number]; top: number; hands?: [number, number]; behind?: boolean; hip?: number }> = {
   // hands: where a carried kolobok's bottom is, held in front of the chest
   did: { mouth: [0, -268], top: -400, hands: [0, -120] },
   baba: { mouth: [0, -262], top: -352, hands: [0, -128] },
   kolobok: { mouth: [6, -36], top: -104 },
+  zasik: { mouth: [0, -150], top: -240 },
   zayets: { mouth: [-44, -126], top: -280, hands: [-34, -66] },
   vovk: { mouth: [-60, -236], top: -350, hands: [-84, -196] },
   // hands: what he carries rides on his back (the box with Marijka in it)

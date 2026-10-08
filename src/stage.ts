@@ -9,7 +9,7 @@
 // While the road "rolls", the backdrop slides left in layers (far hills slowly, the grass at the
 // front fast) and the kolobok turns on the spot: he rolls along without leaving the screen.
 
-import { ANCHORS, el, makePuppet, svg } from './characters';
+import { ANCHORS, el, INK, makePuppet, svg } from './characters';
 import type { Point } from './story';
 import { sfx } from './sfx';
 
@@ -157,6 +157,12 @@ interface Actor {
   textFlip?: boolean;
   /** lying down: 'lie' — flat (the wolf behind the log), 'roll' — rolling side to side (the cat, full of presents) */
   pose: '' | 'lie' | 'roll' | 'sit' | 'back';
+  /** how far sat down, 0 → 1 (sitting folds the body at the hips: sitPose) */
+  sitK: number;
+  /** running flat out, legs a blur (fx whirl) */
+  whirl?: SVGGElement | null;
+  /** the pieces of a sitting body, made the first time it sits */
+  sitRig?: { up: SVGGElement; thigh: SVGGElement; shin: SVGGElement; stool: SVGGElement; hip: number; knee: number; clipUp: string };
   /** asleep: eyes shut, the head nods, "z-z-z" floats up (wakes when it moves or opens its eyes) */
   asleep: boolean;
   zIn: number;
@@ -181,7 +187,7 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'tsehla', 'kelma', 'soloma', 'khmyz', 'kazan', 'opudalo', 'khatynka_babusi', 'lizhko_babusi', 'kovdra', 'khvist', 'kvity', 'kvity2', 'metelyky', 'kaminnia', 'koshyk_pyrizhky'];
+const PROPS = ['zasik', 'bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'tsehla', 'kelma', 'soloma', 'khmyz', 'kazan', 'opudalo', 'khatynka_babusi', 'lizhko_babusi', 'kovdra', 'khvist', 'kvity', 'kvity2', 'metelyky', 'kaminnia', 'koshyk_pyrizhky'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv', 'promin', 'kovdrochka', 'kazan', 'opudalo', 'kovdra', 'khvist'];
 /**
@@ -204,6 +210,8 @@ const ACTS: Record<string, Act> = {
   // shivers all over
   shiver: { dur: 1, at: (p, e) => ({ ox: Math.sin(p * Math.PI * 32) * 4 * e }) },
   // a big stretch, up on its toes
+  // works with its hands at something in front of it: kneading dough, scooping flour — bends to it and back
+  knead: { dur: 2.6, at: (p, e) => ({ rot: (5 + Math.sin(p * Math.PI * 8) * 4) * e, lift: -Math.abs(Math.sin(p * Math.PI * 8)) * 5 * e, sy: 1 - Math.abs(Math.sin(p * Math.PI * 8)) * 0.03 * e }) },
   stretch: { dur: 1.4, eyesShut: true, at: (p, e) => ({ sy: 1 + 0.16 * e, sx: 1 - 0.06 * e, rot: 3 * e }) },
   // a bow
   bow: { dur: 1.1, at: (p, e) => ({ rot: -14 * e, sy: 1 - 0.04 * e }) },
@@ -301,6 +309,36 @@ const PULL = 1.8;
 const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
+let sitIds = 0;
+/** things to sit on: sitting by one of them, a puppet gets no stool */
+const SEATS = /stil|stilets|lav|penok|lizhko|koloda|tron|kamin|skrynia|zasik|vozyk|viz|sanky|kareta|chovnyk/;
+
+type Ambient = 'birds' | 'gulls' | 'fish' | 'dolphin' | 'owl' | 'caterpillar' | 'chimney';
+/** the life of each place, in the background */
+const AMBIENT: Record<string, Ambient[]> = {
+  hata: ['chimney', 'birds'],
+  'hata-evening': ['chimney', 'birds'],
+  road: ['birds', 'caterpillar'],
+  luh: ['birds', 'caterpillar'],
+  horod: ['birds'],
+  river: ['fish', 'birds', 'caterpillar'],
+  forest: ['birds', 'owl', 'caterpillar'],
+  deep: ['owl'],
+  glade: ['birds', 'caterpillar'],
+  polyana: ['birds'],
+  mountains: ['birds'],
+  sea: ['dolphin', 'gulls'],
+};
+/** seconds between one and the next (from, to) */
+const AMBIENT_EVERY: Record<Ambient, [number, number]> = {
+  birds: [7, 13],
+  gulls: [5, 9],
+  fish: [3.5, 7],
+  dolphin: [5, 9],
+  owl: [8, 14],
+  caterpillar: [36, 50],
+  chimney: [0.6, 0.9],
+};
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
 const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri', 'tarilka_vody', 'lopukh', 'norka', 'kvitka_bila', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'khatynka_babusi', 'lizhko_babusi'];
 /**
@@ -404,7 +442,7 @@ function mushroom(x: number, y: number, s = 1) {
 function verge(seed: number, forest: boolean, mushrooms = 0) {
   const r = rand(seed);
   let s = '';
-  for (let i = 0; i < 26; i++) {
+  for (let i = 0; i < 46; i++) {
     const x = r() * W;
     const y = GROUND + 30 + r() * 110;
     const k = r();
@@ -1674,7 +1712,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       [hills('#a5d6a7', GROUND - 150, 70, 2), 0.12],
       [hills('#81c784', GROUND - 90, 50, 4), 0.25],
       [treeRow(8, false), 0.5],
-      [ground('#7cb342', '#c9a77a') + verge(9, false), 1],
+      [ground('#7cb342', '#c9a77a'), 1], [verge(9, false), 1],
     ],
   }),
   forest: () => ({
@@ -1683,7 +1721,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       [hills('#6fa77a', GROUND - 160, 80, 12), 0.12],
       [treeRow(21, true), 0.3],
       [treeRow(22, true), 0.55],
-      [ground('#5d9b3c', '#b8946a') + verge(23, true), 1],
+      [ground('#5d9b3c', '#b8946a'), 1], [verge(23, true, 0.22), 1],
     ],
   }),
   pich: () => ({ still: interior(false), layers: [] }),
@@ -1710,7 +1748,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       [hills('#a5d6a7', GROUND - 170, 70, 41), 0.1],
       [treeRow(42, false), 0.3],
       [river(43), 0.7],
-      [ground('#7cb342', '#c9a77a') + verge(44, false), 1],
+      [ground('#7cb342', '#c9a77a'), 1], [verge(44, false), 1],
     ],
   }),
   deep: () => ({
@@ -1720,7 +1758,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       [LOW_END ? '' : rays(), 0.2],
       [treeRow(52, true), 0.35],
       [treeRow(53, true), 0.6],
-      [ground('#3f7a32', '#9c7a55') + verge(54, true, 0.3), 1],
+      [ground('#3f7a32', '#9c7a55'), 1], [verge(54, true, 0.3), 1],
     ],
   }),
   glade: () => ({
@@ -1728,7 +1766,7 @@ const BACKDROPS: Record<string, () => Backdrop> = {
     layers: [
       [hills('#9ccc65', GROUND - 140, 50, 61), 0.12],
       [birchRow(62), 0.4],
-      [ground('#8bc34a', '#d2b080') + verge(63, false, 0.2) + verge(64, false), 1],
+      [ground('#8bc34a', '#d2b080'), 1], [verge(63, false, 0.2) + verge(64, false), 1],
     ],
   }),
   mountains: () => ({
@@ -1737,12 +1775,12 @@ const BACKDROPS: Record<string, () => Backdrop> = {
       [mountains(71, '#8aa7c7', GROUND - 120, 420, true), 0.05],
       [mountains(72, '#6f9a7c', GROUND - 80, 260, false), 0.15],
       [firCluster(73), 0.35],
-      [ground('#7cb342', '#c9a77a') + verge(74, false), 1],
+      [ground('#7cb342', '#c9a77a'), 1], [verge(74, false), 1],
     ],
   }),
   sea: () => ({
     still: sky('#ffb26b', '#ffe3b3') + sun(1240, 340, '#ffcc4d') + clouds(8) + sea(),
-    layers: [[ground('#8bbf5a', '#d9b98a') + verge(31, false), 1]],
+    layers: [[ground('#8bbf5a', '#d9b98a'), 1], [verge(31, false), 1]],
   }),
 };
 
@@ -1755,9 +1793,13 @@ export class Stage {
   private actorsLayer: SVGGElement;
   private frontLayer: SVGGElement;
   private fxLayer: SVGGElement;
+  /** life in the background: birds, a fish jumping, an owl peeping (AMBIENT) */
+  private ambientLayer: SVGGElement;
+  private ambient: { kind: Ambient; next: number }[] = [];
   private actors = new Map<string, Actor>();
   private particles: Particle[] = [];
   private rolling = false;
+  private rollFast = false;
   /** 0 → 1: the road eases into rolling and out of it */
   private rollAmount = 0;
   private scroll = 0;
@@ -1785,11 +1827,12 @@ export class Stage {
   constructor(host: HTMLElement) {
     this.svg = el('svg', { viewBox: `0 ${VIEW_TOP} ${W} ${VIEW_H}`, preserveAspectRatio: 'xMidYMin meet', class: 'stage' });
     this.backdrop = el('g');
+    this.ambientLayer = el('g', { 'pointer-events': 'none' });
     this.actorsLayer = el('g');
     this.frontLayer = el('g');
     this.fxLayer = el('g', { 'pointer-events': 'none' });
     this.snowLayer = el('g', { 'pointer-events': 'none' });
-    this.svg.append(this.backdrop, this.actorsLayer, this.frontLayer, this.fxLayer, this.snowLayer);
+    this.svg.append(this.backdrop, this.ambientLayer, this.actorsLayer, this.frontLayer, this.fxLayer, this.snowLayer);
     host.appendChild(this.svg);
     this.frame();
     window.addEventListener('resize', () => this.frame());
@@ -1936,6 +1979,8 @@ export class Stage {
     for (const id of [...this.actors.keys()]) this.hide(id);
     for (const p of this.particles) p.el.remove();
     this.particles = [];
+    // the life of this place: each kind starts after a little while
+    this.ambient = (AMBIENT[name] || []).map((kind, i) => ({ kind, next: this.time + 1 + i * 1.3 + Math.random() * 2 }));
     this.rolling = false;
     this.rollAmount = 0;
     this.scroll = 0;
@@ -1988,6 +2033,7 @@ export class Stage {
       wobble: 0,
       prop: PROPS.indexOf(id) >= 0,
       pose: '',
+      sitK: 0,
       asleep: false,
       zIn: 0,
       jab: 0,
@@ -2178,8 +2224,10 @@ export class Stage {
     return this.wait(ms);
   }
 
-  setRolling(on: boolean) {
+  /** the road rolls (or stops); fast: a race — everything flies past */
+  setRolling(on: boolean, fast = false) {
     this.rolling = on;
+    this.rollFast = fast;
   }
 
   setEyes(id: string, open: boolean) {
@@ -2236,14 +2284,14 @@ export class Stage {
         const cx = h.getAttribute('data-cx');
         const cy = h.getAttribute('data-cy');
         const step = () => {
-          const p = Math.min(1, (this.time - t0) / 2.4);
+          const p = Math.min(1, (this.time - t0) / 3.6);
           const ang = -Math.abs(Math.sin(p * Math.PI * 3)) * 38;
           h.setAttribute('transform', p < 1 ? `rotate(${ang.toFixed(1)} ${cx} ${cy})` : '');
           if (Math.random() < 0.15) this.crumbOf(a.x - 96 * (a.flip ? -1 : 1), a.y - 20, '#7cb342');
           if (p < 1) this.later(0, step);
         };
         step();
-        return this.wait(2400);
+        return this.wait(3600);
       }
       case 'tears': {
         // big blue tears from the eyes
@@ -2549,6 +2597,56 @@ export class Stage {
         this.shake = 0.4;
         return this.wait(1300);
       }
+      case 'smell': {
+        // a smell drifts from `on` (a fresh pie, the kolobok) to the nose of the first of `who`
+        if (!a) return this.wait(100);
+        const nose = who.map((id) => this.actors.get(id)).find((t): t is Actor => !!t);
+        for (let i = 0; i < 10; i++)
+          this.later(i * 0.3, () => {
+            const [sx, sy] = this.anchor(a, 'top');
+            const [tx, ty] = nose ? this.anchor(nose, 'mouth') : [sx + 300, sy - 200];
+            const w = el('path', { d: 'M0 0 q10 -12 0 -24 q-10 -12 0 -24 q10 -12 0 -24', fill: 'none', stroke: i % 2 ? '#f0b85a' : '#e08f3a', 'stroke-width': 9, 'stroke-linecap': 'round' });
+            const off = (Math.random() - 0.5) * 40;
+            this.particle(w, 1.8, (p, k) => {
+              const x = sx + (tx - sx) * k + Math.sin(k * 8 + i) * 14;
+              const y = sy + (ty - sy) * k + off * Math.sin(k * Math.PI) - Math.sin(k * Math.PI) * 60;
+              w.setAttribute('transform', `translate(${x.toFixed(0)} ${y.toFixed(0)}) rotate(${(Math.sin(p.t * 4 + i) * 20).toFixed(0)}) scale(${(1.1 + k * 0.6).toFixed(2)})`);
+              w.setAttribute('opacity', (k < 0.2 ? k / 0.2 : (1 - k) / 0.8).toFixed(2));
+            });
+          });
+        return this.wait(400);
+      }
+      case 'whirl': {
+        // runs flat out, cartoon-style: the legs a spinning blur
+        if (!a || a.whirl) return this.wait(100);
+        const foot = (ang: number) =>
+          `<ellipse cx="0" cy="${-30}" rx="12" ry="22" fill="#d9c7b0" stroke="${INK}" stroke-width="3" opacity=".75" transform="rotate(${ang})"/>`;
+        const g = svg(
+          `<g data-part="whirl"><circle r="50" fill="#fff" opacity=".55"/><g>${[0, 90, 180, 270].map(foot).join('')}` +
+            `<path d="M-46 -8 A46 46 0 0 1 8 -46 M46 8 A46 46 0 0 1 -8 46" fill="none" stroke="#9e9e9e" stroke-width="5" stroke-linecap="round" opacity=".7"/></g></g>`,
+        ).firstChild as SVGGElement;
+        a.body.appendChild(g);
+        a.whirl = g;
+        return this.wait(100);
+      }
+      case 'whirl-stop':
+        if (a && a.whirl) {
+          a.whirl.remove();
+          a.whirl = null;
+        }
+        return this.wait(100);
+      case 'knead': {
+        // works at something with its hands (kneads the dough, sweeps the flour bin): bends to it
+        // rhythmically, flour puffing up where it works (at)
+        if (a) {
+          a.act = 'knead';
+          a.actT = 0;
+          a.actDur = ACTS.knead.dur;
+        }
+        const [x, y] = at || (a ? this.anchor(a, 'mouth') : [900, 600]);
+        for (let i = 0; i < 9; i++) this.later(0.15 + i * 0.27, () => this.dust(x + (Math.random() - 0.5) * 90, y));
+        return this.wait(2600);
+      }
       case 'flour': {
         const [x, y] = at || (a ? this.anchor(a, 'mouth') : [900, 600]);
         for (let i = 0; i < 14; i++) this.later(i * 0.12, () => this.dust(x + (Math.random() - 0.5) * 120, y));
@@ -2559,13 +2657,13 @@ export class Stage {
         const k = a;
         const t0 = this.time;
         const step = () => {
-          const p = Math.min(1, (this.time - t0) / 2.4);
+          const p = Math.min(1, (this.time - t0) / 3.6);
           this.fire = 1 + Math.sin(p * Math.PI) * 0.6;
           if (k && k.parts.raw) k.parts.raw.setAttribute('opacity', (1 - p).toFixed(3));
           if (p < 1) this.later(0, step);
         };
         step();
-        return this.wait(2400);
+        return this.wait(3600);
       }
       case 'smoke':
         for (let i = 0; i < 9; i++) this.later(i * 0.35, () => this.puff(708, 196));
@@ -2617,8 +2715,8 @@ export class Stage {
     return new Promise((r) => this.later(ms / 1000, r));
   }
 
-  private particle(node: SVGElement, life: number, update: Particle['update']) {
-    this.fxLayer.appendChild(node);
+  private particle(node: SVGElement, life: number, update: Particle['update'], layer = this.fxLayer) {
+    layer.appendChild(node);
     const p: Particle = { el: node, t: 0, life, update };
     this.particles.push(p);
     update(p, 0);
@@ -2924,6 +3022,262 @@ export class Stage {
     });
   }
 
+  /**
+   * Sitting, seen from the front: the body above the hips keeps its shape and comes down, the
+   * thighs (hips to knees) shorten as if coming towards us, the shins and feet stay on the ground.
+   * Made of the body itself: it is clipped above the hips, and two live copies of it (<use>) show
+   * the thighs and the shins.
+   */
+  private sitPose(a: Actor) {
+    let r = a.sitRig;
+    if (!r) {
+      if (!a.sitK) return;
+      const id = `sit${++sitIds}`;
+      const an = ANCHORS[a.id];
+      const hip = an && an.hip !== undefined ? an.hip : Math.round((an ? an.top : -300) * 0.3);
+      const knee = Math.round(hip / 2);
+      a.body.id = a.body.id || `${id}b`;
+      const defs = el('defs');
+      const clip = (cid: string, y0: number, y1: number) => {
+        const c = el('clipPath', { id: cid });
+        c.appendChild(el('rect', { x: -4000, y: y0, width: 8000, height: y1 - y0 }));
+        defs.appendChild(c);
+      };
+      clip(`${id}u`, -6000, hip + 2);
+      clip(`${id}t`, hip - 2, knee + 2);
+      clip(`${id}s`, knee - 2, 600);
+      const copy = (cid: string) => {
+        const g = el('g', { 'clip-path': `url(#${cid})` }) as SVGGElement;
+        const u = el('use', { href: `#${a.body.id}` });
+        u.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#${a.body.id}`);
+        g.appendChild(u);
+        return g;
+      };
+      // a stool to sit on, behind the legs: as wide as the body
+      let half = Math.abs(hip) * 0.55;
+      try {
+        const bb = a.body.getBBox();
+        if (bb.width) half = Math.min(bb.width * 0.36, Math.abs(hip) * 0.9);
+      } catch {
+        // not measured: the guess
+      }
+      const stool = svg(
+        `<g><path d="M${-half + 12} 0 L${-half + 18} 14 M${half - 12} 0 L${half - 18} 14" stroke="${INK}" stroke-width="12" stroke-linecap="round"/>` +
+          `<path d="M${-half + 12} 0 L${-half + 18} 14 M${half - 12} 0 L${half - 18} 14" stroke="#8d5a2b" stroke-width="5" stroke-linecap="round"/>` +
+          `<rect x="${-half}" y="-16" width="${half * 2}" height="18" rx="7" fill="#b07a45" stroke="${INK}" stroke-width="5"/></g>`,
+      ).firstChild as SVGGElement;
+      const parent = a.body.parentNode!;
+      const up = el('g') as SVGGElement;
+      const thigh = copy(`${id}t`);
+      const shin = copy(`${id}s`);
+      parent.insertBefore(defs, a.body);
+      parent.insertBefore(stool, a.body);
+      parent.insertBefore(shin, a.body);
+      parent.insertBefore(thigh, a.body);
+      parent.insertBefore(up, a.body);
+      up.appendChild(a.body);
+      r = a.sitRig = { up, thigh, shin, stool, hip, knee, clipUp: `url(#${id}u)` };
+    }
+    const k = a.sitK;
+    if (!k) {
+      r.up.removeAttribute('clip-path');
+      r.up.removeAttribute('transform');
+      r.thigh.style.display = r.shin.style.display = r.stool.style.display = 'none';
+      return;
+    }
+    r.up.setAttribute('clip-path', r.clipUp);
+    r.thigh.style.display = r.shin.style.display = '';
+    // a seat of its own (a chair, a stump, a bed, a log) right there: no stool
+    const seated = [...this.actors.values()].some((o) => o.prop && SEATS.test(o.id) && Math.abs(o.x - a.x) < 150);
+    r.stool.style.display = seated ? 'none' : '';
+    // the thighs come down to a third of their height, the body above them with them
+    const fold = 0.68 * k;
+    r.up.setAttribute('transform', `translate(0 ${((r.knee - r.hip) * fold).toFixed(1)})`);
+    r.thigh.setAttribute('transform', `translate(0 ${r.knee}) scale(1 ${(1 - fold).toFixed(3)}) translate(0 ${-r.knee})`);
+    // the seat at the hips, its legs down to the ground (drawn for a seat at y 0, 14 high: stretched)
+    const seat = r.hip + (r.knee - r.hip) * fold;
+    r.stool.setAttribute('opacity', k.toFixed(2));
+    r.stool.setAttribute('transform', `translate(0 ${seat.toFixed(1)}) scale(1 1)`);
+    const legs = r.stool.querySelectorAll('path');
+    const h = -seat;
+    for (let i = 0; i < legs.length; i++) {
+      const d = legs[i].getAttribute('d')!.replace(/L(-?[\d.]+) (-?[\d.]+)/g, (_m, x) => `L${x} ${h.toFixed(0)}`);
+      legs[i].setAttribute('d', d);
+    }
+  }
+
+  // ---------- life in the background ----------
+
+  private spawnAmbient(kind: Ambient) {
+    const L = this.ambientLayer;
+    const R = Math.random;
+    switch (kind) {
+      case 'birds':
+      case 'gulls': {
+        // a few birds crossing the sky far away, wings flapping
+        const gull = kind === 'gulls';
+        const n = 1 + Math.floor(R() * 3);
+        const ltr = R() < 0.5;
+        const y0 = gull ? 400 + R() * 110 : 130 + R() * 200;
+        for (let i = 0; i < n; i++) {
+          const b = el('path', { fill: 'none', stroke: gull ? '#fafafa' : '#4a3a30', 'stroke-width': gull ? 5 : 4, 'stroke-linecap': 'round' });
+          const sc = (gull ? 1 : 0.6) + R() * 0.4;
+          const dy = i * 26 - n * 10;
+          const lag = i * 0.03;
+          const ph = R() * 6;
+          this.particle(
+            b,
+            gull ? 10 : 14,
+            (p, k) => {
+              const kk = Math.min(1, Math.max(0, k - lag));
+              const x = ltr ? -100 + kk * 1800 : 1700 - kk * 1800;
+              const y = y0 + dy + Math.sin(kk * 9 + ph) * 12;
+              const up = Math.sin(p.t * 9 + ph) > 0;
+              b.setAttribute('d', up ? 'M-16 0 Q-8 -12 0 0 Q8 -12 16 0' : 'M-16 -4 Q-8 4 0 0 Q8 4 16 -4');
+              b.setAttribute('transform', `translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${sc.toFixed(2)})`);
+            },
+            L,
+          );
+        }
+        return;
+      }
+      case 'fish': {
+        // a little fish leaps out of the river and back with a splash
+        const x0 = 150 + R() * 1300;
+        const y0 = GROUND - 82;
+        const dir = R() < 0.5 ? 1 : -1;
+        const f = svg(`<g><path d="M-16 0 Q0 -12 16 0 Q0 12 -16 0 Z" fill="#ff9800" stroke="${INK}" stroke-width="3"/><path d="M-16 0 L-28 -9 L-28 9 Z" fill="#ff9800" stroke="${INK}" stroke-width="3"/><circle cx="8" cy="-2" r="2.5" fill="${INK}"/></g>`).firstChild as SVGGElement;
+        this.splash(x0, y0);
+        this.later(1.1, () => this.splash(x0 + dir * 120, y0));
+        this.particle(
+          f,
+          1.1,
+          (_p, k) => {
+            const x = x0 + dir * 120 * k;
+            const y = y0 - Math.sin(k * Math.PI) * 110;
+            const ang = Math.atan2(-Math.cos(k * Math.PI) * 110 * Math.PI, dir * 120) * (180 / Math.PI);
+            f.setAttribute('transform', `translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${dir * 1.5} 1.5) rotate(${(ang * dir).toFixed(0)})`);
+          },
+          L,
+        );
+        return;
+      }
+      case 'dolphin': {
+        // a dolphin arcs out of the sea
+        const x0 = 150 + R() * 1150;
+        const y0 = GROUND - 150;
+        const d = svg(
+          `<g><path d="M-60 6 Q-20 -30 40 -14 Q60 -8 74 2 Q56 4 44 2 Q0 26 -60 6 Z" fill="#6b8fb5" stroke="${INK}" stroke-width="4"/>` +
+            `<path d="M-6 -18 L6 -40 L18 -16 Z" fill="#6b8fb5" stroke="${INK}" stroke-width="4"/><path d="M-60 6 L-80 -10 M-60 6 L-80 20" stroke="${INK}" stroke-width="8" stroke-linecap="round"/>` +
+            `<path d="M-60 6 L-80 -10 M-60 6 L-80 20" stroke="#6b8fb5" stroke-width="4" stroke-linecap="round"/><path d="M-30 6 Q10 14 44 2" fill="none" stroke="#dbe7f2" stroke-width="5"/><circle cx="46" cy="-6" r="3" fill="${INK}"/></g>`,
+        ).firstChild as SVGGElement;
+        this.splash(x0, y0, 1.6);
+        this.later(1.6, () => this.splash(x0 + 300, y0, 1.6));
+        this.particle(
+          d,
+          1.6,
+          (_p, k) => {
+            const x = x0 + 300 * k;
+            const y = y0 - Math.sin(k * Math.PI) * 170;
+            const ang = -Math.cos(k * Math.PI) * 50;
+            d.setAttribute('transform', `translate(${x.toFixed(0)} ${y.toFixed(0)}) rotate(${ang.toFixed(0)})`);
+          },
+          L,
+        );
+        return;
+      }
+      case 'owl': {
+        // an owl peeps out among the trees, blinks, and hides again
+        const x = 150 + R() * 1300;
+        const y = GROUND - 250 - R() * 120;
+        const o = svg(
+          `<g><ellipse cx="0" cy="0" rx="30" ry="36" fill="#8d6e63" stroke="${INK}" stroke-width="4"/><path d="M-26 -26 L-20 -48 L-8 -32 M26 -26 L20 -48 L8 -32" fill="#8d6e63" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>` +
+            `<circle cx="-12" cy="-8" r="11" fill="#fff8e1" stroke="${INK}" stroke-width="3"/><circle cx="12" cy="-8" r="11" fill="#fff8e1" stroke="${INK}" stroke-width="3"/>` +
+            `<g data-owl-eyes="1"><circle cx="-12" cy="-8" r="5" fill="${INK}"/><circle cx="12" cy="-8" r="5" fill="${INK}"/></g><path d="M-5 4 L0 12 L5 4 Z" fill="#ffb300" stroke="${INK}" stroke-width="2"/>` +
+            `<path d="M-14 18 q6 6 12 0 M2 18 q6 6 12 0" fill="none" stroke="#6d4c41" stroke-width="3"/></g>`,
+        ).firstChild as SVGGElement;
+        const eyes = o.querySelector('[data-owl-eyes]') as SVGGElement;
+        this.particle(
+          o,
+          4,
+          (p, k) => {
+            const show = k < 0.15 ? k / 0.15 : k > 0.85 ? (1 - k) / 0.15 : 1;
+            o.setAttribute('transform', `translate(${x.toFixed(0)} ${(y + (1 - show) * 40).toFixed(0)})`);
+            o.setAttribute('opacity', show.toFixed(2));
+            // a blink and a look round
+            eyes.setAttribute('transform', Math.abs(p.t - 1.6) < 0.1 || Math.abs(p.t - 2.6) < 0.1 ? 'translate(0 -8) scale(1 0.15) translate(0 8)' : `translate(${(Math.sin(p.t * 1.5) * 3).toFixed(1)} 0)`);
+          },
+          L,
+        );
+        return;
+      }
+      case 'caterpillar': {
+        // a caterpillar crawls slowly through the grass in front
+        const ltr = R() < 0.5;
+        const y = GROUND + 90 + R() * 30;
+        const c = el('g');
+        const segs: SVGElement[] = [];
+        for (let i = 0; i < 6; i++) {
+          const seg = el('circle', { r: i === 0 ? 11 : 9, fill: i === 0 ? '#9ccc65' : i % 2 ? '#7cb342' : '#8bc34a', stroke: INK, 'stroke-width': 3 });
+          segs.push(seg);
+        }
+        for (const seg of segs.slice().reverse()) c.appendChild(seg);
+        const face = svg(`<g><circle cx="4" cy="-3" r="2" fill="${INK}"/><path d="M2 -10 l4 -10 M-4 -10 l-2 -10" stroke="${INK}" stroke-width="2"/></g>`).firstChild as SVGGElement;
+        c.appendChild(face);
+        this.particle(
+          c,
+          34,
+          (p, k) => {
+            const head = ltr ? -80 + k * 1760 : 1680 - k * 1760;
+            const dir = ltr ? 1 : -1;
+            segs.forEach((seg, i) => {
+              seg.setAttribute('cx', (head - dir * i * 15).toFixed(1));
+              seg.setAttribute('cy', (y - Math.max(0, Math.sin(p.t * 5 - i * 0.9)) * 7).toFixed(1));
+            });
+            face.setAttribute('transform', `translate(${head.toFixed(1)} ${y}) scale(${dir} 1)`);
+          },
+          L,
+        );
+        return;
+      }
+      case 'chimney': {
+        // smoke from the chimney: a soft puff now and then
+        const c = el('circle', { r: 14, fill: '#e9e4dc' });
+        const drift = 10 + R() * 30;
+        this.particle(
+          c,
+          3.2,
+          (_p, k) => {
+            c.setAttribute('cx', (708 + drift * k + Math.sin(k * 5) * 8).toFixed(1));
+            c.setAttribute('cy', (196 - k * 200).toFixed(1));
+            c.setAttribute('r', (12 + k * 34).toFixed(1));
+            c.setAttribute('opacity', (0.75 * (1 - k)).toFixed(2));
+          },
+          L,
+        );
+        return;
+      }
+    }
+  }
+
+  /** rings on the water where something went in or came out */
+  private splash(x: number, y: number, big = 1) {
+    for (let i = 0; i < 2; i++) {
+      const r = el('ellipse', { cx: x, cy: y, fill: 'none', stroke: '#e3f3ff', 'stroke-width': 4 });
+      this.particle(
+        r,
+        0.9,
+        (_p, k) => {
+          const kk = Math.max(0, k - i * 0.25);
+          r.setAttribute('rx', (8 + kk * 40 * big).toFixed(1));
+          r.setAttribute('ry', (3 + kk * 10 * big).toFixed(1));
+          r.setAttribute('opacity', (1 - kk).toFixed(2));
+        },
+        this.ambientLayer,
+      );
+    }
+  }
+
   // ---------- the frame ----------
 
   private mouth(a: Actor, open: boolean) {
@@ -2940,6 +3294,14 @@ export class Stage {
 
   private tick(dt: number) {
     this.time += dt;
+    // background life (not while rushing through scenes)
+    if (this.rush === 1)
+      for (const am of this.ambient)
+        if (this.time >= am.next) {
+          const [lo, hi] = AMBIENT_EVERY[am.kind];
+          am.next = this.time + (lo + Math.random() * (hi - lo)) * (LOW_END ? 1.8 : 1);
+          this.spawnAmbient(am.kind);
+        }
     const due = this.timers.filter((t) => t.at <= this.time);
     if (due.length) {
       this.timers = this.timers.filter((t) => t.at > this.time);
@@ -2947,7 +3309,7 @@ export class Stage {
     }
 
     // the road eases in and out of rolling
-    this.rollAmount += ((this.rolling ? 1 : 0) - this.rollAmount) * Math.min(1, dt * 3);
+    this.rollAmount += ((this.rolling ? (this.rollFast ? 2.4 : 1) : 0) - this.rollAmount) * Math.min(1, dt * 3);
     const slide = ROLL_SPEED * this.rollAmount * dt;
     this.scroll += slide;
     for (const l of this.layerEls) setAttr(l.el, 'transform', `translate(${(-(this.scroll * l.speed) % W).toFixed(LOW_END ? 0 : 1)} 0)`);
@@ -2998,6 +3360,11 @@ export class Stage {
 
   private tickActor(a: Actor, dt: number, slide: number) {
     a.phase += dt;
+    if (a.whirl) {
+      const hipY = Math.round((ANCHORS[a.id] ? ANCHORS[a.id].top : -200) * 0.14);
+      a.whirl.setAttribute('transform', `translate(0 ${hipY})`);
+      (a.whirl.lastChild as SVGGElement).setAttribute('transform', `rotate(${((a.phase * 1400) % 360).toFixed(0)})`);
+    }
     if (a.carriedBy) {
       const c = a.carriedBy;
       if (!this.actors.has(c.id)) a.carriedBy = null;
@@ -3142,11 +3509,19 @@ export class Stage {
       actSY = r.sy || 1;
       if (p >= 1) a.act = '';
     }
+    // sitting: people fold at the hips (sitPose); four-legged ones and things just get lower
+    const folds = !a.prop && a.id !== 'kolobok' && FOUR_LEGS.indexOf(a.id) < 0;
+    const squat = sit && !folds;
     setAttr(
       a.body,
       'transform',
-      `translate(0 ${(-lift - blowLift).toFixed(1)}) rotate(${(lean + blow + chew + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${((2 - breathe) * actSX * (flat ? 1.08 : sit ? 1.06 : 1)).toFixed(4)} ${(breathe * actSY * (flat ? 0.62 : sit ? 0.8 : 1)).toFixed(4)})`,
+      `translate(0 ${(-lift - blowLift).toFixed(1)}) rotate(${(lean + blow + chew + spinAt).toFixed(2)} 0 ${spinAt ? pivot : 0}) scale(${((2 - breathe) * actSX * (flat ? 1.08 : squat ? 1.06 : 1)).toFixed(4)} ${(breathe * actSY * (flat ? 0.62 : squat ? 0.8 : 1)).toFixed(4)})`,
     );
+    const sitTo = sit && folds ? 1 : 0;
+    if (a.sitK !== sitTo) {
+      a.sitK = sitTo > a.sitK ? Math.min(1, a.sitK + dt * 4) : Math.max(0, a.sitK - dt * 4);
+      this.sitPose(a);
+    }
 
     // asleep: z-z-z from the head
     if (a.asleep) {

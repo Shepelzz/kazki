@@ -72,20 +72,44 @@ scenes:
 
   baking:
     - scene: pich
+    - show: zasik
+      at: [1210, 770]
     - show: baba
-      at: [620, 770]
-    - narrator: "Пішла баба до хати. Помела по коробу, пошкребла по засіку — та й набрала борошна дві жмені."
+      at: [560, 770]
+    # she walks to the flour bin while the narrator says so, and scoops there
+    - move: baba
+      to: [1060, 770]
+      ms: 1700
+      along: true
+    - narrator: "Пішла баба до хати."
+    - fx: knead
+      on: baba
+      at: [1200, 620]
+      along: true
+    - narrator: "Помела по коробу, пошкребла по засіку — та й набрала борошна дві жмені."
+    - move: baba
+      to: [760, 770]
+      ms: 1300
+      wait: true
+    # kneads the dough at the table during the line; the kolobok is rolled at its end
+    - fx: knead
+      on: baba
+      at: [910, 590]
+      along: true
     - fx: flour
       at: [910, 590]
+      along: true
+    - narrator: "Замісила баба тісто на сметані, скачала круглого колобка..."
     - show: kolobok
       at: [910, 600]
       eyes: closed
       raw: true
-    - narrator: "Замісила баба тісто на сметані, скачала круглого колобка..."
+    - fx: sparkle
+      on: kolobok
     - baba: "А тепер — у піч!"
     - move: baba
       to: [910, 770]
-      ms: 1300
+      ms: 1000
       wait: true
     - carry: kolobok
       by: baba
@@ -99,9 +123,11 @@ scenes:
     - move: baba
       to: [640, 770]
       ms: 1000
-    - narrator: "Гріється колобок у печі, рум'яніє, підрум'янюється..."
+    # it turns golden while the narrator tells it
     - fx: bake
       on: kolobok
+      along: true
+    - narrator: "Гріється колобок у печі, рум'яніє, підрум'янюється..."
     - fx: sparkle
       on: kolobok
     - move: baba
@@ -110,11 +136,13 @@ scenes:
       wait: true
     - carry: kolobok
       by: baba
-    - narrator: "Спекла баба рум'яного колобка й поклала на віконце, щоб простигав."
+    # she carries it to the window while the narrator says so
     - move: baba
       to: [1200, 770]
       ms: 2600
-      wait: true
+      along: true
+    - narrator: "Спекла баба рум'яного колобка й поклала на віконце, щоб простигав."
+    - pause: 300
     - put: kolobok
       to: [1315, 522]
       ms: 700
@@ -157,11 +185,13 @@ scenes:
       hop: true
       ms: 700
       wait: true
-    - narrator: "Та й покотився колобок: з віконця на призьбу, з призьби на травичку, з травички на стежечку..."
+    # he rolls off while the narrator says so
     - move: kolobok
       to: [1800, 770]
       roll: true
-      ms: 2400
+      ms: 4200
+      along: true
+    - narrator: "Та й покотився колобок: з віконця на призьбу, з призьби на травичку, з травички на стежечку..."
     - did: "Куди ж ти, колобку?"
     - next: road
 
@@ -208,7 +238,32 @@ scenes:
       at: [910, 600]
     - fx: hearts
       on: kolobok
-    - narrator: "І став колобок жити з дідом і бабою. Щовечора співав їм пісеньок, а баба на вечерю пекла пиріжки з вишнями. А колобка ніхто й не думав їсти!"
+    - narrator: "І став колобок жити з дідом і бабою. Щовечора співав їм пісеньок."
+    # she bakes pies in the stove while the narrator says so, and brings them to the table
+    - move: baba
+      to: [470, 770]
+      ms: 1000
+      along: true
+    - show: pyrohy
+      at: [300, 700]
+    - fx: bake
+      along: true
+    - narrator: "А баба на вечерю пекла пиріжки з вишнями."
+    - carry: pyrohy
+      by: baba
+    - move: baba
+      to: [800, 770]
+      ms: 1600
+      wait: true
+    - put: pyrohy
+      to: [1020, 604]
+      ms: 600
+    - fx: munch
+      on: did
+      along: true
+    - narrator: "А колобка ніхто й не думав їсти!"
+    - fx: hearts
+      on: did
     - ending: singer
 
   escape:
@@ -295,17 +350,54 @@ scenes:
   hare_race:
     - kolobok: "А давай, зайчику, наввипередки! Як переженеш мене — тоді й з'їси."
     - zayets: "Ха! Та я ж найшвидший у лісі! Раз, два, три!"
-    - roll: true
+    # the hare turns round and runs, legs a blur; the road flies past
     - move: zayets
-      to: [760, 770]
-      hop: true
-      ms: 1400
+      to: [1150, 770]
+      flip: true
+      ms: 300
       wait: true
-    - narrator: "Побіг зайчик через кущі та пеньки, а колобок — з горбочка вниз: коть-коть-коть! Котився, котився — та й перегнав зайчика!"
+    - fx: whirl
+      on: zayets
+    - roll: fast
     - move: zayets
-      to: [-300, 770]
+      to: [1260, 770]
+      ms: 1600
+      along: true
+    - narrator: "Побіг зайчик через кущі та пеньки, а колобок — з горбочка вниз: коть-коть-коть!"
+    # the kolobok rolls up and overtakes him
+    - move: kolobok
+      to: [1330, 770]
+      ms: 4200
+      along: true
+    - move: zayets
+      to: [880, 770]
+      ms: 4200
+      along: true
+    - narrator: "Котився, котився — та й перегнав зайчика!"
+    # a stone on the road: the kolobok hops over it, the hare trips
+    - show: kamin
+      at: [1900, 770]
+      size: 0.32
+    - move: kamin
+      to: [880, 770]
+      ms: 2400
+      along: true
+    - pause: 1150
+    - move: kolobok
+      to: [1330, 770]
       hop: true
-      ms: 3200
+      ms: 500
+      along: true
+    - pause: 1250
+    - fx: whirl-stop
+      on: zayets
+    - roll: false
+    - fx: bang
+      on: zayets
+      word: "ГУП!"
+    - fx: lie
+      on: zayets
+    - narrator: "А зайчик зачепився за камінь — гуп! — та й упав."
     - zayets: "Ох, і швидкий же ти, колобку! Котися вже, не буду тебе їсти."
     - next: river
 
@@ -428,6 +520,11 @@ scenes:
       to: [720, 770]
       ms: 1800
       wait: true
+    # the smell of a fresh-baked kolobok drifts to the bear's nose while he says so
+    - fx: smell
+      on: kolobok
+      who: [vedmid]
+      along: true
     - vedmid: "Гм... Камінь якийсь лежить. Та чогось він пахне... свіжим пиріжком!"
     - pause: 500
     - vedmid: "Ха! Камінці пиріжками не пахнуть! Я тебе бачу, колобку!"
@@ -465,7 +562,8 @@ scenes:
       ms: 2200
       wait: true
     - roll: false
-    - lysytsia: "Колобок, колобок, який же ти гарний! Який рум'яненький! Кажуть, ти дуже гарно співаєш. Заспівай і мені!"
+    - lysytsia: "Колобок, колобок, я тебе з'їм!"
+    - kolobok: "Не їж мене, лисичко-сестричко, я тобі пісеньку заспіваю!"
     - kolobok: "Я колобок, колобок! По коробу метений, по засіку скребений, на сметані мішений, у печі печений, на віконці стужений. Я від діда втік, я від баби втік, я від зайця втік, я від вовка втік, від ведмедя втік, і від тебе, лисичко, втечу!"
       sing: true
     - lysytsia: "Ой, як гарно! Та тільки я, колобочку, стара стала, недочуваю. Сядь-но мені на носик та заспівай ще разочок, голосніше."
@@ -504,7 +602,7 @@ scenes:
       roll: true
       ms: 2200
       wait: true
-    - lysytsia: "Ех! Перехитрив мене колобок!"
+    - lysytsia: "Ой! Перехитрив мене колобок!"
     - choice: "Куди тепер покотиться колобок?"
       options:
         - label: "Додому, до діда й баби"

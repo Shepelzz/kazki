@@ -6,7 +6,8 @@ import type { Voice } from './voiceKey';
 
 export type Point = [number, number];
 
-export type Step =
+/** along: true — the step starts and the next one goes on at once (an action during a line) */
+export type Step = { along?: boolean } & (
   | { kind: 'say'; who: string; text: string; sing?: boolean }
   | { kind: 'scene'; scene: string }
   | { kind: 'show'; actor: string; at: Point; flip?: boolean; eyes?: 'open' | 'closed'; raw?: boolean; look?: string; size?: number }
@@ -16,13 +17,14 @@ export type Step =
   | { kind: 'move'; actor: string; to: Point; ms: number; hop?: boolean; roll?: boolean; flip?: boolean; wait?: boolean }
   | { kind: 'carry'; actor: string; by: string }
   | { kind: 'put'; actor: string; to: Point; ms: number }
-  | { kind: 'roll'; on: boolean }
+  | { kind: 'roll'; on: boolean; fast?: boolean }
   | { kind: 'eyes'; actor: string; open: boolean }
   | { kind: 'fx'; fx: string; on?: string; at?: Point; who?: string[]; word?: string }
   | { kind: 'pause'; ms: number }
   | { kind: 'choice'; question: string; options: ChoiceOption[] }
   | { kind: 'next'; scene: string }
-  | { kind: 'ending'; ending: string };
+  | { kind: 'ending'; ending: string }
+);
 
 export interface ChoiceOption {
   label: string;
@@ -65,7 +67,8 @@ export function parseStory(id: string, raw: Raw): Story {
     throw new Error(`${id}.yaml, scene "${scene}", step ${i + 1}: ${msg}`);
   };
   for (const [name, steps] of Object.entries(raw.scenes as Record<string, Raw[]>)) {
-    scenes[name] = steps.map((s, i): Step => {
+    scenes[name] = steps.map((s, i): Step => ({ ...parseStep(s, i), ...(s.along ? { along: true } : {}) }) as Step);
+    function parseStep(s: Raw, i: number): Step {
       const who = Object.keys(s).find((k) => k in voices);
       if (who) return { kind: 'say', who, text: String(s[who]), sing: !!s.sing };
       if ('scene' in s) return { kind: 'scene', scene: s.scene };
@@ -77,7 +80,7 @@ export function parseStory(id: string, raw: Raw): Story {
         return { kind: 'move', actor: s.move, to: s.to ?? fail(name, i, 'move needs to'), ms: s.ms ?? 1500, hop: s.hop, roll: s.roll, flip: s.flip, wait: s.wait };
       if ('carry' in s) return { kind: 'carry', actor: s.carry, by: s.by ?? fail(name, i, 'carry needs by') };
       if ('put' in s) return { kind: 'put', actor: s.put, to: s.to ?? fail(name, i, 'put needs to'), ms: s.ms ?? 700 };
-      if ('roll' in s) return { kind: 'roll', on: !!s.roll };
+      if ('roll' in s) return { kind: 'roll', on: !!s.roll, fast: s.roll === 'fast' };
       if ('eyes' in s) return { kind: 'eyes', actor: s.eyes, open: s.state !== 'closed' };
       if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at, who: s.who, word: s.word };
       if ('pause' in s) return { kind: 'pause', ms: s.pause };
@@ -85,7 +88,7 @@ export function parseStory(id: string, raw: Raw): Story {
       if ('next' in s) return { kind: 'next', scene: s.next };
       if ('ending' in s) return { kind: 'ending', ending: s.ending };
       return fail(name, i, `unknown step ${JSON.stringify(s)}`);
-    });
+    }
   }
   const story: Story = { id, title: raw.title, cover: raw.cover, about: raw.about || '', sayTitle: raw.sayTitle, voices, endings: raw.endings, start: raw.start, scenes };
   // every link must lead somewhere: a typo would strand the child mid-tale

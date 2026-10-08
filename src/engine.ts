@@ -158,6 +158,11 @@ export class Teller {
         if (s.kind === 'say') continue;
       } else if (i === skipTo) this.stage.rush = 1;
       if (this.rushing && s.kind === 'say') continue;
+      // an action along with what follows (walking off while the narrator says so): not waited for
+      if (s.along && !this.rushing) {
+        void this.step(s, run).catch(() => {});
+        continue;
+      }
       const out = await this.step(s, run);
       this.check(run);
       if (out) return out;
@@ -199,7 +204,7 @@ export class Teller {
       case 'put':
         return stage.moveTo(s.actor, s.to, s.ms, { hop: true });
       case 'roll':
-        stage.setRolling(s.on);
+        stage.setRolling(s.on, s.fast);
         return;
       case 'eyes':
         stage.setEyes(s.actor, s.open);
