@@ -54,6 +54,9 @@ let open: { tale: string; scene: string } | null = null;
 let waiting: ((go: boolean) => void) | null = null;
 let nextScene: string | null = null;
 let onlyNotes = false;
+/** the note being written: kept through every redraw of the panel (a scene ending redraws it) */
+const drafts: Record<string, string> = {};
+
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLElementTagNameMap[K]> & { cls?: string } = {}, ...kids: (Node | string)[]) => {
   const e = document.createElement(tag);
@@ -240,7 +243,8 @@ function episodeBox() {
   for (const n of list.filter((x) => x.status === 'open')) notesBox.append(noteView(n));
   for (const n of list.filter((x) => x.status === 'done')) notesBox.append(noteView(n));
   box.append(notesBox);
-  const ta = h('textarea', { placeholder: 'Коментар до епізоду (озвучка, модель, рух, текст…)', rows: 3 });
+  const ta = h('textarea', { placeholder: 'Коментар до епізоду (озвучка, модель, рух, текст…)', rows: 3, value: drafts[`${tale}/${scene}`] || '' });
+  ta.addEventListener('input', () => (drafts[`${tale}/${scene}`] = ta.value));
   const lineHint = h('div', { cls: 'rv-hint', textContent: 'Реплика на екрані збережеться разом із коментарем.' });
   const add = h('button', {
     cls: 'go',
@@ -249,6 +253,7 @@ function episodeBox() {
       const text = ta.value.trim();
       if (!text) return;
       ta.value = '';
+      delete drafts[`${tale}/${scene}`];
       void saveNote('add', { tale, scene, text, line: lineOnScreen() || undefined });
     },
   });
@@ -286,6 +291,9 @@ function taleList() {
 function render() {
   const panel = document.getElementById('rv-panel')!;
   const scroll = panel.querySelector('.rv-list')?.scrollTop || 0;
+  // the note being written keeps its focus and cursor
+  const old = panel.querySelector('textarea');
+  const focus = old && document.activeElement === old ? { start: old.selectionStart, end: old.selectionEnd } : null;
   panel.innerHTML = '';
   const c = count(notes);
   const head = h('div', { cls: 'rv-head' }, h('b', { textContent: 'Огляд казок' }), h('span', { cls: 'rv-badges' }, h('span', { cls: 'rv-b open', textContent: `💬 ${c.open}` }), h('span', { cls: 'rv-b done', textContent: `✓ ${c.done}` })));
@@ -301,6 +309,11 @@ function render() {
   const list = h('div', { cls: 'rv-list' }, taleList());
   panel.append(head, filter, episodeBox(), list);
   list.scrollTop = scroll;
+  const ta = panel.querySelector('textarea');
+  if (ta && focus) {
+    ta.focus();
+    ta.setSelectionRange(focus.start, focus.end);
+  }
 }
 
 const CSS = `
