@@ -29,6 +29,14 @@ export class Teller {
   onScene: ((name: string) => void) | null = null;
   /** the scenes told on the way to the ending (all of them, also the ones jumped back over) */
   readonly played = new Set<string>();
+  /**
+   * The review page (dev): the scenes before `target` run quickly and silently along `route`
+   * (scene → the option picked there); `target` is told as usual; then `after` says whether to
+   * go on to the next scene (it may set a new target) or stop there.
+   */
+  review: { target: string; route: Record<string, number>; after: (scene: string, next: string | null) => Promise<boolean> } | null = null;
+  /** on the way to the review's scene: no voice, no waiting */
+  private rushing = false;
 
   constructor(
     private story: Story,
@@ -44,11 +52,19 @@ export class Teller {
     try {
       for (;;) {
         try {
-          this.preloadAround(scene);
+          this.rushing = !!this.review && scene !== this.review.target;
+          this.stage.rush = this.rushing ? 40 : 1;
+          if (!this.rushing) this.preloadAround(scene);
           this.played.add(scene);
           this.onScene?.(scene);
           const next = await this.playScene(scene, run, skipTo);
           skipTo = -1;
+          if (this.review && scene === this.review.target) {
+            this.ui.hideCaption();
+            this.stage.setTalking(null);
+            if (!(await this.review.after(scene, next.scene || null)) || !next.scene) return null;
+            this.check(run);
+          }
           if (next.ending) return next.ending;
           this.trail.push(scene);
           scene = next.scene!;
@@ -141,6 +157,7 @@ export class Teller {
         this.stage.rush = 40;
         if (s.kind === 'say') continue;
       } else if (i === skipTo) this.stage.rush = 1;
+      if (this.rushing && s.kind === 'say') continue;
       const out = await this.step(s, run);
       this.check(run);
       if (out) return out;
@@ -213,6 +230,8 @@ export class Teller {
 
   /** Offer a choice; resolves with the option picked. */
   private choose(question: string, options: ChoiceOption[], run: number): Promise<number> {
+    // on the way to the review's scene: the option that leads there
+    if (this.rushing && this.review) return Promise.resolve(this.review.route[this.at.scene] || 0);
     return new Promise<number>((resolve, reject) => {
       let picked = false;
       this.abortChoice = () => {

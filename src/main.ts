@@ -573,6 +573,35 @@ async function openTale(story: Story, from?: string) {
   if (ending && teller === t) await showEnding(story, ending);
 }
 
+/**
+ * The review page (dev, ?review): a scene of a tale shown on its own — the scenes before it run
+ * quickly and silently on the way to it (route: scene → the option that leads on), then it is told
+ * with its voice. `after` is asked when it is over: go on to the next scene, or stop. Nothing of
+ * it is kept (no endings, no coins).
+ */
+async function reviewScene(id: string, scene: string, route: Record<string, number>, after: (scene: string, next: string | null) => Promise<boolean>, started?: () => void) {
+  unlockAudio();
+  setPaused(false);
+  teller?.stop();
+  const story = await fetchStory(id);
+  const st = await player();
+  current = story;
+  $('ending').hidden = true;
+  $('loading').hidden = true;
+  $('btn-pause').hidden = false;
+  $('btn-back').hidden = false;
+  $('btn-next').hidden = false;
+  show('play');
+  st.speed = 1;
+  const t = new TellerOf!(story, st, ui);
+  t.review = { target: scene, route, after };
+  t.onScene = (sc) => {
+    if (t.review && sc === t.review.target) started?.();
+  };
+  teller = t;
+  await t.tell();
+}
+
 async function showEnding(story: Story, ending: string) {
   const before = found(story);
   const coins = progress.reachEnding(story.id, ending, Object.keys(story.endings));
@@ -689,6 +718,13 @@ show('library');
     return teller;
   },
   stories: TALE_LIST,
+  /** the review page: a tale's scenes (fetched), and one scene played on its own */
+  story: (id: string) => fetchStory(id),
+  reviewScene,
+  setPaused,
+  get paused() {
+    return !!stage?.paused;
+  },
   /** start a tale (default: the first) from a scene; for a scene that doesn't set its backdrop, give one (the kolobok waits there) */
   async go(scene?: string, backdrop?: string, id = SHELF[0]) {
     const s = await fetchStory(id);
@@ -717,3 +753,6 @@ show('library');
     progress.addCoins(n);
   },
 };
+
+// the review page (dev server only): /?review — every tale by scenes, played one by one, with notes
+if (import.meta.env.DEV && new URLSearchParams(location.search).has('review')) void import('./review').then((r) => r.startReview(TALE_LIST));

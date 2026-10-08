@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { defineConfig, loadEnv, runnerImport, type Plugin, type ViteDevServer } from 'vite';
 import YAML from 'yaml';
 import { parseStory, type TaleInfo } from './src/story.ts';
@@ -95,11 +95,26 @@ function wardrobeArt(): Plugin {
   };
 }
 
+/** a note on a scene, from the review page */
+interface Note {
+  id: string;
+  tale: string;
+  scene: string;
+  /** the line on screen when it was written: who and what */
+  line?: string;
+  text: string;
+  created: string;
+  status: 'open' | 'done';
+  /** what was done about it */
+  reply?: string;
+}
+
 // fit.html (dev only): where a thing sits on a hero, dragged into place by hand, is saved into
 // src/fit-overrides.json — without reloading the page that is busy editing
 function fitEditor(): Plugin {
   const file = resolve(__dirname, 'src/fit-overrides.json');
   const edits = resolve(__dirname, 'src/wardrobe-edits.json');
+  const notes = resolve(__dirname, 'review/notes.json');
   return {
     name: 'fit-editor',
     configureServer(server) {
@@ -121,6 +136,30 @@ function fitEditor(): Plugin {
           } catch (e) {
             res.statusCode = 400;
             res.end(String(e));
+          }
+        });
+      });
+      // the review page (/?review): notes on the scenes of the tales, kept in review/notes.json
+      // (committed: the notes are the to-do list, and what was done about each)
+      server.middlewares.use('/__review', (req, res) => {
+        const read = (): Note[] => (existsSync(notes) ? (JSON.parse(readFileSync(notes, 'utf8') || '[]') as Note[]) : []);
+        res.setHeader('Content-Type', 'application/json');
+        if (req.method === 'GET') return res.end(JSON.stringify(read()));
+        let body = '';
+        req.on('data', (c) => (body += c));
+        req.on('end', () => {
+          try {
+            const { action, note } = JSON.parse(body) as { action: 'add' | 'update' | 'delete'; note: Note };
+            let all = read();
+            if (action === 'add') all.push({ ...note, id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, created: new Date().toISOString(), status: 'open' });
+            if (action === 'update') all = all.map((n) => (n.id === note.id ? { ...n, ...note } : n));
+            if (action === 'delete') all = all.filter((n) => n.id !== note.id);
+            mkdirSync(dirname(notes), { recursive: true });
+            writeFileSync(notes, JSON.stringify(all, null, 2) + '\n');
+            res.end(JSON.stringify(all));
+          } catch (e) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: String(e) }));
           }
         });
       });
@@ -159,7 +198,7 @@ function fitEditor(): Plugin {
       });
     },
     handleHotUpdate(ctx) {
-      if (ctx.file === file || ctx.file === edits) return [];
+      if (ctx.file === file || ctx.file === edits || ctx.file === notes) return [];
     },
   };
 }

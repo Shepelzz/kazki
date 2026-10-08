@@ -1,0 +1,356 @@
+// The review page (dev server only: http://localhost:5220/?review, or /review.html).
+//
+// Every tale, split into its scenes (episodes). A tap on a scene plays it on its own, with its
+// animation and voice: the scenes before it run quickly and silently on the way (by the shortest
+// route of choices), then it is told as usual and stops at its end — "Далі" goes on to the next one.
+// Notes are written to a scene (with the line on screen at that moment) and kept in
+// review/notes.json by the dev server: the to-do list for fixes. A note marked done carries what
+// was done about it, and shows so when its scene is opened.
+
+import type { TaleInfo } from './story';
+
+interface Step {
+  kind: string;
+  who?: string;
+  text?: string;
+  scene?: string;
+  question?: string;
+  options?: { label: string; next: string }[];
+  ending?: string;
+}
+interface FullStory {
+  id: string;
+  title: string;
+  start: string;
+  voices: Record<string, { name: string }>;
+  scenes: Record<string, Step[]>;
+  endings: Record<string, { title: string; icon: string }>;
+}
+interface Note {
+  id: string;
+  tale: string;
+  scene: string;
+  line?: string;
+  text: string;
+  created: string;
+  status: 'open' | 'done';
+  reply?: string;
+}
+interface TaleApi {
+  story(id: string): Promise<FullStory>;
+  reviewScene(id: string, scene: string, route: Record<string, number>, after: (scene: string, next: string | null) => Promise<boolean>, started?: () => void): Promise<void>;
+  setPaused(on: boolean): void;
+  readonly paused: boolean;
+}
+
+const api = () => (window as unknown as { tale: TaleApi }).tale;
+
+let tales: TaleInfo[] = [];
+const stories = new Map<string, FullStory>();
+let notes: Note[] = [];
+/** the scene being shown */
+let open: { tale: string; scene: string } | null = null;
+/** the end of a scene, waiting for "Далі" / "Стоп" */
+let waiting: ((go: boolean) => void) | null = null;
+let nextScene: string | null = null;
+let onlyNotes = false;
+
+const h = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLElementTagNameMap[K]> & { cls?: string } = {}, ...kids: (Node | string)[]) => {
+  const e = document.createElement(tag);
+  const { cls, ...rest } = props;
+  if (cls) e.className = cls;
+  Object.assign(e, rest);
+  for (const k of kids) e.append(k);
+  return e;
+};
+
+// ---------- notes: the dev server keeps them ----------
+
+async function loadNotes() {
+  try {
+    notes = (await (await fetch('/__review')).json()) as Note[];
+  } catch {
+    notes = [];
+  }
+}
+
+async function saveNote(action: 'add' | 'update' | 'delete', note: Partial<Note>) {
+  const r = await fetch('/__review', { method: 'POST', body: JSON.stringify({ action, note }) });
+  notes = (await r.json()) as Note[];
+  render();
+}
+
+const notesOf = (tale: string, scene?: string) => notes.filter((n) => n.tale === tale && (scene === undefined || n.scene === scene));
+const count = (list: Note[]) => ({ open: list.filter((n) => n.status === 'open').length, done: list.filter((n) => n.status === 'done').length });
+const badges = (list: Note[]) => {
+  const c = count(list);
+  return h('span', { cls: 'rv-badges' }, c.open ? h('span', { cls: 'rv-b open', textContent: `💬 ${c.open}` }) : '', c.done ? h('span', { cls: 'rv-b done', textContent: `✓ ${c.done}` }) : '');
+};
+
+// ---------- the scenes of a tale ----------
+
+async function storyOf(id: string) {
+  let s = stories.get(id);
+  if (!s) {
+    s = await api().story(id);
+    stories.set(id, s);
+  }
+  return s;
+}
+
+/** the shortest way from the start to a scene: scene → the option picked there */
+function routeTo(s: FullStory, target: string): Record<string, number> {
+  const from = new Map<string, { scene: string; option: number }>();
+  const seen = new Set([s.start]);
+  const queue = [s.start];
+  while (queue.length) {
+    const sc = queue.shift()!;
+    if (sc === target) break;
+    for (const st of s.scenes[sc] || []) {
+      const go = (to: string, option: number) => {
+        if (seen.has(to) || !s.scenes[to]) return;
+        seen.add(to);
+        from.set(to, { scene: sc, option });
+        queue.push(to);
+      };
+      if (st.kind === 'next' && st.scene) go(st.scene, 0);
+      if (st.kind === 'choice') (st.options || []).forEach((o, i) => go(o.next, i));
+    }
+  }
+  const route: Record<string, number> = {};
+  for (let sc = target; from.has(sc); sc = from.get(sc)!.scene) route[from.get(sc)!.scene] = from.get(sc)!.option;
+  return route;
+}
+
+/** what a scene is about, in a few words: its first line */
+function gist(s: FullStory, scene: string) {
+  const say = (s.scenes[scene] || []).find((st) => st.kind === 'say' || st.kind === 'choice');
+  const text = say ? say.text || say.question || '' : '';
+  return text.length > 70 ? text.slice(0, 68) + '…' : text;
+}
+
+/** where a scene leads: the choice's options, the next scene, the ending */
+function leads(s: FullStory, scene: string) {
+  const out: string[] = [];
+  for (const st of s.scenes[scene] || []) {
+    if (st.kind === 'choice') out.push(...(st.options || []).map((o) => `${o.label} → ${o.next}`));
+    if (st.kind === 'next') out.push(`→ ${st.scene}`);
+    if (st.kind === 'ending' && st.ending) out.push(`кінцівка: ${s.endings[st.ending]?.icon || ''} ${s.endings[st.ending]?.title || st.ending}`);
+  }
+  return out;
+}
+
+// ---------- playing a scene ----------
+
+function status(text: string) {
+  const el = document.getElementById('rv-status');
+  if (el) el.textContent = text;
+}
+
+async function play(tale: string, scene: string) {
+  // the scene shown before, if it was waiting at its end, is let go
+  waiting?.(false);
+  waiting = null;
+  nextScene = null;
+  open = { tale, scene };
+  render();
+  const s = await storyOf(tale);
+  status(scene === s.start ? '▶ грає' : '⏩ перемотую до епізоду…');
+  const after = (_done: string, next: string | null) =>
+    new Promise<boolean>((resolve) => {
+      nextScene = next;
+      waiting = (go) => {
+        waiting = null;
+        if (go && next) {
+          open = { tale, scene: next };
+          // the teller goes on to it, telling it as usual
+          const t = (window as unknown as { tale: { teller: { review: { target: string } | null } | null } }).tale.teller;
+          if (t && t.review) t.review.target = next;
+        }
+        resolve(go && !!next);
+        render();
+      };
+      render();
+    });
+  await api().reviewScene(tale, scene, routeTo(s, scene), after, () => status('▶ грає'));
+}
+
+function lineOnScreen() {
+  const cap = document.getElementById('caption');
+  if (!cap || cap.hidden) return '';
+  const who = document.getElementById('caption-who');
+  const text = document.getElementById('caption-text')?.textContent || '';
+  return (who && !who.hidden && who.textContent ? `${who.textContent}: ` : '') + text;
+}
+
+// ---------- the panel ----------
+
+function noteView(n: Note) {
+  const box = h('div', { cls: `rv-note ${n.status}` });
+  if (n.line) box.append(h('div', { cls: 'rv-line', textContent: `«${n.line}»` }));
+  box.append(h('div', { cls: 'rv-text', textContent: n.text }));
+  if (n.status === 'done') box.append(h('div', { cls: 'rv-reply', textContent: `✓ Виконано${n.reply ? ': ' + n.reply : ''}` }));
+  const tools = h('div', { cls: 'rv-tools' });
+  if (n.status === 'done') tools.append(h('button', { textContent: '↺ відкрити знову', onclick: () => void saveNote('update', { id: n.id, status: 'open' }) }));
+  tools.append(
+    h('button', {
+      textContent: '✎',
+      title: 'змінити',
+      onclick: () => {
+        const t = prompt('Коментар', n.text);
+        if (t !== null && t.trim()) void saveNote('update', { id: n.id, text: t.trim() });
+      },
+    }),
+    h('button', {
+      textContent: '🗑',
+      title: 'видалити',
+      onclick: () => {
+        if (confirm('Видалити коментар?')) void saveNote('delete', { id: n.id });
+      },
+    }),
+  );
+  box.append(tools);
+  return box;
+}
+
+function episodeBox() {
+  if (!open) return h('div', { cls: 'rv-episode empty', textContent: 'Обери епізод зліва — він зіграє з анімацією та озвучкою.' });
+  const { tale, scene } = open;
+  const s = stories.get(tale);
+  const info = tales.find((x) => x.id === tale);
+  const box = h('div', { cls: 'rv-episode' });
+  box.append(h('div', { cls: 'rv-ep-title' }, h('b', { textContent: info?.title || tale }), ' › ', h('code', { textContent: scene })));
+  box.append(h('div', { cls: 'rv-status', id: 'rv-status', textContent: waiting ? (nextScene ? `■ кінець епізоду. Далі: ${nextScene}` : '■ кінець епізоду (кінцівка)') : '' }));
+  const ctl = h('div', { cls: 'rv-ctl' });
+  ctl.append(
+    h('button', {
+      textContent: '⏯ пауза',
+      onclick: () => api().setPaused(!api().paused),
+    }),
+    h('button', { textContent: '↺ заново', onclick: () => void play(tale, scene) }),
+  );
+  if (waiting && nextScene) ctl.append(h('button', { cls: 'go', textContent: `▶ далі: ${nextScene}`, onclick: () => waiting?.(true) }));
+  box.append(ctl);
+  if (s) {
+    const l = leads(s, scene);
+    if (l.length) box.append(h('div', { cls: 'rv-leads', textContent: l.join(' · ') }));
+  }
+  const list = notesOf(tale, scene);
+  const notesBox = h('div', { cls: 'rv-notes' });
+  for (const n of list.filter((x) => x.status === 'open')) notesBox.append(noteView(n));
+  for (const n of list.filter((x) => x.status === 'done')) notesBox.append(noteView(n));
+  box.append(notesBox);
+  const ta = h('textarea', { placeholder: 'Коментар до епізоду (озвучка, модель, рух, текст…)', rows: 3 });
+  const lineHint = h('div', { cls: 'rv-hint', textContent: 'Реплика на екрані збережеться разом із коментарем.' });
+  const add = h('button', {
+    cls: 'go',
+    textContent: '💬 Додати коментар',
+    onclick: () => {
+      const text = ta.value.trim();
+      if (!text) return;
+      ta.value = '';
+      void saveNote('add', { tale, scene, text, line: lineOnScreen() || undefined });
+    },
+  });
+  box.append(ta, lineHint, add);
+  return box;
+}
+
+function taleList() {
+  const wrap = h('div', { cls: 'rv-tales' });
+  for (const t of tales) {
+    const s = stories.get(t.id);
+    const all = notesOf(t.id);
+    if (onlyNotes && !all.length) continue;
+    const det = h('details', { cls: 'rv-tale' });
+    det.open = !!open && open.tale === t.id;
+    det.append(h('summary', {}, h('span', { textContent: t.title }), badges(all)));
+    det.addEventListener('toggle', () => {
+      if (det.open && !stories.has(t.id)) void storyOf(t.id).then(render);
+    });
+    if (s) {
+      Object.keys(s.scenes).forEach((scene, i) => {
+        const list = notesOf(t.id, scene);
+        if (onlyNotes && !list.length) return;
+        const row = h('button', { cls: 'rv-scene' + (open && open.tale === t.id && open.scene === scene ? ' on' : '') });
+        row.append(h('span', { cls: 'rv-n', textContent: String(i + 1) }), h('span', { cls: 'rv-sc' }, h('code', { textContent: scene }), h('small', { textContent: gist(s, scene) })), badges(list));
+        row.addEventListener('click', () => void play(t.id, scene));
+        det.append(row);
+      });
+    } else det.append(h('div', { cls: 'rv-hint', textContent: 'завантажую…' }));
+    wrap.append(det);
+  }
+  return wrap;
+}
+
+function render() {
+  const panel = document.getElementById('rv-panel')!;
+  const scroll = panel.querySelector('.rv-list')?.scrollTop || 0;
+  panel.innerHTML = '';
+  const c = count(notes);
+  const head = h('div', { cls: 'rv-head' }, h('b', { textContent: 'Огляд казок' }), h('span', { cls: 'rv-badges' }, h('span', { cls: 'rv-b open', textContent: `💬 ${c.open}` }), h('span', { cls: 'rv-b done', textContent: `✓ ${c.done}` })));
+  const filter = h('label', { cls: 'rv-filter' });
+  const cb = h('input', { type: 'checkbox', checked: onlyNotes });
+  cb.addEventListener('change', () => {
+    onlyNotes = cb.checked;
+    // the tales with notes: their scenes are needed to show which
+    if (onlyNotes) void Promise.all([...new Set(notes.map((n) => n.tale))].map(storyOf)).then(render);
+    else render();
+  });
+  filter.append(cb, ' лише з коментарями');
+  const list = h('div', { cls: 'rv-list' }, taleList());
+  panel.append(head, filter, episodeBox(), list);
+  list.scrollTop = scroll;
+}
+
+const CSS = `
+body.review .screen { left: 380px; }
+#rv-panel { position: fixed; top: 0; left: 0; bottom: 0; width: 380px; z-index: 50; display: flex; flex-direction: column;
+  background: #fdf8ef; color: #3a2a1e; font: 14px/1.35 Nunito, system-ui, sans-serif; border-right: 2px solid #e2d6c2; }
+#rv-panel button { font: inherit; cursor: pointer; border: 1px solid #d8c9b0; background: #fff; border-radius: 8px; padding: 5px 9px; color: inherit; }
+#rv-panel button.go { background: #3fa34d; border-color: #2a7a36; color: #fff; font-weight: 800; }
+.rv-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px 4px; font-size: 17px; }
+.rv-filter { padding: 0 12px 8px; font-size: 13px; }
+.rv-badges { display: inline-flex; gap: 4px; margin-left: auto; }
+.rv-b { font-size: 12px; font-weight: 800; border-radius: 999px; padding: 1px 7px; }
+.rv-b.open { background: #ffe0b2; color: #a14a00; }
+.rv-b.done { background: #d7f0d9; color: #2a7a36; }
+.rv-episode { margin: 0 10px 8px; padding: 10px; border-radius: 12px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.1); max-height: 55vh; overflow-y: auto; }
+.rv-episode.empty { color: #8a7a68; }
+.rv-ep-title { font-size: 15px; margin-bottom: 4px; }
+.rv-status { font-size: 13px; color: #6b5a48; min-height: 18px; }
+.rv-ctl { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.rv-leads { font-size: 12px; color: #6b5a48; margin-bottom: 6px; }
+.rv-note { border-radius: 10px; padding: 7px 9px; margin: 6px 0; background: #fff4e5; border: 1px solid #ffd59a; }
+.rv-note.done { background: #eef8ef; border-color: #b9e0bd; }
+.rv-note.done .rv-text { text-decoration: line-through; color: #6b8a6e; }
+.rv-line { font-size: 12px; color: #7a6a58; font-style: italic; margin-bottom: 3px; }
+.rv-reply { font-size: 13px; color: #2a7a36; font-weight: 700; margin-top: 4px; }
+.rv-tools { display: flex; gap: 4px; justify-content: flex-end; margin-top: 4px; }
+.rv-tools button { padding: 1px 6px !important; font-size: 12px !important; }
+.rv-episode textarea { width: 100%; box-sizing: border-box; font: inherit; border-radius: 8px; border: 1px solid #d8c9b0; padding: 6px; margin-top: 6px; }
+.rv-hint { font-size: 11px; color: #8a7a68; margin: 2px 0 6px; }
+.rv-list { flex: 1; overflow-y: auto; padding: 0 10px 20px; }
+.rv-tale { margin: 4px 0; border-radius: 10px; background: #fff; border: 1px solid #ecdfca; }
+.rv-tale summary { display: flex; align-items: center; gap: 6px; padding: 8px 10px; font-weight: 800; cursor: pointer; }
+.rv-scene { display: flex !important; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0 !important; border-top: 1px solid #f1e7d6 !important; border-radius: 0 !important; padding: 6px 10px !important; background: transparent !important; }
+.rv-scene.on { background: #fff1c9 !important; }
+.rv-n { width: 22px; text-align: right; color: #a8957c; font-size: 12px; }
+.rv-sc { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.rv-sc small { color: #8a7a68; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 900px) { body.review .screen { left: 300px; } #rv-panel { width: 300px; } }
+`;
+
+export async function startReview(list: TaleInfo[]) {
+  tales = list;
+  document.body.classList.add('review');
+  document.head.append(h('style', { textContent: CSS }));
+  document.body.append(h('aside', { id: 'rv-panel' }));
+  document.title = 'Огляд казок';
+  await loadNotes();
+  // the tales with notes: their scenes at hand
+  await Promise.all([...new Set(notes.map((n) => n.tale))].filter((id) => list.some((t) => t.id === id)).map(storyOf));
+  render();
+  // the stage resizes to the narrower window
+  window.dispatchEvent(new Event('resize'));
+}
