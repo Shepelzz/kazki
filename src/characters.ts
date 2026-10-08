@@ -22,6 +22,7 @@ import { hryby, kasha, khata_vedmedya, korob, mariyka, penok, podruzhky, soroka,
 import { kareta, kit_chobotar, kit_chobotar_bosyi, korol, kosari, krolyk, kulka, kuropatky, lakhmittia, lev, lyudozher, markiz, myshenia, osel, pryntsesa, restoran, starshi, syn, voda, zhentsi } from './puppets-kit';
 import { dveri, lizhko_male, lizhko_serednie, lizhko_velyke, lozhka, masha, mishko, miska_mala, miska_mala_porozhnia, miska_serednia, miska_velyka, stil_vedmediv, stilets_lamanyi, stilets_malyi, stilets_serednii, stilets_velykyi, vedmedytsia, vikno } from './puppets-vedmedi';
 import { kubelko, kurcha, ryaba, shkarlupa, shokolad, yaieshnia, yaiechko, zolote } from './puppets-ryaba';
+import { charivnytsia, duimovochka, duimovochka_cover, duimovochka_koroleva, elf, kovdrochka, krit, kvitka_bila, kvitochka, lastivka, latattia, lopukh, metelyk_bilyi, norka, norka_zyma, pelustka, promin, romashka, rybky, shkarlupka, steblo, synok, tarilka_vody, tulpan, tulpan_vidkrytyi, vazon, zernia, zhinka, zhuk, zhuky } from './puppets-duimovochka';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
@@ -541,6 +542,37 @@ export const PUPPETS: Record<string, () => string> = {
   // the cover of «Три ведмеді»: the father, the mother and Mishko side by side
   try_vedmedi: () =>
     `<g transform="translate(-120 0) scale(.6)">${vedmid()}</g><g transform="translate(30 0) scale(.6)">${vedmedytsia()}</g><g transform="translate(150 0) scale(.6)">${mishko()}</g>`,
+  duimovochka,
+  duimovochka_koroleva,
+  zhuk,
+  zhuky,
+  krit,
+  lastivka,
+  elf,
+  zhinka,
+  charivnytsia,
+  synok,
+  rybky,
+  metelyk_bilyi,
+  zernia,
+  vazon,
+  tulpan,
+  tulpan_vidkrytyi,
+  shkarlupka,
+  tarilka_vody,
+  pelustka,
+  latattia,
+  steblo,
+  romashka,
+  lopukh,
+  norka,
+  norka_zyma,
+  kovdrochka,
+  promin,
+  kvitochka,
+  kvitka_bila,
+  // the cover of «Дюймовочка»: she stands in the open tulip
+  duimovochka_cover,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -725,4 +757,34 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   // mouth = the window itself: Masha jumps out through it
   vikno: { mouth: [0, -60], top: -260 },
   dveri: { mouth: [0, -20], top: -400 },
+  // «Дюймовочка»: she is shown small on stage (size ≈ 0.6), the anchors scale with her
+  duimovochka: { mouth: [0, -229], top: -300, hands: [0, -150] },
+  // hands: the beetle carries her off in his arms; the swallow on her back
+  zhuk: { mouth: [0, -262], top: -370, hands: [-80, -140] },
+  zhuky: { mouth: [0, -190], top: -270 },
+  krit: { mouth: [0, -226], top: -352, hands: [-112, -120] },
+  lastivka: { mouth: [0, -236], top: -312, hands: [24, -196] },
+  elf: { mouth: [0, -231], top: -330, hands: [0, -150] },
+  zhinka: { mouth: [0, -258], top: -340, hands: [64, -150] },
+  charivnytsia: { mouth: [0, -250], top: -440, hands: [54, -150] },
+  synok: { mouth: [0, -80], top: -160 },
+  rybky: { mouth: [0, -10], top: -60 },
+  metelyk_bilyi: { mouth: [0, -90], top: -150 },
+  zernia: { mouth: [0, -30], top: -60 },
+  vazon: { mouth: [0, -76], top: -80 },
+  tulpan: { mouth: [0, -280], top: -320 },
+  // hands: who lies in the cradle lies on its violet mattress
+  shkarlupka: { mouth: [0, -50], top: -90, hands: [-40, -56] },
+  tarilka_vody: { mouth: [0, -68], top: -110 },
+  pelustka: { mouth: [0, -20], top: -60, hands: [0, -14] },
+  latattia: { mouth: [0, -10], top: -40, hands: [-30, -4] },
+  steblo: { mouth: [0, 50], top: 0 },
+  romashka: { mouth: [0, -410], top: -470 },
+  lopukh: { mouth: [-110, -230], top: -420 },
+  // mouth = the little door
+  norka: { mouth: [0, -10], top: -180 },
+  kovdrochka: { mouth: [0, -40], top: -90 },
+  promin: { mouth: [0, -10], top: -100 },
+  kvitochka: { mouth: [0, -126], top: -150 },
+  kvitka_bila: { mouth: [0, -410], top: -560 },
 };

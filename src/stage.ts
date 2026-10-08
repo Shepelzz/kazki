@@ -149,9 +149,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv', 'promin', 'kovdrochka'];
 /**
  * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
  * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
@@ -249,6 +249,11 @@ const REACTIONS: Record<string, string[]> = {
   masha: ['spin', 'hop', 'giggle', 'bow'],
   vedmedytsia: ['bow', 'wiggle', 'stretch', 'no'],
   mishko: ['hops', 'sneeze', 'chase', 'curl'],
+  duimovochka: ['dance', 'giggle', 'spin', 'bow'],
+  zhuk: ['wiggle', 'flex', 'sneeze', 'hops'],
+  krit: ['scratch', 'no', 'stretch', 'sneeze'],
+  lastivka: ['flip', 'stretch', 'wiggle', 'hop'],
+  elf: ['bow', 'flip', 'hops', 'dance'],
 };
 
 /** one heave-ho of pulling (seconds) */
@@ -258,7 +263,7 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
-const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri'];
+const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri', 'tarilka_vody', 'lopukh', 'norka', 'kvitka_bila'];
 
 interface Particle {
   el: SVGElement;
@@ -1023,7 +1028,155 @@ function vedmezha(room: 'svitlytsia' | 'spalnia') {
   ${[200, 420, 640, 860, 1080, 1300].map((x, i) => `<g transform="translate(${x} ${GROUND + 70 + (i % 2) * 14})"><ellipse rx="13" ry="10" fill="#33691e"/><circle cx="-11" cy="-15" r="4.5" fill="#33691e"/><circle cx="0" cy="-19" r="4.5" fill="#33691e"/><circle cx="11" cy="-15" r="4.5" fill="#33691e"/></g>`).join('')}`;
 }
 
+// ---------- «Дюймовочка» ----------
+
+/**
+ * On the woman's table, seen as tiny Thumbelina sees it: the tabletop is the floor, the window
+ * behind is huge, a giant spool of thread and a thimble stand about. Night: a dark window with the
+ * moon and a broken pane (the toad comes in through it), the room dim.
+ */
+function stilZblyzka(night: boolean) {
+  const F = GROUND - 40;
+  let grain = '';
+  for (let i = 0; i < 9; i++) grain += `<path d="M-1600 ${F + 30 + i * 46} Q0 ${F + 20 + i * 46} 3200 ${F + 34 + i * 46}" stroke="#a87444" stroke-width="4" fill="none"/>`;
+  const pane = (x: number, y: number, w: number, h: number) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${night ? '#1a2350' : '#a9dcf5'}"/>`;
+  return `
+  <rect x="-1600" y="-1400" width="4800" height="${F + 1400}" fill="#efe2c6"/>
+  ${Array.from({ length: 30 }, (_, i) => `<path d="M${-1600 + i * 170} -1400 V${F}" stroke="#e6d6b4" stroke-width="40"/>`).join('')}
+  <!-- the huge window -->
+  <rect x="160" y="-760" width="1280" height="${F - 140 + 760}" fill="#8b5a2b"/>
+  ${pane(220, -700, 560, 420)}${pane(820, -700, 560, 420)}${pane(220, -240, 560, F - 220 + 40)}${pane(820, -240, 560, F - 220 + 40)}
+  ${night
+    ? `<circle cx="1150" cy="-500" r="80" fill="#fff6c8"/><circle cx="1120" cy="-520" r="16" fill="#e9dfa8"/>` +
+      Array.from({ length: 16 }, (_, i) => `<circle cx="${240 + ((i * 173) % 1130)}" cy="${-680 + ((i * 97) % 380)}" r="${i % 3 ? 3 : 5}" fill="#fff"/>`).join('') +
+      // the broken pane, low on the left: a jagged hole with the night beyond and splinters of glass
+      `<path d="M260 ${F - 160} L300 ${F - 330} L360 ${F - 250} L420 ${F - 380} L470 ${F - 260} L540 ${F - 300} L560 ${F - 160} Z" fill="#0b1030" stroke="#cfd8dc" stroke-width="5"/>` +
+      `<path d="M240 ${F - 150} l40 -20 M560 ${F - 150} l-30 -24" stroke="#cfd8dc" stroke-width="4"/>`
+    : `${cloud(500, -560, 1.8)}${cloud(1150, -420, 1.4)}<circle cx="1250" cy="-600" r="70" fill="#ffd54f"/>`}
+  <path d="M780 -700 V${F - 160} M820 -700 V${F - 160}" stroke="#6d4426" stroke-width="10"/>
+  <rect x="120" y="${F - 170}" width="1360" height="60" rx="14" fill="#a0703c" stroke="#5a3a22" stroke-width="8"/>
+  <!-- the tabletop: the floor down here -->
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#c08a52"/>${grain}
+  <path d="M-1600 ${F} H3200" stroke="#8b5a2b" stroke-width="8"/>
+  <!-- a giant spool of red thread, a giant thimble -->
+  <g transform="translate(-60 ${F + 4})">
+    <rect x="-110" y="-30" width="220" height="30" rx="8" fill="#d7a86e" stroke="#5a3a22" stroke-width="6"/>
+    <rect x="-80" y="-300" width="160" height="270" fill="#e53935" stroke="#5a3a22" stroke-width="6"/>
+    ${Array.from({ length: 12 }, (_, i) => `<path d="M-80 ${-290 + i * 22} L80 ${-280 + i * 22}" stroke="#b71c1c" stroke-width="4"/>`).join('')}
+    <rect x="-110" y="-330" width="220" height="30" rx="8" fill="#d7a86e" stroke="#5a3a22" stroke-width="6"/>
+  </g>
+  <g transform="translate(1660 ${F + 4})">
+    <path d="M-120 0 L-96 -300 Q0 -360 96 -300 L120 0 Z" fill="#cfd8dc" stroke="#78909c" stroke-width="6"/>
+    ${Array.from({ length: 30 }, (_, i) => `<circle cx="${-90 + (i % 6) * 36 + (Math.floor(i / 6) % 2) * 18}" cy="${-260 + Math.floor(i / 6) * 50}" r="7" fill="#90a4ae"/>`).join('')}
+  </g>
+  ${night ? `<rect x="-1600" y="-1400" width="4800" height="8000" fill="#0a1030" opacity=".42"/><path d="M820 -700 L1380 -700 L1700 ${F + 300} L600 ${F + 300} Z" fill="#fff6c8" opacity=".08"/>` : ''}`;
+}
+
+/** a winter field: stubble sticking out of the snow, a wood far off, grey sky, snow falling */
+function zymovePole() {
+  let stubble = '';
+  const r = rand(235);
+  for (let i = 0; i < 70; i++) {
+    const x = -400 + r() * 2400;
+    const y = GROUND - 30 + r() * 200;
+    stubble += `<path d="M${x.toFixed(0)} ${y.toFixed(0)} l-6 -22 M${(x + 8).toFixed(0)} ${y.toFixed(0)} l2 -26 M${(x + 16).toFixed(0)} ${y.toFixed(0)} l8 -20" stroke="#c9a14a" stroke-width="5" stroke-linecap="round"/>`;
+  }
+  return (
+    sky('#97aec6', '#e6edf4') +
+    clouds(231).replace(/opacity=".92"/, 'opacity=".55"') +
+    [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${snowHills('#e3ecf5', GROUND - 170, 50, 232)}${snowFirRow(233, 9, GROUND - 110, 0.45)}</g>`).join('') +
+    snowGround(234, false) +
+    stubble
+  );
+}
+
+/** the field mouse's home under the stubble: earth walls and roots, sacks and heaps of grain, a lamp, a rug */
+function norkaInside() {
+  const F = GROUND - 40;
+  let stones = '';
+  for (let i = 0; i < 40; i++) stones += `<ellipse cx="${(i * 157) % 2600 - 500}" cy="${-500 + ((i * 89) % 1100)}" rx="${14 + (i % 4) * 6}" ry="${9 + (i % 3) * 4}" fill="#7a5b4c"/>`;
+  const sack = (x: number, s: number) => `<g transform="translate(${x} ${F + 6}) scale(${s})">
+    <path d="M-60 0 Q-74 -110 -30 -140 L30 -140 Q74 -110 60 0 Z" fill="#e8d5a8" stroke="#8d6e3b" stroke-width="6"/>
+    <path d="M-30 -140 Q0 -170 30 -140" fill="#e8d5a8" stroke="#8d6e3b" stroke-width="6"/><path d="M-34 -134 H34" stroke="#c62828" stroke-width="8"/></g>`;
+  const heap = (x: number, y: number, w: number, c: string) => `<path d="M${x - w} ${y} Q${x} ${y - w * 0.9} ${x + w} ${y} Z" fill="${c}" stroke="#8d6e3b" stroke-width="4"/>`;
+  return `
+  <rect x="-1600" y="-1400" width="4800" height="${F + 1400}" fill="#8d6e63"/>${stones}
+  <!-- the arched ceiling, roots hanging down -->
+  <path d="M-1600 -60 Q-800 -260 0 -60 Q800 -260 1600 -60 Q2400 -260 3200 -60 L3200 -1400 L-1600 -1400 Z" fill="#5d4037"/>
+  ${Array.from({ length: 12 }, (_, i) => `<path d="M${-200 + i * 170} ${-120 + (i % 3) * 30} q${i % 2 ? 20 : -20} 80 ${i % 2 ? -6 : 10} 160" stroke="#a1887f" stroke-width="7" fill="none" stroke-linecap="round"/>`).join('')}
+  <!-- shelves dug into the wall, heaps of grain on them -->
+  <rect x="980" y="360" width="460" height="22" rx="8" fill="#6d4426"/>
+  ${heap(1060, 360, 60, '#f2c14e')}${heap(1210, 360, 52, '#d7b26a')}${heap(1360, 360, 58, '#e8c35a')}
+  <rect x="980" y="540" width="460" height="22" rx="8" fill="#6d4426"/>
+  ${heap(1080, 540, 56, '#c9a14a')}${heap(1260, 540, 66, '#f2c14e')}
+  <!-- a lamp in a nutshell: a warm glow -->
+  <ellipse cx="560" cy="370" rx="150" ry="110" fill="#ffe0a0" opacity=".22"/><ellipse cx="560" cy="360" rx="80" ry="60" fill="#fff3c4" opacity=".3"/>
+  <path d="M520 360 Q560 410 600 360 Z" fill="#a1704a" stroke="#5a3a22" stroke-width="5"/><path d="M560 356 q-10 -20 0 -40 q10 20 0 40z" fill="#ffb300"/>
+  <path d="M560 316 V200" stroke="#5a3a22" stroke-width="4"/>
+  <!-- the floor of trodden earth, a red rug -->
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#6d4c41"/>
+  <ellipse cx="800" cy="${GROUND + 70}" rx="520" ry="60" fill="#c62828" opacity=".85"/>
+  <ellipse cx="800" cy="${GROUND + 70}" rx="430" ry="44" fill="none" stroke="#ffd54f" stroke-width="8"/>
+  ${sack(150, 1)}${sack(300, 0.8)}${sack(1500, 0.9)}`;
+}
+
+/** the mole's long tunnel: dark earth, roots, pebbles, a dim greyish light */
+function khid() {
+  const F = GROUND - 40;
+  let pebbles = '';
+  for (let i = 0; i < 50; i++) pebbles += `<ellipse cx="${(i * 131) % 2800 - 600}" cy="${-600 + ((i * 71) % 1300)}" rx="${10 + (i % 4) * 6}" ry="${7 + (i % 3) * 4}" fill="${i % 3 ? '#4e342e' : '#6d4c41'}"/>`;
+  return `
+  <rect x="-1600" y="-1400" width="4800" height="8000" fill="#3e2723"/>${pebbles}
+  <!-- the tunnel: a long lighter tube of earth -->
+  <path d="M-1600 ${F + 60} L-1600 120 Q800 40 3200 120 L3200 ${F + 60} Z" fill="#5d4037"/>
+  <path d="M-1600 120 Q800 40 3200 120" stroke="#2b1b17" stroke-width="16" fill="none"/>
+  ${Array.from({ length: 14 }, (_, i) => `<path d="M${-300 + i * 160} ${110 - (i % 2) * 20} q${i % 2 ? 24 : -24} 70 ${i % 2 ? -10 : 8} ${120 + (i % 3) * 40}" stroke="#8d6e63" stroke-width="6" fill="none" stroke-linecap="round"/>`).join('')}
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#4e342e"/>
+  ${Array.from({ length: 20 }, (_, i) => `<ellipse cx="${(i * 113) % 1900 - 150}" cy="${GROUND + 20 + ((i * 47) % 160)}" rx="${12 + (i % 3) * 6}" ry="7" fill="#3e2723"/>`).join('')}
+  <rect x="-1600" y="-1400" width="4800" height="8000" fill="#1a0f0c" opacity=".18"/>`;
+}
+
+/** a giant flower in the warm land's meadow */
+function bigFlower(x: number, h: number, c: string, s = 1) {
+  let p = '';
+  for (let i = 0; i < 6; i++) p += `<ellipse cx="0" cy="-46" rx="24" ry="46" fill="${c}" transform="rotate(${i * 60})"/>`;
+  return `<g transform="translate(${x} ${GROUND}) scale(${s})"><path d="M0 0 Q-14 ${-h / 2} 0 ${-h}" stroke="#388e3c" stroke-width="14" fill="none"/>
+    <path d="M0 ${-h * 0.4} q-70 -40 -90 0 q50 20 90 0 M0 ${-h * 0.6} q70 -40 90 0 q-50 20 -90 0" fill="#4caf50"/>
+    <g transform="translate(0 ${-h})">${p}<circle r="26" fill="#fff59d"/></g></g>`;
+}
+
+/** the warm land: a blue lake, a white marble palace wound with vines, giant flowers */
+function teplyiKrai() {
+  const col = (x: number, h: number) => `<rect x="${x - 26}" y="${GROUND - 160 - h}" width="52" height="${h}" fill="#fafafa" stroke="#cfd8dc" stroke-width="5"/>
+    <rect x="${x - 36}" y="${GROUND - 176 - h}" width="72" height="22" rx="4" fill="#fafafa" stroke="#cfd8dc" stroke-width="5"/>
+    <path d="M${x - 26} ${GROUND - 160 - h * 0.8} q30 20 0 40 q-30 20 0 40 q30 20 0 40" stroke="#43a047" stroke-width="8" fill="none"/>`;
+  return (
+    sky('#4fc3f7', '#e1f5fe') +
+    sun(1380, 220, '#ffe082') +
+    clouds(241) +
+    [-1, 0, 1].map((i) => `<g transform="translate(${i * W} 0)">${hills('#80cbc4', GROUND - 230, 70, 242)}</g>`).join('') +
+    `<rect x="-1600" y="${GROUND - 210}" width="4800" height="110" fill="#29b6f6"/>` +
+    Array.from({ length: 14 }, (_, i) => `<path d="M${(i * 157) % 2200 - 300} ${GROUND - 190 + (i % 3) * 26} q20 -8 40 0" stroke="#e1f5fe" stroke-width="4" fill="none"/>`).join('') +
+    // the marble palace on the shore
+    `<rect x="120" y="${GROUND - 470}" width="560" height="40" fill="#fafafa" stroke="#cfd8dc" stroke-width="6"/>` +
+    `<path d="M100 ${GROUND - 470} L400 ${GROUND - 580} L700 ${GROUND - 470} Z" fill="#fafafa" stroke="#cfd8dc" stroke-width="6"/>` +
+    [170, 290, 410, 530, 630].map((x) => col(x, 270)).join('') +
+    `<rect x="100" y="${GROUND - 160}" width="620" height="40" fill="#eceff1" stroke="#cfd8dc" stroke-width="5"/>` +
+    ground('#8bc34a', '#9ccc65') +
+    bigFlower(900, 360, '#f06292', 0.9) +
+    bigFlower(1500, 420, '#ffb74d', 1) +
+    bigFlower(60, 300, '#ba68c8', 0.8) +
+    `<g>${verge(243, false)}${verge(244, false)}</g>`
+  );
+}
+
 const BACKDROPS: Record<string, () => Backdrop> = {
+  'stil-zblyzka': () => ({ still: stilZblyzka(false), layers: [] }),
+  'stil-nich': () => ({ still: stilZblyzka(true), layers: [] }),
+  'zymove-pole': () => ({ still: zymovePole(), layers: [], snow: true }),
+  norka: () => ({ still: norkaInside(), layers: [] }),
+  khid: () => ({ still: khid(), layers: [] }),
+  'teplyi-krai': () => ({ still: teplyiKrai(), layers: [] }),
   svitlytsia: () => ({ still: vedmezha('svitlytsia'), layers: [] }),
   spalnia: () => ({ still: vedmezha('spalnia'), layers: [] }),
   mlyn: () => ({
@@ -1659,6 +1812,7 @@ export class Stage {
         tail: part('tail'),
         head: part('head'),
         peek: part('peek'),
+        wings: part('wings'),
       },
     };
     (FRONT.indexOf(id) >= 0 ? this.frontLayer : this.actorsLayer).appendChild(g);
@@ -1857,8 +2011,9 @@ export class Stage {
   /** Where a puppet's anchor is on the stage right now. */
   private anchor(a: Actor, which: 'mouth' | 'top'): Point {
     const an = ANCHORS[a.id];
-    if (which === 'top') return [a.x, a.y + an.top];
-    return [a.x + an.mouth[0] * (a.flip ? -1 : 1), a.y + an.mouth[1]];
+    // a puppet shown smaller or bigger (size): its mouth and head are nearer or further
+    if (which === 'top') return [a.x, a.y + an.top * a.size];
+    return [a.x + an.mouth[0] * a.size * (a.flip ? -1 : 1), a.y + an.mouth[1] * a.size];
   }
 
   // ---------- effects ----------
@@ -2037,6 +2192,14 @@ export class Stage {
         this.shake = 0.4;
         return this.wait(900);
       }
+      case 'shiver':
+        // shivers with cold (or fright)
+        if (a) {
+          a.act = 'shiver';
+          a.actT = 0;
+          a.actDur = 1.4;
+        }
+        return this.wait(1200);
       case 'sit':
         // sits down (on the ground, a bench): until it moves or stands up
         if (a) a.pose = 'sit';
@@ -2756,6 +2919,15 @@ export class Stage {
     if (a.parts.tail) {
       const t = a.parts.tail;
       t.setAttribute('transform', `rotate(${(Math.sin(a.phase * (a.talking ? 18 : 8)) * 14).toFixed(1)} ${t.getAttribute('data-cx')} ${t.getAttribute('data-cy')})`);
+    }
+
+    // wings flutter: fast in the air (off the ground or flying somewhere), slowly at rest
+    if (a.parts.wings) {
+      const w = a.parts.wings;
+      const flying = a.y < GROUND - 30 || (a.move && a.move.to[1] < GROUND - 30);
+      const s = flying ? 0.35 + Math.abs(Math.sin(a.phase * 16)) * 0.65 : 0.9 + Math.sin(a.phase * 2.5) * 0.1;
+      const cy = Number(w.getAttribute('data-cy'));
+      w.setAttribute('transform', `translate(0 ${cy}) scale(1 ${s.toFixed(3)}) translate(0 ${-cy})`);
     }
 
     // the hare's ears twitch now and then

@@ -15,7 +15,7 @@ import { COIN, heroesOf } from './heroes';
 import TALES from 'virtual:tales';
 
 /** the shelf, in this order */
-const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid', 'kit-u-chobotyakh', 'try-vedmedi'];
+const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid', 'kit-u-chobotyakh', 'try-vedmedi', 'duimovochka'];
 /** what the shelf knows of each tale (a few kilobytes); the tale itself is fetched when its card opens */
 const TALE_LIST: TaleInfo[] = SHELF.map((id) => TALES[id]);
 /** each tale's scenes: a chunk of its own, fetched on demand */
@@ -29,7 +29,7 @@ async function fetchStory(id: string): Promise<Story> {
 const SOON: { title: string; icon: string }[] = [];
 
 /** backdrops with no road: subtitles at the bottom there */
-const HOME_SCENES = ['hata', 'hata-evening', 'hata-winter', 'hata-night', 'pich', 'pich-evening', 'berloga', 'svitlytsia', 'spalnia'];
+const HOME_SCENES = ['hata', 'hata-evening', 'hata-winter', 'hata-night', 'pich', 'pich-evening', 'berloga', 'svitlytsia', 'spalnia', 'stil-zblyzka', 'stil-nich', 'norka', 'khid'];
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -59,6 +59,7 @@ const COVER_VIEW: Record<string, string> = {
   mariyka: '-110 -320 230 330',
   kit_chobotar: '-125 -385 265 395',
   try_vedmedi: '-200 -250 410 260',
+  duimovochka_cover: '-175 -480 350 490',
 };
 
 function cover(story: Pick<TaleInfo, 'cover'>) {

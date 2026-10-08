@@ -106,6 +106,8 @@ export const BODY: Record<string, Body> = {
   // the king's beard: the seal on its chain hangs below it
   korol: { slots: { neck: { dy: 0.55 } } },
   lyudozher: { slots: { neck: { dy: 0.4 } } },
+  // the mole's eyes are tiny: glasses and masks bigger than they would be
+  krit: { slots: { face: { k: 1.8 } } },
   zmiy: { view: 'side', head: { x: -190, y: -352, rx: 78, ry: 46 }, slots: { mouth: { k: 1.7 } }, items: { zmiy_bant: { dx: 4.02, dy: 0.86 } } },
 };
 
@@ -225,6 +227,8 @@ export function dress(g: Element, hero: string, items: Wearable[]) {
   const on = (slot: Slot) => items.some((i) => i.slot === slot);
   for (const h of Array.from(g.querySelectorAll('[data-part="hat"]'))) (h as SVGElement).style.display = on('head') ? 'none' : '';
   for (const c of Array.from(g.querySelectorAll('[data-part="collar"]'))) (c as SVGElement).style.display = on('neck') ? 'none' : '';
+  // its own glasses (the mole's little gold ones) for glasses or a mask
+  for (const c of Array.from(g.querySelectorAll('[data-part="glasses"]'))) (c as SVGElement).style.display = on('face') ? 'none' : '';
   // and its own boots for other shoes (the Cat in Boots' big cuffed ones)
   for (const c of Array.from(g.querySelectorAll('[data-part="boots"]'))) (c as SVGElement).style.display = on('feet') ? 'none' : '';
   // and its own beard and moustache for another one
