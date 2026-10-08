@@ -458,8 +458,11 @@ function drawPurses() {
   for (const id of ['purse', 'heroes-purse']) $(id).innerHTML = `${COIN}<b>${progress.coins()}</b>`;
 }
 progress.onChange(drawPurses);
-// +10 000 coins on the heroes' page, to try the wardrobe
-$('heroes-coins').addEventListener('click', () => progress.addCoins(10000));
+// dev server and DEBUG=TRUE builds: +10 000 coins on the heroes' page, to try the wardrobe
+if (import.meta.env.DEV || __DEBUG__) {
+  $('heroes-coins').hidden = false;
+  $('heroes-coins').addEventListener('click', () => progress.addCoins(10000));
+}
 // DEBUG=TRUE builds: the purse topped up to 100 000 on every start, to try the whole wardrobe
 if (__DEBUG__ && progress.coins() < 100000) progress.addCoins(100000 - progress.coins());
 const heroIds = heroesOf(TALE_LIST).map((h) => h.id);
