@@ -15,7 +15,7 @@ import { COIN, heroesOf } from './heroes';
 import TALES from 'virtual:tales';
 
 /** the shelf, in this order */
-const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid', 'kit-u-chobotyakh', 'try-vedmedi', 'duimovochka'];
+const SHELF = ['kolobok', 'ripka', 'rukavychka', 'koza-dereza', 'pan-kotskyi', 'sirko', 'lysychka', 'telesyk', 'kyrylo', 'kotyhoroshko', 'kotyhoroshko2', 'solomyanyi-bychok', 'kotyk-pivnyk', 'lysychka-zhuravel', 'kurochka-ryaba', 'mariyka-vedmid', 'kit-u-chobotyakh', 'try-vedmedi', 'duimovochka', 'troie-porosiat'];
 /** what the shelf knows of each tale (a few kilobytes); the tale itself is fetched when its card opens */
 const TALE_LIST: TaleInfo[] = SHELF.map((id) => TALES[id]);
 /** each tale's scenes: a chunk of its own, fetched on demand */
@@ -60,6 +60,7 @@ const COVER_VIEW: Record<string, string> = {
   kit_chobotar: '-125 -385 265 395',
   try_vedmedi: '-200 -250 410 260',
   duimovochka_cover: '-175 -480 350 490',
+  troie_porosiat: '-228 -258 456 270',
 };
 
 function cover(story: Pick<TaleInfo, 'cover'>) {
@@ -262,7 +263,8 @@ async function startTale(info: TaleInfo) {
   // the narrator finishes telling what it is about first
   if (s && aboutTalking) {
     $('loading-pct').textContent = '100%';
-    await about;
+    // (not for ever: a voice that got stuck on the device mustn't keep the tale waiting)
+    await Promise.race([about, new Promise((r) => setTimeout(r, 2000 + aboutPhrase(info).length * 90))]);
     if (waitingFor !== info) return;
   }
   if (!s) {

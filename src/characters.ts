@@ -25,6 +25,7 @@ import { kubelko, kurcha, ryaba, shkarlupa, shokolad, yaieshnia, yaiechko, zolot
 import { charivnytsia, duimovochka, duimovochka_cover, duimovochka_koroleva, elf, kovdrochka, krit, kvitka_bila, kvitochka, lastivka, latattia, lopukh, metelyk_bilyi, norka, norka_zyma, pelustka, promin, romashka, rybky, shkarlupka, steblo, synok, tarilka_vody, tulpan, tulpan_vidkrytyi, vazon, zernia, zhinka, zhuk, zhuky } from './puppets-duimovochka';
 import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
+import { hata_khmyzova, hata_podushkova, hata_solomiana, hata_tsehlyana, kazan, kazan_kryshka, kelma, khmyz, nafnaf, nifnif, nufnuf, opudalo, soloma, troie_porosiat, tsehla, vovk_kaska, vovk_pirya } from './puppets-porosiata';
 import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -238,7 +239,7 @@ const zayets = () => `
   )}
 </g>`;
 
-const vovk = () => `
+export const vovk = () => `
 <g data-part="body">
   <!-- tail -->
   <path d="M40 -100 Q110 -110 116 -40 Q90 -70 44 -70 Z" fill="#7d8790" ${stroke}/>
@@ -572,7 +573,24 @@ export const PUPPETS: Record<string, () => string> = {
   kvitochka,
   kvitka_bila,
   // the cover of «Дюймовочка»: she stands in the open tulip
-  duimovochka_cover,
+  duimovochka_cover,  nifnif,
+  nufnuf,
+  nafnaf,
+  hata_solomiana,
+  hata_khmyzova,
+  hata_tsehlyana,
+  hata_podushkova,
+  tsehla,
+  kelma,
+  soloma,
+  khmyz,
+  kazan,
+  kazan_kryshka,
+  opudalo,
+  vovk_pirya,
+  vovk_kaska,
+  // the cover of «Троє поросят»: the three brothers
+  troie_porosiat,
 };
 
 /** a fresh puppet (drawing `id`, playing the actor `actor`); the stage keeps its live parts */
@@ -786,5 +804,19 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   kovdrochka: { mouth: [0, -40], top: -90 },
   promin: { mouth: [0, -10], top: -100 },
   kvitochka: { mouth: [0, -126], top: -150 },
-  kvitka_bila: { mouth: [0, -410], top: -560 },
+  kvitka_bila: { mouth: [0, -410], top: -560 },  // «Троє поросят»: hands — what they carry (a bundle, the bricks) is held in front of the belly
+  nifnif: { mouth: [0, -200], top: -345, hands: [0, -96] },
+  nufnuf: { mouth: [0, -200], top: -365, hands: [0, -96] },
+  nafnaf: { mouth: [0, -200], top: -345, hands: [0, -96] },
+  // mouth = the door, where the piglets go in and tumble out
+  hata_solomiana: { mouth: [0, -20], top: -360 },
+  hata_khmyzova: { mouth: [0, -20], top: -360 },
+  hata_tsehlyana: { mouth: [-80, -20], top: -500 },
+  hata_podushkova: { mouth: [0, -20], top: -380 },
+  tsehla: { mouth: [0, -60], top: -110 },
+  kelma: { mouth: [0, -20], top: -40 },
+  soloma: { mouth: [0, -80], top: -150 },
+  khmyz: { mouth: [0, -60], top: -110 },
+  kazan: { mouth: [0, -150], top: -260 },
+  opudalo: { mouth: [0, -300], top: -420 },
 };

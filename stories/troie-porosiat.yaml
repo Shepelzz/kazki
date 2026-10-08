@@ -1,0 +1,982 @@
+# Троє поросят — казка з вибором (за Сергієм Михалковим). Головна лінія — як у відомій казці (жили
+# три поросята-брати, Ніф-Ніф, Нуф-Нуф і Наф-Наф, усе літо гралися; настала осінь — Наф-Наф кличе
+# будувати хатки на зиму, брати відмахуються: «Встигнемо!»; Ніф-Ніф збудував хатку з соломи, Нуф-Нуф —
+# з гілочок, швидко й співаючи, а Наф-Наф — міцний дім з цегли й каміння, з дубовими дверима й
+# засувом; брати сміються: «Свинарник чи фортеця?» — «Дім поросяти має бути фортецею!»; співають
+# «Нам не страшний сірий вовк, сірий вовк, сірий вовк!»; у лісі — вовк; брати тікають по хатках; вовк
+# дмухнув — солом'яна хатка розлетілася, Ніф-Ніф утік до Нуф-Нуфа; вовк дмухнув — розлетілась і хатка
+# з гілочок, обидва втекли до Наф-Нафа; «Відчиняйте, бо зламаю!» — «Не подумаємо відчиняти!»; вовк
+# дмухав-дмухав — дім стоїть, аж знесилився; поліз через димар — а Наф-Наф зняв кришку з казана з
+# окропом: вовк ускочив у казан, ошпарився, вилетів назад через димар і втік до лісу назавжди;
+# поросята співають); відгалуження — на виборах. Кроки ті самі, що в інших казках.
+#
+# Вовк — той самий vovk з «Колобка» (look: pirya — обліплений пір'ям, look: kaska — у будівельній
+# касці). Хатки — речі (hata_solomiana, hata_khmyzova, hata_tsehlyana, hata_podushkova): двері — їхній
+# «рот», туди входять (enter) і звідти вискакують. Нові ефекти: fx blow on: вовк who: [хатка] — вовк
+# дмухає, вітер летить на хатку; солом'яна, з гілочок і з подушок розлітаються на соломинки, гілочки
+# й пір'я (хто був усередині — вискакує), а кам'яна тільки труситься; fx scald on: вовк — ошпарився в
+# казані (пара, підскакує). Новий фон kamianytsia — у кам'яному домі: камін з димарем, казан (kazan)
+# стоїть у каміні на [600, 700], спереду (хто в ньому — видно від грудей); look: kryshka — з кришкою.
+# Цегляний дім: двері на x − 80, димар на x + 130, верх димаря на y − 490 (вовк лізе туди по даху).
+#
+# Після зміни текстів: npm run voice:all (Леся + ElevenLabs).
+
+title: Троє поросят
+cover: troie_porosiat
+about: "Жили-були три поросятка — Ніф-Ніф, Нуф-Нуф і Наф-Наф. Настала осінь, і кожен збудував собі хатку: з соломи, з гілочок і з цегли. А в лісі тим часом ходив сірий вовк…"
+
+voices:
+  narrator: { name: "", pitch: 1.1, rate: 1 }
+  nifnif:   { name: "Ніф-Ніф", pitch: 1.5, rate: 1.1, hello: "Привіт! Я Ніф-Ніф! Моя хатка — із соломи: раз-два — і готово! Ходімо гратися!" }
+  nufnuf:   { name: "Нуф-Нуф", pitch: 1.35, rate: 1.05, hello: "Привіт! Я Нуф-Нуф! Нам не страшний сірий вовк! Ну... майже не страшний. Хі-хі!" }
+  nafnaf:   { name: "Наф-Наф", pitch: 1.15, rate: 0.98, hello: "Добридень! Я Наф-Наф. Дім поросяти має бути фортецею! Хочеш, і тобі збудую?" }
+  vovk:     { name: "Вовк", pitch: 0.68, rate: 0.95 }
+
+endings:
+  pisenka:     { title: "Нам не страшний сірий вовк!", icon: "🐷" }
+  podushky:    { title: "Пір'яний вовк", icon: "🐔" }
+  opudalo:     { title: "Страшне опудало", icon: "🌾" }
+  budivelnyk:  { title: "Вовк-будівельник", icon: "🧱" }
+
+start: start
+
+scenes:
+  start:
+    - scene: luh
+    - show: nifnif
+      at: [520, 770]
+    - show: nafnaf
+      at: [800, 770]
+    - show: nufnuf
+      at: [1080, 770]
+    - narrator: "Привіт! Сьогодні — казка про трьох поросят. А ти допомагатимеш їм вибирати, що робити далі!"
+    - narrator: "Жили-були на світі три поросятка — три брати. Усі однакового зросту, кругленькі, рожеві, з веселими закрученими хвостиками."
+    - narrator: "Навіть імена в них були схожі."
+    - fx: tumble
+      on: nifnif
+    - nifnif: "Я — Ніф-Ніф!"
+    - fx: tumble
+      on: nufnuf
+    - nufnuf: "Я — Нуф-Нуф!"
+    - fx: tumble
+      on: nafnaf
+    - nafnaf: "А я — Наф-Наф!"
+    - narrator: "Усе літо поросята перекидалися в зеленій травичці, грілися на сонечку й хлюпалися в калюжах."
+    - fx: belly
+      on: nifnif
+    - fx: belly
+      on: nufnuf
+    - nifnif: "Хрю-хрю! Літо — найкраща пора!"
+    - fx: stand
+      on: nifnif
+    - fx: stand
+      on: nufnuf
+    - narrator: "Та ось минуло літо..."
+    - move: nifnif
+      to: [2000, 770]
+      flip: true
+      ms: 2200
+    - move: nafnaf
+      to: [2100, 770]
+      flip: true
+      ms: 2400
+    - move: nufnuf
+      to: [2200, 770]
+      flip: true
+      ms: 2400
+      wait: true
+    - next: osin
+
+  osin:
+    - scene: lis-osin
+    - show: nifnif
+      at: [500, 770]
+    - show: nufnuf
+      at: [760, 770]
+    - show: nafnaf
+      at: [1100, 770]
+    - narrator: "Настала осінь. Сонечко гріло вже не так, як улітку, а з дерев летіло жовте й червоне листя."
+    - fx: shiver
+      on: nafnaf
+    - nafnaf: "Брр! Пора й нам подумати про зиму. Я аж тремчу від холоду. Збудуймо собі хатки — щоб зимувати в теплі!"
+    - nifnif: "Встигнемо! До зими ще далеко. Ми ще погуляємо!"
+    - fx: tumble
+      on: nifnif
+    - nufnuf: "Ага! Коли треба буде, тоді й збудуємо!"
+    - nafnaf: "Ну, як хочете. А я вже зараз почну будувати."
+    - move: nafnaf
+      to: [2000, 770]
+      flip: true
+      ms: 2000
+      wait: true
+    - narrator: "Пішов Наф-Наф будувати, а Ніф-Ніф і Нуф-Нуф лишилися гуляти. Та з кожним днем ставало дедалі холодніше."
+    - fx: shiver
+      on: nifnif
+    - fx: shiver
+      on: nufnuf
+    - nifnif: "Брр! Ну гаразд, і я збудую хатку. Тільки швиденько — з соломи! Раз-два — і готово!"
+    - nufnuf: "А я — з гілочок! Теж раз-два — і гуляти!"
+    - move: nifnif
+      to: [-300, 770]
+      ms: 1800
+    - move: nufnuf
+      to: [-300, 770]
+      ms: 2200
+      wait: true
+    - next: budova
+
+  budova:
+    - scene: lis-osin
+    - show: soloma
+      at: [480, 770]
+    - show: khmyz
+      at: [1120, 770]
+    - show: nifnif
+      at: [1900, 770]
+    - show: nufnuf
+      at: [2100, 770]
+    - move: nifnif
+      to: [800, 770]
+      ms: 2000
+    - move: nufnuf
+      to: [1440, 770]
+      ms: 1600
+      wait: true
+    - narrator: "Набрав Ніф-Ніф оберемок соломи..."
+    - hide: soloma
+    - show: hata_solomiana
+      at: [480, 770]
+    - fx: build
+      on: hata_solomiana
+    - narrator: "...і за один день збудував собі хатку з соломи."
+    - nifnif: "Ось яка гарна хатка! Тепер можна й погуляти!"
+    - fx: tumble
+      on: nifnif
+    - narrator: "А Нуф-Нуф назбирав сухих гілочок..."
+    - hide: khmyz
+    - show: hata_khmyzova
+      at: [1120, 770]
+    - fx: build
+      on: hata_khmyzova
+    - narrator: "...та й склав собі хатку з гілочок. Співав і пританцьовував — швиденько впорався!"
+    - nufnuf: "Тра-ля-ля! Моя хатка з гілочок — найкраща в лісі хатка!"
+      sing: true
+    - fx: tumble
+      on: nufnuf
+    - choice: "Ніф-Ніф і Нуф-Нуф уже збудували свої хатки. Що ж вони робитимуть далі?"
+      options:
+        - label: "Піти подивитися, як будує Наф-Наф"
+          icon: "🧱"
+          next: fortetsia_budova
+        - label: "Збудувати ще й хатку з подушок"
+          icon: "🛏️"
+          next: podushky
+
+  fortetsia_budova:
+    - nifnif: "Ходімо подивимося, що там будує Наф-Наф!"
+    - move: nifnif
+      to: [2000, 770]
+      flip: true
+      ms: 2000
+    - move: nufnuf
+      to: [2100, 770]
+      flip: true
+      ms: 1400
+      wait: true
+    - next: nafbudova
+
+  nafbudova:
+    - scene: glade
+    - show: tsehla
+      at: [1460, 770]
+    - show: hata_tsehlyana
+      at: [1050, 770]
+      size: 0.05
+    - show: nafnaf
+      at: [700, 770]
+    - show: nifnif
+      at: [-300, 770]
+      flip: true
+    - show: nufnuf
+      at: [-480, 770]
+      flip: true
+    - move: nifnif
+      to: [400, 770]
+      ms: 2000
+    - move: nufnuf
+      to: [200, 770]
+      ms: 2000
+      wait: true
+    - narrator: "Пішли брати подивитися, що там будує Наф-Наф. А Наф-Наф носить цеглу, місить глину, кладе камінь до каменю."
+    - fx: bang
+      on: nafnaf
+      word: "ТУК-ТУК!"
+    - fx: dust
+      on: nafnaf
+    - nafnaf: "Цеглинка до цеглинки, камінчик до камінчика — буде міцний дім!"
+    - fx: build
+      on: hata_tsehlyana
+    - fx: bang
+      at: [1050, 560]
+      word: "ТУК-ТУК!"
+    - narrator: "Ріс дім поволі, зате який міцний! З цегли й каміння, з дубовими дверима й залізним засувом. Ще й з димарем, а в хаті — камін."
+    - nifnif: "Хі-хі! Що це ти будуєш, Наф-Нафе? Свинарник чи фортецю?"
+    - nafnaf: "Дім поросяти має бути фортецею! Бо в лісі живе сірий вовк."
+    - nufnuf: "Вовк? Ха-ха! Нема тут ніякого вовка! Ти просто боягуз!"
+    - narrator: "І заспівали Ніф-Ніф і Нуф-Нуф, ще й затанцювали:"
+    - nifnif: "Нам не страшний сірий вовк, сірий вовк, сірий вовк!"
+      sing: true
+    - fx: tumble
+      on: nifnif
+    - fx: tumble
+      on: nufnuf
+    - nufnuf: "Нам не страшний сірий вовк, сірий вовк, сірий вовк!"
+      sing: true
+    - nafnaf: "Співайте-співайте. А я ще віконце доробити мушу."
+    - narrator: "Махнули брати хвостиками — та й побігли до лісу гуляти."
+    - move: nifnif
+      to: [-300, 770]
+      flip: false
+      ms: 1600
+    - move: nufnuf
+      to: [-300, 770]
+      flip: false
+      ms: 1400
+      wait: true
+    - next: lis
+
+  lis:
+    - scene: deep
+    - show: bush
+      at: [300, 770]
+    - show: nifnif
+      at: [1900, 770]
+    - show: nufnuf
+      at: [2100, 770]
+    - move: nifnif
+      to: [880, 770]
+      ms: 2000
+    - move: nufnuf
+      to: [1150, 770]
+      ms: 2000
+      wait: true
+    - narrator: "Бігають брати лісом, стрибають через пеньки та співають на весь ліс:"
+    - nufnuf: "Нам не страшний сірий вовк, сірий вовк, сірий вовк!"
+      sing: true
+    - fx: tumble
+      on: nufnuf
+    - fx: rustle
+      on: bush
+    - show: vovk
+      at: [280, 770]
+      flip: true
+    - narrator: "Аж раптом — зашелестіли кущі... і вийшов із-за них справжній сірий вовк! Очі злі, зуби гострі."
+    - move: vovk
+      to: [560, 770]
+      ms: 1200
+      wait: true
+    - fx: bang
+      on: vovk
+      word: "Р-Р-Р!"
+    - vovk: "Ага! Поросятка! Ото буде мені смачна вечеря!"
+    - fx: shiver
+      on: nifnif
+    - fx: shiver
+      on: nufnuf
+    - nifnif: "Ой! Вовк! Справжній!"
+    - choice: "Ой, вовк! Що ж робити поросятам?"
+      options:
+        - label: "Тікати до своїх хаток"
+          icon: "🏃"
+          next: vtecha
+        - label: "Зробити опудало"
+          icon: "🌾"
+          next: opudalo
+
+  vtecha:
+    - nufnuf: "Тікаймо! Кожен до своєї хатки!"
+    - move: nifnif
+      to: [2100, 770]
+      flip: true
+      ms: 1300
+    - move: nufnuf
+      to: [2100, 770]
+      flip: true
+      ms: 1100
+    - fx: whoosh
+      on: nifnif
+    - fx: whoosh
+      on: nufnuf
+    - fx: dust
+      on: nufnuf
+    - vovk: "Стійте! Куди ж ви?"
+    - move: vovk
+      to: [2200, 770]
+      ms: 1800
+      wait: true
+    - next: soloma
+
+  soloma:
+    - scene: lis-osin
+    - show: hata_solomiana
+      at: [480, 770]
+    - show: hata_khmyzova
+      at: [1120, 770]
+    - show: nifnif
+      at: [-250, 770]
+      flip: true
+    - show: nufnuf
+      at: [-450, 770]
+      flip: true
+    - fx: whoosh
+      on: nifnif
+    - enter: nifnif
+      into: hata_solomiana
+    - fx: whoosh
+      on: nufnuf
+    - enter: nufnuf
+      into: hata_khmyzova
+    - narrator: "Прибіг Ніф-Ніф до своєї солом'яної хатки й зачинив двері. А Нуф-Нуф — до своєї, з гілочок."
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [110, 770]
+      ms: 1400
+      wait: true
+    - vovk: "Поросятко, поросятко, відчини! Я тільки погляну, яка в тебе хатка!"
+    - nifnif: "Ні! Не відчиню!"
+    - vovk: "Ах так? Ну то я як дмухну — і твоя хатка розлетиться!"
+    - narrator: "Набрав вовк повні груди повітря та як дмухне:"
+    - vovk: "Ф-ф-ф-у-у-у!"
+    - fx: bang
+      on: hata_solomiana
+      word: "ФУУУ!"
+    - fx: blow
+      on: vovk
+      who: [hata_solomiana]
+    - narrator: "Солом'яна хатка вмить розлетілася! Тільки соломинки по лісу закружляли."
+    - nifnif: "Ой-ой-ой! Нуф-Нуфе, відчини!"
+    - fx: whoosh
+      on: nifnif
+    - enter: nifnif
+      into: hata_khmyzova
+    - narrator: "Кинувся Ніф-Ніф до брата, у хатку з гілочок. А вовк — за ним!"
+    - move: vovk
+      to: [790, 770]
+      ms: 1300
+      wait: true
+    - vovk: "Ну, поросятка, відчиняйте!"
+    - nufnuf: "Не відчинимо!"
+    - vovk: "Ах так? То я й цю хатку здмухну!"
+    - narrator: "Набрав вовк повітря — та як дмухне щосили:"
+    - vovk: "Ф-ф-ф-у-у-у!"
+    - fx: bang
+      on: hata_khmyzova
+      word: "ФУУУ!"
+    - fx: blow
+      on: vovk
+      who: [hata_khmyzova]
+    - narrator: "Затріщали гілочки — і хатка з гілочок теж розлетілася!"
+    - nufnuf: "Тікаймо до Наф-Нафа! У нього дім міцний!"
+    - move: nifnif
+      to: [2200, 770]
+      flip: true
+      ms: 1200
+    - move: nufnuf
+      to: [2200, 770]
+      flip: true
+      ms: 1100
+    - fx: whoosh
+      on: nufnuf
+    - fx: dust
+      on: nufnuf
+    - vovk: "Не втечете!"
+    - move: vovk
+      to: [2300, 770]
+      flip: true
+      ms: 1700
+      wait: true
+    - next: fortetsia
+
+  fortetsia:
+    - scene: glade
+    - show: hata_tsehlyana
+      at: [1050, 770]
+    - fx: tuck
+      on: hata_tsehlyana
+      who: [nafnaf]
+    - show: nifnif
+      at: [-250, 770]
+      flip: true
+    - show: nufnuf
+      at: [-420, 770]
+      flip: true
+    - move: nifnif
+      to: [800, 770]
+      ms: 1300
+    - fx: whoosh
+      on: nifnif
+    - move: nufnuf
+      to: [620, 770]
+      ms: 1300
+      wait: true
+    - nifnif: "Наф-Нафе! Відчини! Вовк за нами женеться!"
+    - narrator: "Відчинив Наф-Наф двері, пустив братів..."
+    - enter: nifnif
+      into: hata_tsehlyana
+    - enter: nufnuf
+      into: hata_tsehlyana
+    - fx: bang
+      at: [970, 640]
+      word: "КЛАЦ!"
+    - narrator: "...і зачинив двері на міцний засув."
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [560, 770]
+      ms: 1700
+      wait: true
+    - narrator: "Аж ось і вовк прибіг."
+    - fx: hit
+      on: vovk
+      who: [hata_tsehlyana]
+      word: "ГУП-ГУП!"
+    - vovk: "Відчиняйте, бо зламаю!"
+    - nafnaf: "Ні! Не подумаємо відчиняти!"
+    - narrator: "А поросята сидять у кам'яному домі й співають:"
+    - nifnif: "Нам не страшний сірий вовк, сірий вовк, сірий вовк!"
+      sing: true
+    - vovk: "Ах так?! Ну, начувайтеся! Зараз я цю хату як дмухну!"
+    - fx: bang
+      on: hata_tsehlyana
+      word: "ФУУУ!"
+    - fx: blow
+      on: vovk
+      who: [hata_tsehlyana]
+    - narrator: "Дмухнув вовк — а дім стоїть. Дмухнув ще раз — стоїть!"
+    - fx: blow
+      on: vovk
+      who: [hata_tsehlyana]
+    - narrator: "Дмухав-дмухав вовк, аж знесилився. А кам'яному домові — хоч би що!"
+    - fx: sit
+      on: vovk
+    - vovk: "Ух... Ух... Не можу більше дмухати..."
+    - narrator: "Сидить вовк, відсапується. А тоді глянув на дах — і придумав хитрість."
+    - fx: stand
+      on: vovk
+    - vovk: "Ага! Там димар! Через димар я до них і залізу!"
+    - move: vovk
+      to: [1340, 770]
+      ms: 1300
+      wait: true
+    - move: vovk
+      to: [1290, 485]
+      hop: true
+      ms: 800
+      wait: true
+    - move: vovk
+      to: [1180, 282]
+      hop: true
+      ms: 700
+      wait: true
+    - narrator: "Поліз вовк на дах — та й до самого димаря."
+    - fx: whoosh
+      on: vovk
+    - hide: vovk
+    - next: kamin
+
+  kamin:
+    - scene: kamianytsia
+    - show: kazan
+      at: [600, 700]
+      look: kryshka
+    - show: nafnaf
+      at: [900, 770]
+    - show: nifnif
+      at: [1150, 770]
+    - show: nufnuf
+      at: [1380, 770]
+    - narrator: "А в домі в Наф-Нафа тепло: палає камін, а на вогні кипить великий казан з водою."
+    - fx: bang
+      at: [600, 140]
+      word: "ТУП-ТУП!"
+    - nafnaf: "Тихо! Чуєте? Хтось лізе по даху!"
+    - fx: shiver
+      on: nifnif
+    - nufnuf: "Ой, це вовк! Він хоче залізти через димар!"
+    - choice: "Вовк лізе в димар! Що ж зробить Наф-Наф?"
+      options:
+        - label: "Зняти кришку з казана"
+          icon: "🍲"
+          next: okrip
+        - label: "Покликати вовка на вечерю"
+          icon: "🍽️"
+          next: vecheria
+
+  okrip:
+    - nafnaf: "Не бійтеся, братики! Зараз ми його зустрінемо!"
+    - move: nafnaf
+      to: [720, 770]
+      flip: false
+      ms: 900
+      wait: true
+    - hide: kazan
+    - show: kazan
+      at: [600, 700]
+    - narrator: "Підбіг Наф-Наф до каміна й зняв з казана кришку. А вода в казані — так і кипить, так і булькає!"
+    - move: nafnaf
+      to: [940, 770]
+      flip: true
+      ms: 700
+      wait: true
+    - show: vovk
+      at: [600, 330]
+    - move: vovk
+      to: [600, 690]
+      ms: 450
+      wait: true
+    - fx: bang
+      on: kazan
+      word: "ПЛЮХ!"
+    - narrator: "А вовк — шусть у димар... і прямісінько в казан з окропом!"
+    - fx: scald
+      on: vovk
+    - fx: bang
+      at: [600, 320]
+      word: "АЙ-АЙ!"
+    - vovk: "Ай-ай-ай! Гаряче! Ой, пече! Ой-ой-ой!"
+    - narrator: "Ох і ошпарився ж вовк! Очі на лоба полізли, шерсть дибки стала."
+    - fx: scald
+      on: vovk
+    - fx: whoosh
+      on: vovk
+    - move: vovk
+      to: [600, 160]
+      ms: 400
+      wait: true
+    - hide: vovk
+    - narrator: "З диким виттям вилетів він назад через димар — тільки його й бачили!"
+    - next: vtik
+
+  vtik:
+    - scene: glade
+    - show: hata_tsehlyana
+      at: [1050, 770]
+    - show: vovk
+      at: [1180, 282]
+    - fx: bang
+      at: [1180, 200]
+      word: "АЙ-АЙ!"
+    - fx: scald
+      on: vovk
+    - move: vovk
+      to: [1330, 490]
+      hop: true
+      ms: 600
+      wait: true
+    - move: vovk
+      to: [1480, 770]
+      hop: true
+      ms: 600
+      wait: true
+    - fx: shake
+      on: vovk
+    - narrator: "Скотився вовк із даху, гепнувся на землю..."
+    - vovk: "Ой-ой-ой! Більше ніколи-ніколи до цих поросят не прийду!"
+    - move: vovk
+      to: [-400, 770]
+      flip: false
+      ms: 2000
+    - fx: whoosh
+      on: vovk
+    - fx: dust
+      on: vovk
+    - narrator: "...та як дремене до лісу! Біг, аж курява стояла. І відтоді вовк до поросят більше ніколи не приходив."
+    - next: pisnia
+
+  pisnia:
+    - scene: glade
+    - show: hata_tsehlyana
+      at: [1050, 770]
+    - fx: tuck
+      on: hata_tsehlyana
+      who: [nafnaf, nifnif, nufnuf]
+    - fx: popout
+      on: hata_tsehlyana
+      who: [nafnaf, nifnif, nufnuf]
+    - narrator: "Вийшли поросята з дому — а вовка вже й сліду нема."
+    - nifnif: "Наф-Нафе, ти мав рацію! Дім поросяти має бути фортецею!"
+    - nufnuf: "Більше ми лінуватися не будемо!"
+    - nafnaf: "А тепер — заспіваймо всі разом!"
+    - narrator: "І заспівали три брати веселу пісеньку:"
+    - nafnaf: "Нам не страшний сірий вовк, сірий вовк, сірий вовк!"
+      sing: true
+    - fx: tumble
+      on: nifnif
+    - fx: tumble
+      on: nufnuf
+    - fx: tumble
+      on: nafnaf
+    - fx: hearts
+      on: nafnaf
+    - narrator: "Відтоді три брати жили разом у міцному кам'яному домі. І не страшні їм були ні вовк, ні зима!"
+    - ending: pisenka
+
+  # ---------- відгалуження: хатка з подушок ----------
+
+  podushky:
+    - nifnif: "Ой, а солома колеться!"
+    - nufnuf: "А гілочки дряпаються! Знаєш що? Збудуймо хатку з подушок — м'якеньку-м'якеньку!"
+    - fx: tumble
+      on: nifnif
+    - move: nifnif
+      to: [2100, 770]
+      flip: true
+      ms: 1800
+    - move: nufnuf
+      to: [2100, 770]
+      flip: true
+      ms: 1300
+      wait: true
+    - next: podushky_budova
+
+  podushky_budova:
+    - scene: luh
+    - show: hata_podushkova
+      at: [800, 770]
+      size: 0.05
+    - show: nifnif
+      at: [-250, 770]
+      flip: true
+    - show: nufnuf
+      at: [-450, 770]
+      flip: true
+    - move: nifnif
+      to: [400, 770]
+      ms: 1600
+    - move: nufnuf
+      to: [1230, 770]
+      ms: 2600
+      wait: true
+    - narrator: "Позносили Ніф-Ніф і Нуф-Нуф усі подушки, які тільки знайшли: рожеві, блакитні, в горошок. І склали з них хатку."
+    - fx: build
+      on: hata_podushkova
+    - nifnif: "Ох, яка м'якенька! Тут і зима не страшна!"
+    - nufnuf: "Ходімо спатоньки!"
+    - enter: nifnif
+      into: hata_podushkova
+    - enter: nufnuf
+      into: hata_podushkova
+    - narrator: "Залізли поросята в подушкову хатку — та й солодко заснули."
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [260, 770]
+      ms: 1700
+      wait: true
+    - narrator: "Аж тут — сірий вовк! Іде лісом, принюхується..."
+    - vovk: "Ага! Хто це хропе в подушках? Поросятка! А ну, відчиняйте!"
+    - nufnuf: "Ой! Хто там? Не відчинимо!"
+    - vovk: "То я як дмухну — і ваша хатка розлетиться!"
+    - vovk: "Ф-ф-ф-у-у-у!"
+    - fx: bang
+      on: hata_podushkova
+      word: "ФУУУ!"
+    - fx: blow
+      on: vovk
+      who: [hata_podushkova]
+    - narrator: "Розлетілися подушки, полопалися — і пір'я здійнялося хмарою! Закружляло, закружляло... та й обліпило вовка з голови до хвоста."
+    - hide: vovk
+    - show: vovk
+      at: [260, 770]
+      flip: true
+      look: pirya
+    - fx: bang
+      on: vovk
+      word: "АПЧХИ!"
+    - vovk: "Апчхи! Апчхи! Ой, пір'я в носі! Апчхи!"
+    - nifnif: "Ха-ха! Дивись, Нуф-Нуфе! Яка велика сіра курка!"
+    - nufnuf: "Курочко, курочко, а яєчко ти знесеш? Ха-ха-ха!"
+    - fx: tumble
+      on: nifnif
+    - fx: tumble
+      on: nufnuf
+    - vovk: "Я не курка! Я страшний сірий вовк! Апчхи!"
+    - narrator: "Та хто ж злякається вовка, коли він увесь у пір'ї й чхає без упину? Засоромився вовк — та й побіг до лісу, обтрушуючись."
+    - move: vovk
+      to: [-400, 770]
+      flip: false
+      ms: 1800
+    - fx: whoosh
+      on: vovk
+    - pause: 800
+    - next: podushky_kinets
+
+  podushky_kinets:
+    - scene: glade
+    - show: hata_tsehlyana
+      at: [1050, 770]
+    - show: nafnaf
+      at: [760, 770]
+    - show: nifnif
+      at: [-250, 770]
+      flip: true
+    - show: nufnuf
+      at: [-430, 770]
+      flip: true
+    - move: nifnif
+      to: [480, 770]
+      ms: 1800
+    - move: nufnuf
+      to: [270, 770]
+      ms: 1800
+      wait: true
+    - nifnif: "Наф-Нафе! А ми вовка на курку перетворили!"
+    - nafnaf: "Ото сміху! Тільки ж хатки у вас тепер нема. Ходіть жити до мене — у мене дім міцний!"
+    - nufnuf: "Ура! А з пір'я ми пошиємо нові подушки!"
+    - fx: hearts
+      on: nafnaf
+    - narrator: "Позбирали брати пір'я, пошили нові подушки — і зажили втрьох у кам'яному домі. А вовк відтоді як побачить пір'їнку — то чхає й тікає!"
+    - ending: podushky
+
+  # ---------- відгалуження: опудало ----------
+
+  opudalo:
+    - nifnif: "Я знаю! Зробімо опудало — вовк подумає, що то мисливець!"
+    - nufnuf: "Швидше, до моєї хатки!"
+    - move: nifnif
+      to: [2100, 770]
+      flip: true
+      ms: 1300
+    - move: nufnuf
+      to: [2100, 770]
+      flip: true
+      ms: 1100
+    - fx: whoosh
+      on: nifnif
+    - vovk: "Куди ж ви? Однаково наздожену!"
+    - move: vovk
+      to: [2200, 770]
+      ms: 2600
+      wait: true
+    - next: opudalo_robota
+
+  opudalo_robota:
+    - scene: lis-osin
+    - show: hata_solomiana
+      at: [480, 770]
+    - show: opudalo
+      at: [1000, 770]
+      size: 0.05
+    - show: nifnif
+      at: [-250, 770]
+      flip: true
+    - show: nufnuf
+      at: [-430, 770]
+      flip: true
+    - move: nifnif
+      to: [760, 770]
+      ms: 1300
+    - move: nufnuf
+      to: [600, 770]
+      ms: 1300
+      wait: true
+    - fx: rustle
+      on: hata_solomiana
+    - narrator: "Висмикнули поросята з солом'яної хатки оберемок соломи, знайшли палицю, стару латану курточку й бриль — і швиденько змайстрували опудало."
+    - fx: build
+      on: opudalo
+    - move: nifnif
+      to: [960, 770]
+      ms: 600
+    - move: nufnuf
+      to: [1060, 770]
+      ms: 900
+      wait: true
+    - fx: sit
+      on: nifnif
+    - fx: sit
+      on: nufnuf
+    - narrator: "А самі — шусть за опудало! Присіли й сидять тихенько."
+    - show: vovk
+      at: [-300, 770]
+      flip: true
+    - move: vovk
+      to: [380, 770]
+      ms: 1700
+      wait: true
+    - vovk: "Ну, поросятка, де ви сховалися? Я вас однаково знайду!"
+    - narrator: "І тут Нуф-Нуф як заговорить з-за опудала грубим-прегрубим голосом:"
+    - nufnuf: "Хто це тут ходить по моєму лісі?! Я — мисливець! А ну, геть звідси, сірий, бо як стрельну!"
+    - fx: rock
+      on: opudalo
+    - narrator: "А Ніф-Ніф як ляснув палицею по колоді!"
+    - fx: bang
+      on: opudalo
+      word: "БАХ!"
+    - fx: shiver
+      on: vovk
+    - vovk: "Ой! Мисливець! Рятуйте!"
+    - move: vovk
+      to: [-400, 770]
+      flip: false
+      ms: 1300
+    - fx: whoosh
+      on: vovk
+    - fx: dust
+      on: vovk
+    - narrator: "Вовк так перелякався, що аж хвоста підібгав — і дременув до лісу, не озираючись."
+    - fx: stand
+      on: nifnif
+    - fx: stand
+      on: nufnuf
+    - move: nifnif
+      to: [700, 770]
+      hop: true
+      ms: 700
+    - move: nufnuf
+      to: [1320, 770]
+      hop: true
+      ms: 700
+      wait: true
+    - nufnuf: "Ха-ха! Нам не страшний сірий вовк, сірий вовк, сірий вовк!"
+      sing: true
+    - fx: tumble
+      on: nifnif
+    - nifnif: "А тепер ходімо до Наф-Нафа — хай знає, які ми хитрі!"
+    - move: nifnif
+      to: [2100, 770]
+      flip: true
+      ms: 1800
+    - move: nufnuf
+      to: [2100, 770]
+      flip: true
+      ms: 1300
+      wait: true
+    - next: opudalo_kinets
+
+  opudalo_kinets:
+    - scene: glade
+    - show: tsehla
+      at: [300, 770]
+    - show: hata_tsehlyana
+      at: [1050, 770]
+    - show: nafnaf
+      at: [700, 770]
+    - show: nifnif
+      at: [-250, 770]
+      flip: true
+    - show: nufnuf
+      at: [-430, 770]
+      flip: true
+    - move: nifnif
+      to: [480, 770]
+      ms: 1500
+    - move: nufnuf
+      to: [130, 770]
+      ms: 1700
+      wait: true
+    - nifnif: "Наф-Нафе! Ми вовка опудалом налякали!"
+    - nafnaf: "Ото молодці, хитруни! Тільки опудало — то на раз. Давайте разом збудуємо вам міцні хатки — з цегли!"
+    - nufnuf: "Давайте! Цеглинка до цеглинки!"
+    - fx: bang
+      on: nafnaf
+      word: "ТУК-ТУК!"
+    - fx: dust
+      on: tsehla
+    - fx: hearts
+      on: nifnif
+    - narrator: "Відтоді на краю лісу стоять три кам'яні хатки. А біля них — опудало в брилі, вартує. І вовк туди й носа не показує!"
+    - ending: opudalo
+
+  # ---------- відгалуження: вовка — на вечерю ----------
+
+  vecheria:
+    - nafnaf: "Вовче! Не лізь у димар — там вогонь і окріп, ошпаришся! Заходь краще в двері, як гість. Повечеряємо разом!"
+    - nifnif: "Наф-Нафе, ти що?!"
+    - nafnaf: "Нічого. Хто ситий — той не злий."
+    - narrator: "Довго вовк мовчав на даху. А тоді зліз — і тихенько постукав у двері."
+    - fx: bang
+      at: [1500, 520]
+      word: "ТУК-ТУК!"
+    - next: vecheria_stil
+
+  vecheria_stil:
+    - scene: kamianytsia
+    - show: kazan
+      at: [600, 700]
+    - show: nafnaf
+      at: [880, 770]
+    - show: nifnif
+      at: [1060, 770]
+    - show: nufnuf
+      at: [1220, 770]
+    - show: kasha
+      at: [970, 628]
+    - show: halushky
+      at: [1150, 628]
+    - show: stil_vedmediv
+      at: [1060, 770]
+    - show: vovk
+      at: [1950, 770]
+    - move: vovk
+      to: [1440, 770]
+      ms: 1700
+      wait: true
+    - narrator: "Відчинив Наф-Наф двері — а на порозі вовк. Голодний, змерзлий, хвіст униз."
+    - vovk: "Добрий вечір... А можна... справді повечеряти?"
+    - nafnaf: "Сідай, вовче! Ось каша гаряча, а ось галушки."
+    - fx: munch
+      on: vovk
+    - narrator: "Їв вовк, їв — аж за вухами лящало."
+    - fx: munch
+      on: vovk
+    - vovk: "Ох, як смачно! А я ж не такий уже й злий. Просто холодно мені в лісі, і хатки в мене нема..."
+    - nifnif: "І в нас уже нема! Ти ж наші хатки здмухнув!"
+    - vovk: "Ой... Вибачте, поросятка. Я... я вам нові збудую! Я ж дужий!"
+    - fx: hearts
+      on: nafnaf
+    - nafnaf: "От і домовились! Завтра й почнемо — а я тебе навчу."
+    - next: budivnytstvo
+
+  budivnytstvo:
+    - scene: lis-osin
+    - show: tsehla
+      at: [180, 770]
+    - show: hata_tsehlyana
+      at: [560, 770]
+      size: 0.05
+    - show: vovk
+      at: [960, 770]
+      look: kaska
+    - show: nafnaf
+      at: [1170, 770]
+    - show: nifnif
+      at: [1340, 770]
+    - show: nufnuf
+      at: [1500, 770]
+    - narrator: "Уранці вдягнув вовк будівельну каску — і взявся до роботи. А Наф-Наф показує: цеглинка до цеглинки, а між ними — глина."
+    - fx: bang
+      on: vovk
+      word: "ТУК-ТУК!"
+    - fx: build
+      on: hata_tsehlyana
+    - nafnaf: "Молодець, вовче! Рівненько!"
+    - vovk: "А я ще й подмухаю — щоб глина швидше висохла! Ф-ф-фу!"
+    - fx: blow
+      on: vovk
+      who: [hata_tsehlyana]
+    - narrator: "Збудував вовк Ніф-Нифові кам'яну хатку, Нуф-Нуфові — кам'яну хатку, а собі — найбільшу, з високим димарем."
+    - nifnif: "Ура! Вовк-будівельник!"
+    - fx: tumble
+      on: nifnif
+    - nufnuf: "Нам не страшний сірий вовк, сірий вовк, сірий вовк!"
+      sing: true
+    - vovk: "Бо я вже не страшний! Я тепер — будівельник!"
+    - fx: hearts
+      on: vovk
+    - narrator: "Відтоді в лісі ніхто не боїться сірого вовка. Бо як треба кому хатку збудувати — кличуть вовка-будівельника!"
+    - ending: budivelnyk

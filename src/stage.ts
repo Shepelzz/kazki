@@ -96,6 +96,35 @@ interface Move {
   done: () => void;
 }
 
+/**
+ * Writing on a puppet or its clothes reads the right way round whichever way it faces: each
+ * <text> is mirrored back round its own middle when the puppet is flipped. False while a piece of
+ * writing can't be measured yet (not on screen): tried again next frame.
+ */
+function keepTextReadable(g: Element, flipped: boolean): boolean {
+  let done = true;
+  for (const t of Array.from(g.querySelectorAll<SVGTextElement>('text'))) {
+    if (t.getAttribute('data-flip') === String(flipped)) continue;
+    const own = t.getAttribute('data-tf') ?? (t.getAttribute('transform') || '');
+    let cx: number;
+    try {
+      const b = t.getBBox();
+      if (!b.width) {
+        done = false;
+        continue;
+      }
+      cx = b.x + b.width / 2;
+    } catch {
+      done = false;
+      continue;
+    }
+    t.setAttribute('data-tf', own);
+    t.setAttribute('transform', flipped ? `${own} translate(${(cx * 2).toFixed(1)} 0) scale(-1 1)`.trim() : own);
+    t.setAttribute('data-flip', String(flipped));
+  }
+  return done;
+}
+
 interface Actor {
   id: string;
   g: SVGGElement;
@@ -123,6 +152,8 @@ interface Actor {
   wobble: number;
   /** a thing, not a creature: doesn't walk or blink */
   prop: boolean;
+  /** which way its writing was last turned to read (keepTextReadable); unset: to do */
+  textFlip?: boolean;
   /** lying down: 'lie' — flat (the wolf behind the log), 'roll' — rolling side to side (the cat, full of presents) */
   pose: '' | 'lie' | 'roll' | 'sit' | 'back';
   /** asleep: eyes shut, the head nods, "z-z-z" floats up (wakes when it moves or opens its eyes) */
@@ -149,9 +180,9 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky'];
+const PROPS = ['bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'tsehla', 'kelma', 'soloma', 'khmyz', 'kazan', 'opudalo'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
-const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv', 'promin', 'kovdrochka'];
+const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv', 'promin', 'kovdrochka', 'kazan', 'opudalo'];
 /**
  * Reactions to a tap: each a little movement over its time, p 0→1, smooth at both ends (env).
  * lift up, rot in degrees (minus leans forward, the way it faces), ox along its facing, sx/sy squash.
@@ -254,6 +285,9 @@ const REACTIONS: Record<string, string[]> = {
   krit: ['scratch', 'no', 'stretch', 'sneeze'],
   lastivka: ['flip', 'stretch', 'wiggle', 'hop'],
   elf: ['bow', 'flip', 'hops', 'dance'],
+  nifnif: ['hops', 'giggle', 'spin', 'wiggle'],
+  nufnuf: ['dance', 'sneeze', 'flip', 'hop'],
+  nafnaf: ['flex', 'bow', 'no', 'stretch'],
 };
 
 /** one heave-ho of pulling (seconds) */
@@ -263,7 +297,16 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
-const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri', 'tarilka_vody', 'lopukh', 'norka', 'kvitka_bila'];
+const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri', 'tarilka_vody', 'lopukh', 'norka', 'kvitka_bila', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova'];
+/**
+ * What the wolf's blowing (fx blow) knocks apart, and the bits that fly off it: straw, twigs,
+ * feathers out of the pillows. Anything else (the brick house) only shakes.
+ */
+const BLOWN: Record<string, { colors: string[]; shape: 'straw' | 'twig' | 'feather' }> = {
+  hata_solomiana: { colors: ['#f2cf66', '#e9bd4c', '#d9a93a'], shape: 'straw' },
+  hata_khmyzova: { colors: ['#8b5e34', '#6d4426', '#7a5230', '#7cb342'], shape: 'twig' },
+  hata_podushkova: { colors: ['#ffffff', '#ffffff', '#f8bbd0', '#bbdefb', '#fff59d'], shape: 'feather' },
+};
 
 interface Particle {
   el: SVGElement;
@@ -1170,7 +1213,71 @@ function teplyiKrai() {
   );
 }
 
+// ---------- «Троє поросят» ----------
+
+/**
+ * Inside Naf-Naf's brick house: whitewashed walls with bricks showing, a big stone fireplace on the
+ * left (its flue goes up through the ceiling: the wolf comes down it), the fire, an iron trivet the
+ * pot (kazan, at x 600, y 700) stands on; a window, shelves of jars, a round rug.
+ */
+function kamianytsia() {
+  const F = GROUND - 40;
+  let planks = '';
+  for (let x = -1600; x < 3200; x += 120) planks += `<path d="M${x} ${F} L${x - 300} 6000" stroke="#8a5e34" stroke-width="3"/>`;
+  // patches of bare brick in the whitewash
+  const bricks = (x: number, y: number, n: number) =>
+    Array.from({ length: n }, (_, r) => Array.from({ length: 3 }, (_, i) => `<rect x="${x + i * 46 + (r % 2 ? 23 : 0)}" y="${y + r * 24}" width="44" height="22" rx="3" fill="#c9603f" stroke="#8e3a26" stroke-width="3"/>`).join('')).join('');
+  let stones = '';
+  for (let r = 0; r < 9; r++)
+    for (let i = 0; i < 6; i++) {
+      const x = 290 + i * 80 + (r % 2 ? 40 : 0);
+      const y = 380 + r * 40;
+      if (x > 740) continue;
+      stones += `<rect x="${x}" y="${y}" width="76" height="36" rx="12" fill="${(i + r) % 3 ? '#a8a29a' : '#bdb7ae'}" stroke="#6d6760" stroke-width="4"/>`;
+    }
+  return `
+  <rect x="-1600" y="-1200" width="4800" height="${F + 1200}" fill="#f6eedf"/>
+  ${bricks(900, 120, 3)}${bricks(1380, 520, 2)}${bricks(-120, 300, 3)}
+  <rect x="-1600" y="${F}" width="4800" height="6000" fill="#a8743f"/>${planks}
+  <rect x="-1600" y="${F - 16}" width="4800" height="20" fill="#7a5232"/>
+  <rect x="-1600" y="-3000" width="4800" height="2960" fill="#b98a5a"/>
+  <rect x="-1600" y="-40" width="4800" height="70" fill="#7a5232"/>
+  <!-- the flue up through the ceiling, the stone fireplace (drawn round x 520, put at 600, smaller) -->
+  <g transform="translate(600 ${F}) scale(.76) translate(-520 ${-F})">
+  <rect x="410" y="-1200" width="220" height="1600" fill="#bdb7ae" stroke="#6d6760" stroke-width="6"/>
+  ${Array.from({ length: 30 }, (_, r) => `<path d="M410 ${370 - r * 52} H630 M${r % 2 ? 480 : 520} ${370 - r * 52} v-52 M${r % 2 ? 560 : 600} ${370 - r * 52} v-52" stroke="#8d877f" stroke-width="3"/>`).join('')}
+  <rect x="280" y="370" width="480" height="${F - 370}" fill="#a8a29a"/>
+  ${stones}
+  <rect x="262" y="350" width="516" height="34" rx="8" fill="#8d6e63" stroke="#5a3a22" stroke-width="5"/>
+  <path d="M370 ${F} V560 Q520 450 670 560 V${F} Z" fill="#2a1a12" stroke="#5a3a22" stroke-width="6"/>
+  <ellipse data-glow="1" cx="520" cy="${F - 40}" rx="140" ry="70" fill="#ff9a3c" opacity=".5"/>
+  <g transform="translate(520 ${F - 4})">
+    <path data-flame="1" d="M-120 0 Q-130 -50 -100 -76 Q-92 -40 -70 -32 Q-80 -80 -40 -100 Q-40 -50 -10 -44 Q-10 -90 20 -100 Q30 -50 60 -44 Q60 -84 96 -90 Q130 -40 110 0 Z" fill="#ff7a1a"/>
+    <path data-flame="1" d="M-90 0 Q-96 -30 -70 -50 Q-62 -26 -44 -22 Q-50 -56 -16 -70 Q-10 -30 14 -26 Q20 -62 50 -66 Q70 -30 80 0 Z" fill="#ffd23f"/>
+    <rect x="-110" y="-10" width="220" height="14" rx="6" fill="#4e2f18"/>
+  </g>
+  <path d="M410 ${F} L440 690 H600 L630 ${F}" fill="none" stroke="#263238" stroke-width="10" stroke-linejoin="round"/>
+  <!-- things on the mantelpiece: a clock, two candles -->
+  <circle cx="520" cy="318" r="30" fill="#fff8e1" stroke="#5a3a22" stroke-width="5"/><path d="M520 318 V298 M520 318 h14" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
+  <rect x="320" y="300" width="18" height="50" fill="#fff8e1" stroke="#5a3a22" stroke-width="3"/><path d="M329 296 q-8 -14 0 -26 q8 12 0 26z" fill="#ffb300"/>
+  <rect x="702" y="300" width="18" height="50" fill="#fff8e1" stroke="#5a3a22" stroke-width="3"/><path d="M711 296 q-8 -14 0 -26 q8 12 0 26z" fill="#ffb300"/>
+  </g>
+  <!-- the window, its green shutters -->
+  <rect x="980" y="250" width="220" height="200" fill="#9fd3f0" stroke="#5a3a22" stroke-width="12"/>
+  <path d="M1090 250 v200 M980 350 h220" stroke="#5a3a22" stroke-width="8"/>
+  <circle cx="1150" cy="300" r="22" fill="#ffd54f"/>
+  <path d="M940 244 h40 v212 h-40 z M1200 244 h40 v212 h-40 z" fill="#2e7d32" stroke="#5a3a22" stroke-width="5"/>
+  <!-- shelves with jars of jam and pickles -->
+  <rect x="1300" y="300" width="260" height="14" rx="5" fill="#6d4426"/><rect x="1300" y="420" width="260" height="14" rx="5" fill="#6d4426"/>
+  ${[[1330, 300, '#e53935'], [1400, 300, '#fbc02d'], [1470, 300, '#7cb342'], [1340, 420, '#8e24aa'], [1420, 420, '#ff7043'], [1500, 420, '#e53935']].map(([x, y, c]) => `<rect x="${x}" y="${Number(y) - 54}" width="44" height="54" rx="8" fill="${c}" stroke="#5a3a22" stroke-width="4"/><rect x="${Number(x) - 4}" y="${Number(y) - 64}" width="52" height="14" rx="4" fill="#fff" stroke="#5a3a22" stroke-width="3"/>`).join('')}
+  <!-- a round striped rug -->
+  <ellipse cx="1050" cy="${GROUND + 70}" rx="430" ry="56" fill="#ffca28" opacity=".9"/>
+  <ellipse cx="1050" cy="${GROUND + 70}" rx="340" ry="40" fill="none" stroke="#e57373" stroke-width="10"/>
+  <ellipse cx="1050" cy="${GROUND + 70}" rx="240" ry="26" fill="none" stroke="#4fc3f7" stroke-width="10"/>`;
+}
+
 const BACKDROPS: Record<string, () => Backdrop> = {
+  kamianytsia: () => ({ still: kamianytsia(), layers: [] }),
   'stil-zblyzka': () => ({ still: stilZblyzka(false), layers: [] }),
   'stil-nich': () => ({ still: stilZblyzka(true), layers: [] }),
   'zymove-pole': () => ({ still: zymovePole(), layers: [], snow: true }),
@@ -2297,6 +2404,52 @@ export class Stage {
         for (let i = 0; i < 16; i++) this.later(i * 0.18, () => this.puffSnow(a.x + (Math.random() - 0.5) * 560, GROUND - Math.random() * 80));
         return this.wait(3200);
       }
+      case 'blow': {
+        // the wolf (on) draws a big breath and blows at a house (who[0]): a gust streams from his
+        // mouth; a house of straw, twigs or pillows (BLOWN) shakes and flies apart into bits, and
+        // whoever was inside tumbles out; any other (the brick one) only shakes
+        if (!a) return this.wait(300);
+        const t = who[0] ? this.actors.get(who[0]) : undefined;
+        const dir = t ? (t.x >= a.x ? 1 : -1) : a.flip ? 1 : -1;
+        if (!a.prop) a.flip = dir > 0;
+        a.act = 'sneeze';
+        a.actT = 0;
+        a.actDur = 1.4;
+        this.mouth(a, true);
+        this.later(1.4, () => this.mouth(a, false));
+        const [mx, my] = this.anchor(a, 'mouth');
+        const reach = t ? Math.max(200, Math.abs(t.x - mx)) : 500;
+        for (let i = 0; i < 26; i++) this.later(0.35 + i * 0.04, () => this.gust(mx, my, dir, reach));
+        if (!t) return this.wait(1500);
+        for (const k of [0.6, 0.9, 1.2]) this.later(k, () => (t.wobble = 1));
+        const bits = BLOWN[t.id];
+        if (!bits) {
+          for (let i = 0; i < 8; i++) this.later(0.6 + i * 0.08, () => this.dustAt(t.x + (Math.random() - 0.5) * 400, GROUND));
+          return this.wait(1700);
+        }
+        const inside = Object.keys(this.inside).filter((id) => this.inside[id] === t.id);
+        this.later(1.3, () => {
+          const h = -ANCHORS[t.id].top * t.size;
+          for (let i = 0; i < 46; i++) this.blownBit(t.x + (Math.random() - 0.5) * 380 * t.size, t.y - Math.random() * h, dir, bits.colors[i % bits.colors.length], bits.shape);
+          for (let i = 0; i < 8; i++) this.dustAt(t.x + (Math.random() - 0.5) * 400, GROUND);
+          this.shake = 0.3;
+          t.g.style.display = 'none';
+          if (inside.length) this.popOut(t, inside, true);
+          this.later(inside.length * 0.15 + 0.2, () => this.hide(t.id));
+        });
+        return this.wait(1300 + inside.length * 150 + 1000);
+      }
+      case 'scald': {
+        // fallen into the boiling pot: steam bursts up round him, he jumps and shivers all over
+        if (!a) return this.wait(300);
+        for (let i = 0; i < 16; i++) this.later(i * 0.05, () => this.puff(a.x + (Math.random() - 0.5) * 240, a.y - 140 - Math.random() * 100));
+        a.act = 'shiver';
+        a.actT = 0;
+        a.actDur = 1.4;
+        a.bounce = 1;
+        this.shake = 0.4;
+        return this.wait(1300);
+      }
       case 'flour': {
         const [x, y] = at || (a ? this.anchor(a, 'mouth') : [900, 600]);
         for (let i = 0; i < 14; i++) this.later(i * 0.12, () => this.dust(x + (Math.random() - 0.5) * 120, y));
@@ -2379,6 +2532,34 @@ export class Stage {
       c.setAttribute('cy', String(y - k * 230));
       c.setAttribute('r', String(18 + k * 40));
       c.setAttribute('opacity', String(0.9 * (1 - k)));
+    });
+  }
+
+  /** a curl of wind from the mouth (x, y), streaming `reach` along dir and spreading out */
+  private gust(x: number, y: number, dir: number, reach: number) {
+    const spread = (Math.random() - 0.5) * 2;
+    const len = 60 + Math.random() * 70;
+    const l = el('path', { d: `M0 0 q${dir * len * 0.5} -18 ${dir * len} 0 t${dir * len * 0.6} 0`, stroke: Math.random() < 0.3 ? '#e1f5fe' : '#ffffff', 'stroke-width': 7, fill: 'none', 'stroke-linecap': 'round' });
+    this.particle(l, 0.7, (p, k) => {
+      l.setAttribute('transform', `translate(${x + dir * reach * k} ${y + spread * 140 * k})`);
+      l.setAttribute('opacity', String(0.95 * (1 - k * k)));
+    });
+  }
+
+  /** a bit of a blown-apart house (a straw, a twig, a feather): swept away along dir, tumbling */
+  private blownBit(x: number, y: number, dir: number, color: string, shape: 'straw' | 'twig' | 'feather') {
+    const b =
+      shape === 'feather'
+        ? svg(`<g><path d="M0 12 Q-9 -4 0 -20 Q9 -4 0 12 Z" fill="${color}" stroke="#5a3a22" stroke-width="2"/></g>`)
+        : el('rect', { x: shape === 'twig' ? -30 : -22, y: -3, width: shape === 'twig' ? 60 : 44, height: shape === 'twig' ? 8 : 5, rx: 3, fill: color, stroke: '#5a3a22', 'stroke-width': shape === 'twig' ? 2 : 1 });
+    const vx = dir * (500 + Math.random() * 700);
+    const vy = shape === 'feather' ? -150 - Math.random() * 250 : -250 - Math.random() * 350;
+    const fall = shape === 'feather' ? 220 : 600;
+    const spin = (Math.random() - 0.5) * 1400;
+    this.particle(b, shape === 'feather' ? 2.6 : 1.8, (p, k) => {
+      const sway = shape === 'feather' ? Math.sin(k * 14) * 30 : 0;
+      b.setAttribute('transform', `translate(${(x + vx * k + sway).toFixed(1)} ${(y + vy * k + fall * k * k).toFixed(1)}) rotate(${(spin * k).toFixed(0)})`);
+      b.setAttribute('opacity', String(k < 0.75 ? 1 : (1 - k) * 4));
     });
   }
 
@@ -2666,6 +2847,8 @@ export class Stage {
   }
 
   private place(a: Actor) {
+    // turned round, it is mirrored whole: the writing on it (a T-shirt, a sign) is turned back
+    if (a.textFlip !== a.flip) a.textFlip = keepTextReadable(a.g, a.flip) ? a.flip : undefined;
     const k = a.scale * a.size;
     setAttr(a.g, 'transform', `translate(${(a.x + a.ox).toFixed(1)} ${a.y.toFixed(1)}) scale(${(a.flip ? -k : k).toFixed(3)} ${k.toFixed(3)})`);
   }
