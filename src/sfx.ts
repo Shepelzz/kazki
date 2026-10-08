@@ -31,7 +31,8 @@ type Kind =
   | 'splash'
   | 'sneeze'
   | 'snore'
-  | 'snip';
+  | 'snip'
+  | 'coins';
 
 /** the words of the tales → their sound (the first that matches; checked without the "!") */
 const BY_WORD: [RegExp, Kind][] = [
@@ -42,6 +43,7 @@ const BY_WORD: [RegExp, Kind][] = [
   [/^ЧИК/, 'snip'],
   [/^ХАП|^ЦАП|^ГАМ|^ЛИП/, 'snap'],
   [/^ДЗЕНЬ/, 'ding'],
+  [/^ДЗИНЬ/, 'coins'],
   [/^Р-Р|^ГУР|^ФРР/, 'growl'],
   [/^ШУ|^ФУ/, 'whoosh'],
   [/^БУЛЬК/, 'bloop'],
@@ -272,6 +274,14 @@ const SOUNDS: Record<Kind, (c: AudioContext, o: AudioNode, t: number, n: number)
       const at = t + i * 0.18;
       hiss(c, o, at, 'highpass', 5000, 3500, 0.06, 0.6, 1, 0.002);
       tone(c, o, at, 'triangle', 2400, 1600, 0.05, 0.25, 0.002);
+    }
+  },
+  coins: (c, o, t) => {
+    // a handful of coins: bright pings one after another
+    for (let i = 0; i < 6; i++) {
+      const f = 2200 + Math.random() * 1600;
+      tone(c, o, t + i * 0.06 + Math.random() * 0.03, 'sine', f, f * 0.98, 0.35, 0.28, 0.002);
+      tone(c, o, t + i * 0.06, 'triangle', f * 1.5, f * 1.48, 0.2, 0.12, 0.002);
     }
   },
   clatter: (c, o, t) => {

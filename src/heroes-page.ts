@@ -9,6 +9,7 @@ import { loadItems, outfitIds, outfitOf, wearable } from './closet';
 import { dress, SLOTS, type Slot, type Wearable } from './dress';
 import { COIN, heroesOf, type Hero } from './heroes';
 import { progress } from './progress';
+import { sfx } from './sfx';
 import { say, stopSpeech, unlockAudio } from './speech';
 import { COMMON, type Story } from './story';
 import type { Voice } from './voiceKey';
@@ -228,7 +229,8 @@ function buyTried() {
   progress.wear(open.id, it.slot, it.id);
   hop = 1;
   redraw();
-  void say(open.narrator, COMMON.bought);
+  // bought: the coins jingle (no words)
+  sfx('ДЗИНЬ!', 'coins');
 }
 
 async function greet() {
