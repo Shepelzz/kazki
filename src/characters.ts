@@ -27,7 +27,7 @@ import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppe
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { hata_khmyzova, hata_podushkova, hata_solomiana, hata_tsehlyana, kazan, kazan_kryshka, kelma, khmyz, nafnaf, nifnif, nufnuf, opudalo, soloma, troie_porosiat, tsehla, vovk_kaska, vovk_pirya } from './puppets-porosiata';
 import { baba_chepets, chervona_shapochka, chervona_shapochka_bez, chervona_shapochka_bez_koshyka, chervona_shapochka_cover, chervona_shapochka_kvity, drovorub, kaminnia, khatynka_babusi, khvist, koshyk_pyrizhky, kovdra, kvity, kvity2, lizhko_babusi, mama, metelyky, myslyvets, vovk_babusia } from './puppets-shapochka';
-import { did_winter, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
+import { did_winter, did_winter1, kaban, myshka, rukavychka, rukavychka_rvana, snizhna_khatka, sobaka, zhabka } from './puppets-winter';
 
 const NS = 'http://www.w3.org/2000/svg';
 export const INK = '#5a3a22';
@@ -405,7 +405,8 @@ export const PUPPETS: Record<string, () => string> = {
   vedmid,
   lysytsia,
   bush,
-  did_winter,
+  did_winter: () => did_winter(),
+  did_winter1,
   sobaka,
   myshka,
   zhabka,
@@ -444,7 +445,7 @@ export const PUPPETS: Record<string, () => string> = {
   lunka,
   vudka,
   lysytsia_tisto,
-  chumak: did_winter,
+  chumak: () => did_winter(),
   telesyk,
   chovnyk,
   kolyska,

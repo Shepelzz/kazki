@@ -5,7 +5,8 @@
 
 import { INK, closedEyes, eyes, mouth, st, stitch, stroke } from './characters';
 
-export const did_winter = () => `
+/** both: mittens on both hands (one falls out on the way: did_winter1, the left hand bare) */
+export const did_winter = (both = true) => `
 <g data-part="body">
   <!-- felt boots (valenky) -->
   <path d="M-44 0 q0 -16 6 -60 h30 v60 z" fill="#8d8f94" ${stroke}/>
@@ -17,14 +18,14 @@ export const did_winter = () => `
   <circle cx="0" cy="-220" r="6" fill="#6d4426"/><circle cx="0" cy="-180" r="6" fill="#6d4426"/>
   <rect x="-80" y="-176" width="160" height="16" rx="5" fill="#b71c1c" ${st(4)}/>
   <path d="M-34 -150 q10 30 0 60 M36 -150 q-10 30 0 60" stroke="#9c6c45" stroke-width="4" fill="none"/>
-  <!-- arms with fur cuffs and mittens (one is lost later…) -->
+  <!-- arms with fur cuffs and mittens -->
   <path d="M-62 -252 Q-104 -200 -96 -140" fill="none" stroke="${INK}" stroke-width="38" stroke-linecap="round"/>
   <path d="M-62 -252 Q-104 -200 -96 -140" fill="none" stroke="#b5835a" stroke-width="28" stroke-linecap="round"/>
   <path d="M62 -252 Q104 -200 96 -140" fill="none" stroke="${INK}" stroke-width="38" stroke-linecap="round"/>
   <path d="M62 -252 Q104 -200 96 -140" fill="none" stroke="#b5835a" stroke-width="28" stroke-linecap="round"/>
   <ellipse cx="-96" cy="-142" rx="20" ry="11" fill="#f4efe6" ${st(4)}/>
   <ellipse cx="96" cy="-142" rx="20" ry="11" fill="#f4efe6" ${st(4)}/>
-  <circle cx="-96" cy="-124" r="15" fill="#f2c4a0" ${st(4)}/>
+  <circle cx="-96" cy="-124" r="15" fill="${both ? '#c62828' : '#f2c4a0'}" ${st(4)}/>
   <circle cx="96" cy="-124" r="15" fill="#c62828" ${st(4)}/>
   <!-- fur collar -->
   <path d="M-60 -262 Q0 -236 60 -262 Q50 -238 0 -228 Q-50 -238 -60 -262 Z" fill="#f4efe6" ${st(4)}/>
@@ -221,3 +222,6 @@ export const snizhna_khatka = () => {
   <path d="M-240 -120 l-8 26 M-200 -190 l-6 22 M200 -60 l-8 24" stroke="#cfe3f4" stroke-width="6" stroke-linecap="round"/>
 </g>`;
 };
+
+/** the grandfather in winter, one mitten lost */
+export const did_winter1 = () => did_winter(false);

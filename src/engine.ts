@@ -217,7 +217,7 @@ export class Teller {
       case 'pause':
         return stage.wait(s.ms);
       case 'choice':
-        return { scene: s.options[await this.choose(s.question, s.options, run)].next };
+        return { scene: s.options[await this.choose(s.question, s.options, run, s.questionSpeak)].next };
       case 'next':
         return { scene: s.scene };
       case 'ending':
@@ -237,7 +237,7 @@ export class Teller {
   }
 
   /** Offer a choice; resolves with the option picked. */
-  private choose(question: string, options: ChoiceOption[], run: number): Promise<number> {
+  private choose(question: string, options: ChoiceOption[], run: number, spoken = question): Promise<number> {
     // on the way to the review's scene: the option that leads there
     if (this.rushing && this.review) return Promise.resolve(this.review.route[this.at.scene] || 0);
     return new Promise<number>((resolve, reject) => {
@@ -260,7 +260,7 @@ export class Teller {
       const read = async () => {
         this.ui.caption('narrator', '', question);
         if (this.fast) return;
-        await say(narrator, question);
+        await say(narrator, spoken);
         for (let i = 0; i < options.length && !picked && run === this.run; i++) {
           this.ui.highlightChoice(i);
           await say(narrator, optionPhrase(options[i]));
@@ -279,7 +279,7 @@ export class Teller {
       for (const s of this.story.scenes[scene]) {
         if (s.kind === 'say') out.push({ voice: v[s.who], text: s.speak || s.text });
         if (s.kind === 'choice') {
-          out.push({ voice: v.narrator, text: s.question });
+          out.push({ voice: v.narrator, text: s.questionSpeak || s.question });
           for (const o of s.options) out.push({ voice: v.narrator, text: optionPhrase(o) });
         }
       }

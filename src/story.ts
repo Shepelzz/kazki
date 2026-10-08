@@ -25,19 +25,23 @@ export type Step = { along?: boolean; delay?: number } & (
   | { kind: 'eyes'; actor: string; open: boolean }
   | { kind: 'fx'; fx: string; on?: string; at?: Point; who?: string[]; word?: string }
   | { kind: 'pause'; ms: number }
-  | { kind: 'choice'; question: string; options: ChoiceOption[] }
+  | { kind: 'choice'; question: string; questionSpeak?: string; options: ChoiceOption[] }
   | { kind: 'next'; scene: string }
   | { kind: 'ending'; ending: string }
 );
 
 export interface ChoiceOption {
   label: string;
+  /** the label as the voice is given it (spelled()) */
+  speak?: string;
   icon: string;
   next: string;
 }
 
 export interface Ending {
   title: string;
+  /** the title as the voice is given it (spelled()) */
+  speak?: string;
   icon: string;
 }
 
@@ -99,13 +103,27 @@ export function parseStory(id: string, raw: Raw): Story {
       if ('eyes' in s) return { kind: 'eyes', actor: s.eyes, open: s.state !== 'closed' };
       if ('fx' in s) return { kind: 'fx', fx: s.fx, on: s.on, at: s.at, who: s.who, word: s.word };
       if ('pause' in s) return { kind: 'pause', ms: s.pause };
-      if ('choice' in s) return { kind: 'choice', question: s.choice, options: s.options };
+      if ('choice' in s) {
+        const q = spelled(String(s.choice));
+        const options = (s.options as Raw[]).map((o) => {
+          const l = spelled(String(o.label));
+          return { ...o, label: l.text, ...(l.speak ? { speak: l.speak } : {}) } as ChoiceOption;
+        });
+        return { kind: 'choice', question: q.text, ...(q.speak ? { questionSpeak: q.speak } : {}), options };
+      }
       if ('next' in s) return { kind: 'next', scene: s.next };
       if ('ending' in s) return { kind: 'ending', ending: s.ending };
       return fail(name, i, `unknown step ${JSON.stringify(s)}`);
     }
   }
-  const story: Story = { id, title: raw.title, cover: raw.cover, about: raw.about || '', sayTitle: raw.sayTitle, voices, endings: raw.endings, start: raw.start, scenes };
+  // ending titles and hellos may spell a word for the voice too (the hello is only heard)
+  const endings: Record<string, Ending> = {};
+  for (const [k, e] of Object.entries(raw.endings as Record<string, Ending>)) {
+    const t = spelled(String(e.title));
+    endings[k] = { ...e, title: t.text, ...(t.speak ? { speak: t.speak } : {}) };
+  }
+  for (const v of Object.values(voices)) if (v.hello) v.hello = spelled(v.hello).speak || spelled(v.hello).text;
+  const story: Story = { id, title: raw.title, cover: raw.cover, about: raw.about || '', sayTitle: raw.sayTitle, voices, endings, start: raw.start, scenes };
   // every link must lead somewhere: a typo would strand the child mid-tale
   for (const [name, steps] of Object.entries(scenes))
     steps.forEach((s, i) => {
@@ -140,7 +158,7 @@ export function spokenPhrases(story: Story): Phrase[] {
     for (const s of steps) {
       if (s.kind === 'say') out.push({ who: s.who, text: s.speak || s.text });
       if (s.kind === 'choice') {
-        out.push({ who: 'narrator', text: s.question });
+        out.push({ who: 'narrator', text: s.questionSpeak || s.question });
         for (const o of s.options) out.push({ who: 'narrator', text: optionPhrase(o) });
       }
     }
@@ -151,7 +169,7 @@ export function spokenPhrases(story: Story): Phrase[] {
   return out;
 }
 
-export const optionPhrase = (o: ChoiceOption) => `${o.label.replace(/[!.]+$/, '')}?`;
-export const endingPhrase = (e: Ending) => `Кінцівка «${e.title}».`;
+export const optionPhrase = (o: ChoiceOption) => `${(o.speak || o.label).replace(/[!.]+$/, '')}?`;
+export const endingPhrase = (e: Ending) => `Кінцівка «${e.speak || e.title}».`;
 /** said when the tale's card opens: its name, then what it is about */
 export const aboutPhrase = (s: Pick<Story, 'title' | 'sayTitle' | 'about'>) => `${s.sayTitle || s.title}. ${s.about}`;
