@@ -371,27 +371,49 @@ scenes:
     - fx: fallback
       on: did
       who: [baba, vnuchka, zhuchka, vedmid]
+    # it flies off sideways, over the fence, out of sight
     - fx: whoosh
       on: ripka
       along: true
-    # over the fence and the house, away to the forest beyond it
     - move: ripka
-      to: [380, 250]
-      ms: 3600
+      to: [2300, 640]
+      hop: true
+      ms: 1600
       along: true
-    - resize: ripka
-      to: 0.06
-      ms: 3600
-      along: true
-    - narrator: "Ріпка — фррр! — перелетіла через тин, через хату й покотилася аж до лісу!"
+    - narrator: "Ріпка — фррр! — перелетіла через тин і покотилася аж до лісу!"
     - hide: ripka
     - fx: stand
       on: vedmid
     - vedmid: "Ой... Перестарався я. Зараз принесу!"
     - move: vedmid
       to: [1900, 770]
+      flip: true
       ms: 1800
       wait: true
+    - next: bear_forest
+
+  # in the forest: the turnip rolls by, the bear runs after it
+  bear_forest:
+    - scene: forest
+    - show: ripka
+      at: [-250, 770]
+      size: 0.6
+    - move: ripka
+      to: [1900, 770]
+      roll: true
+      ms: 3600
+      along: true
+    - narrator: "А ріпка котиться лісом, по пеньках підстрибує!"
+    - show: vedmid
+      at: [-300, 770]
+      flip: true
+    - move: vedmid
+      to: [1900, 770]
+      flip: true
+      ms: 2800
+      along: true
+    - vedmid: "Стій, ріпко! Куди ж ти? Тупу-тупу!"
+    - pause: 800
     - next: bear_back
 
   bear_back:

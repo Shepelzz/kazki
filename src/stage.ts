@@ -3150,12 +3150,10 @@ export class Stage {
 
   // ---------- pulling: arms reaching out ----------
 
-  private pullArms: { pullers: Actor[]; target: Actor | null; g: SVGGElement; arms: { from: Actor; sh: Point; out: SVGElement; fill: SVGElement; hand: SVGElement }[] } | null = null;
+  private pullArms: { pullers: Actor[]; target: Actor | null; arms: { from: Actor; held: Actor; sh: Point; g: SVGGElement; out: SVGElement; fill: SVGElement; hand: SVGElement }[] } | null = null;
 
   private startPullArms(pullers: Actor[], target: Actor | null) {
     this.stopPullArms();
-    const g = el('g') as SVGGElement;
-    this.fxLayer.appendChild(g);
     const arms: NonNullable<typeof this.pullArms>['arms'] = [];
     pullers.forEach((p, i) => {
       const rig = PULL_ARMS[p.id];
@@ -3165,50 +3163,55 @@ export class Stage {
       const side = (held.x >= p.x ? 1 : -1) * (p.flip ? -1 : 1);
       for (const l of Array.from(p.g.querySelectorAll<SVGGElement>(`[data-arm="${side}"]`))) l.style.display = 'none';
       for (const sh of rig.sh.filter((q) => Math.sign(q[0]) === side)) {
+        // drawn in the puppet itself: it leans back with the body, never comes off it
+        const g = el('g', { 'data-pull-arm': '1' }) as SVGGElement;
         const out = el('path', { fill: 'none', stroke: INK, 'stroke-width': rig.w + 10, 'stroke-linecap': 'round' });
         const fill = el('path', { fill: 'none', stroke: rig.sleeve, 'stroke-width': rig.w, 'stroke-linecap': 'round' });
         const hand = el('circle', { r: rig.w * 0.55, fill: rig.hand, stroke: INK, 'stroke-width': 4 });
         g.append(out, fill, hand);
-        arms.push({ from: p, sh, out, fill, hand });
+        p.body.appendChild(g);
+        arms.push({ from: p, held, sh, g, out, fill, hand });
       }
     });
-    this.pullArms = { pullers, target, g, arms };
+    this.pullArms = { pullers, target, arms };
   }
 
   private stopPullArms() {
     const pa = this.pullArms;
     if (!pa) return;
-    pa.g.remove();
+    for (const arm of pa.arms) arm.g.remove();
     for (const p of pa.pullers) for (const l of Array.from(p.g.querySelectorAll<SVGGElement>('[data-arm]'))) l.style.display = '';
     this.pullArms = null;
   }
 
-  /** every frame while they pull: each arm from the shoulder to what it holds */
+  /** every frame while they pull: each arm from the shoulder to what it holds (on the held one's
+   * body, wherever it leans), worked out in the puller's own drawing */
   private tickPullArms() {
     const pa = this.pullArms;
     if (!pa) return;
     if (!pa.pullers.some((p) => p.tug > 0)) return this.stopPullArms();
-    const k = (a: Actor) => a.scale * a.size;
+    const pt = this.svg.createSVGPoint();
     for (const arm of pa.arms) {
-      const p = arm.from;
-      const i = pa.pullers.indexOf(p);
-      const held = i === 0 ? pa.target : pa.pullers[i - 1];
-      if (!held) continue;
-      const dir = held.x >= p.x ? 1 : -1;
-      const f = p.flip ? -1 : 1;
-      const sx = p.x + p.ox + arm.sh[0] * f * k(p);
-      const sy = p.y + arm.sh[1] * k(p);
-      // the turnip by its top, under the leaves; a person by the back, at the waist
+      const { from: p, held } = arm;
+      const toHeld = held.body.getScreenCTM();
+      const fromMine = p.body.getScreenCTM();
+      if (!toHeld || !fromMine) continue;
+      // where it holds, in the held one's drawing: the turnip under its leaves, a person at the
+      // back of the waist (the side towards the puller)
+      const first = held === pa.target;
+      const towards = (p.x >= held.x ? 1 : -1) * (held.flip ? -1 : 1);
       const top = ANCHORS[held.id] ? ANCHORS[held.id].top : -200;
-      const gx = held.x + held.ox - dir * (i === 0 ? 40 : 34) * k(held);
-      const gy = held.y + top * (i === 0 ? 0.62 : 0.42) * k(held) + (arm.sh[0] * f < 0 ? -10 : 10);
-      const mx = (sx + gx) / 2;
-      const my = Math.max(sy, gy) + 18;
-      const d = `M${sx.toFixed(0)} ${sy.toFixed(0)} Q${mx.toFixed(0)} ${my.toFixed(0)} ${gx.toFixed(0)} ${gy.toFixed(0)}`;
+      pt.x = towards * (first ? 40 : 34);
+      pt.y = top * (first ? 0.62 : 0.42);
+      const q = pt.matrixTransform(toHeld).matrixTransform(fromMine.inverse());
+      const [sx, sy] = arm.sh;
+      const mx = (sx + q.x) / 2;
+      const my = Math.max(sy, q.y) + 16;
+      const d = `M${sx} ${sy} Q${mx.toFixed(0)} ${my.toFixed(0)} ${q.x.toFixed(0)} ${q.y.toFixed(0)}`;
       arm.out.setAttribute('d', d);
       arm.fill.setAttribute('d', d);
-      arm.hand.setAttribute('cx', gx.toFixed(0));
-      arm.hand.setAttribute('cy', gy.toFixed(0));
+      arm.hand.setAttribute('cx', q.x.toFixed(0));
+      arm.hand.setAttribute('cy', q.y.toFixed(0));
     }
   }
 
