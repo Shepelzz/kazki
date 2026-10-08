@@ -42,6 +42,8 @@ interface TaleApi {
   story(id: string): Promise<FullStory>;
   reviewScene(id: string, scene: string, route: Record<string, number>, after: (scene: string, next: string | null) => Promise<boolean>, started?: () => void): Promise<void>;
   setPaused(on: boolean): void;
+  /** stop the tale, back to the shelf */
+  home(): void;
   readonly paused: boolean;
 }
 
@@ -56,6 +58,8 @@ let open: { tale: string; scene: string } | null = null;
 let waiting: ((go: boolean) => void) | null = null;
 let nextScene: string | null = null;
 let onlyNotes = false;
+/** the tales unfolded in the list (by hand, or by opening one of their scenes) */
+const unfolded = new Set<string>();
 /** the list of what was done since last looked, instead of the tales */
 let showNews = false;
 /** the note being written: kept through every redraw of the panel (a scene ending redraws it) */
@@ -209,6 +213,7 @@ async function play(tale: string, scene: string) {
   waiting = null;
   nextScene = null;
   open = { tale, scene };
+  unfolded.add(tale);
   render();
   const s = await storyOf(tale);
   status(scene === s.start ? '▶ грає' : '⏩ перемотую до епізоду…');
@@ -288,6 +293,19 @@ function episodeBox() {
   const ctl = h('div', { cls: 'rv-ctl' });
   ctl.append(
     h('button', {
+      textContent: '← До списку',
+      title: 'Закрити епізод і повернутися до списку казок',
+      onclick: () => {
+        waiting?.(false);
+        waiting = null;
+        nextScene = null;
+        unfolded.delete(tale);
+        open = null;
+        api().home();
+        render();
+      },
+    }),
+    h('button', {
       textContent: '⏯ пауза',
       onclick: () => api().setPaused(!api().paused),
     }),
@@ -363,9 +381,11 @@ function taleList() {
     const all = notesOf(t.id);
     if (onlyNotes && !all.length) continue;
     const det = h('details', { cls: 'rv-tale' });
-    det.open = !!open && open.tale === t.id;
+    det.open = unfolded.has(t.id);
     det.append(h('summary', {}, h('span', { textContent: t.title }), badges(all)));
     det.addEventListener('toggle', () => {
+      if (det.open) unfolded.add(t.id);
+      else unfolded.delete(t.id);
       if (det.open && !stories.has(t.id)) void storyOf(t.id).then(render);
     });
     if (s) {

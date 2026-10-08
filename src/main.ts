@@ -722,6 +722,7 @@ show('library');
   story: (id: string) => fetchStory(id),
   reviewScene,
   setPaused,
+  home: () => toLibrary(),
   get paused() {
     return !!stage?.paused;
   },
