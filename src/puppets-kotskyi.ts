@@ -123,3 +123,40 @@ export const koshyk = () => `
   <circle cx="-22" cy="-58" r="16" fill="#e53935" ${st(3)}/><circle cx="6" cy="-62" r="17" fill="#c62828" ${st(3)}/><circle cx="30" cy="-56" r="15" fill="#fbc02d" ${st(3)}/>
   <path d="M6 -78 q2 -8 8 -10" stroke="#5d4037" stroke-width="3" fill="none"/>
 </g>`;
+
+/** a haystack standing on the ground: a dense golden dome in shaggy layers, straw sticking out all round,
+ *  a loose straw skirt and a shadow at its foot, a pole out of the top */
+export const stih = () => {
+  const dome = (k: number) => `M${-170 * k} 0 Q${-178 * k} ${-150 * k} ${-92 * k} ${-228 * k} Q0 ${-292 * k} ${92 * k} ${-228 * k} Q${178 * k} ${-150 * k} ${170 * k} 0 Z`;
+  let straw = '';
+  // strands poking out of the outline
+  for (let i = 0; i <= 24; i++) {
+    const t = Math.PI * (0.03 + 0.94 * (i / 24));
+    const x = -Math.cos(t) * 166;
+    const y = -Math.sin(t) * 250;
+    const a = t + ((i % 3) - 1) * 0.4;
+    const l = 18 + ((i * 13) % 20);
+    straw += `<path d="M${x.toFixed(0)} ${y.toFixed(0)} l${(-Math.cos(a) * l).toFixed(0)} ${(-Math.sin(a) * l * 1.1).toFixed(0)}" stroke="${i % 2 ? '#b8862b' : '#d9a93e'}" stroke-width="4" stroke-linecap="round"/>`;
+  }
+  // shaggy layer lines: rows of short downward strokes
+  for (let r = 0; r < 4; r++) {
+    const y = -50 - r * 52;
+    const w = 150 - r * r * 9;
+    for (let x = -w; x <= w; x += 16) {
+      const yy = y - Math.abs(x) * 0.12 * (r + 1) * 0.3;
+      straw += `<path d="M${x} ${yy.toFixed(0)} l${(x % 3) - 1} 20" stroke="#b5832a" stroke-width="3.5" stroke-linecap="round"/>`;
+    }
+  }
+  // the loose skirt of straw at the foot
+  for (let x = -180; x <= 180; x += 12) straw += `<path d="M${x} 2 l${((x / 12) % 3) * 4 - 4} -${16 + (Math.abs(x) % 7) * 2}" stroke="${x % 24 ? '#c99a35' : '#e2b84f'}" stroke-width="4" stroke-linecap="round"/>`;
+  return `
+<g data-part="body">
+  <ellipse cx="0" cy="2" rx="200" ry="20" fill="#2e5a1c" opacity=".35"/>
+  <path d="M0 -320 V-250" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="M0 -320 V-250" stroke="#8b5e34" stroke-width="7" stroke-linecap="round"/>
+  <path d="${dome(1)}" fill="#d9ad45" ${stroke}/>
+  <path d="M-150 -10 Q-160 -140 -84 -212 Q0 -262 60 -232 Q-40 -200 -70 -120 Q-90 -50 -60 -8 Z" fill="#ecc860"/>
+  <path d="M170 0 Q178 -150 92 -228 Q140 -150 120 -2 Z" fill="#b98a2e"/>
+  ${straw}
+  <path d="M-30 -270 Q0 -290 30 -270 Q0 -262 -30 -270 Z" fill="#c99a35" ${st(2)}/>
+</g>`;
+};

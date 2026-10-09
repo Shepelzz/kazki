@@ -9228,7 +9228,31 @@
     "13047b8d": {
       "voice": "B31Kx7rXmNnYqp1QWHR2",
       "chars": 4
+    },
+    "2e75c4f3": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 1
+    },
+    "d4d5bacd": {
+      "voice": "B31Kx7rXmNnYqp1QWHR2",
+      "chars": 2
+    },
+    "60dfd95d": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 11
+    },
+    "f176f9d8": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 9
+    },
+    "8d3344a8": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 13
+    },
+    "514373b4": {
+      "voice": "2HWb7sZSrZqPB8HOI0KI",
+      "chars": 26
     }
   },
-  "charsSpent": 17112
+  "charsSpent": 17174
 }

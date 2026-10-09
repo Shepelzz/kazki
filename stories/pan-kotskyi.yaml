@@ -256,6 +256,9 @@ scenes:
       at: [560, 786]
     - show: dub
       at: [1100, 770]
+    - show: stih
+      at: [760, 748]
+      size: 1.05
     - show: koloda
       at: [960, 800]
     - show: bush
@@ -274,6 +277,9 @@ scenes:
       at: [560, 786]
     - show: dub
       at: [1100, 770]
+    - show: stih
+      at: [760, 748]
+      size: 1.05
     - show: koloda
       at: [960, 800]
     - show: bush
@@ -312,7 +318,7 @@ scenes:
       hop: true
       ms: 1300
     - move: kaban
-      to: [790, 752]
+      to: [690, 742]
       ms: 1100
     - move: zayets
       to: [130, 770]
@@ -330,11 +336,11 @@ scenes:
       wait: true
     - fx: lie
       on: vovk
-    # the brushwood in front of the boar: only a bit of him shows
-    - show: khmyz
-      at: [800, 756]
-      size: 1.25
-    - narrator: "Розстелили звірі на галявині скатертину й поклали гостинці. А самі — щоб пан Коцький не побачив — поховалися: ведмідь виліз на дуба, вовк заліг під колодою, кабан зарився в хмиз, а зайчик сховався під кущиком."
+    # the boar hides behind the haystack: put the stack over him (he shows through it)
+    - show: stih
+      at: [760, 748]
+      size: 1.05
+    - narrator: "Розстелили звірі на галявині скатертину й поклали гостинці. А самі — щоб пан Коцький не побачив — поховалися: ведмідь виліз на дуба, вовк заліг під колодою, кабан сховався за стіг сіна, а зайчик сховався під кущиком."
     - show: lysytsia
       at: [-250, 770]
       flip: true
@@ -358,7 +364,7 @@ scenes:
     - narrator: "Побачив кіт гостинці, наїжачився, вуса настовбурчив — та як кинеться на них!"
     - choice: "Що скаже пан Коцький?"
       options:
-        - label: "«Мау-у-у! Мау-у-у!»"
+        - label: "«Мау! Мау!»"
           icon: "😼"
           next: greedy
         - label: "«Дякую, друзі!»"
@@ -397,7 +403,7 @@ scenes:
     - fx: munch
       on: kit
       along: true
-    - kit: "Мау-у-у! Мау-у-у! Мау-у-у!"
+    - kit: "Мау! Мау! Мау!"
     - vedmid: "Чуєте? Каже: «Мало! Мало!»"
     - vovk: "От вражого батька син! Стільки всього наносили — а йому ще мало!"
     - move: kit
@@ -429,8 +435,8 @@ scenes:
       delay: 3400
     - narrator: "А пан Коцький усе з'їв — і рибку, і яблука, і капусту, і ведмедів дарунок. Та й ліг на скатертину догори черевцем, качається, вурчить."
     - fx: rustle
-      on: khmyz
-    - narrator: "А кабан у хмизі не втерпів — захотілося й йому на пана подивитися. Ворухнув він хвостиком — шурх-шурх!"
+      on: stih
+    - narrator: "А кабан за стогом не втерпів — захотілося й йому на пана подивитися. Ворухнув він хвостиком — шурх-шурх!"
     - choice: "Що зробить пан Коцький?"
       options:
         - label: "Кинутися — це миша!"
@@ -444,12 +450,17 @@ scenes:
     - fx: mood
       on: kit
       word: curious
-    - narrator: "Подумав кіт, що то миша, — та як кинеться в хмиз, прямо на кабанячий хвостик!"
+      along: true
     - move: kit
       to: [720, 770]
       hop: true
       ms: 900
-      wait: true
+      along: true
+      delay: 1800
+    - narrator: "Подумав кіт, що то миша, — та як кинеться за стіг, прямо на кабанячий хвостик!"
+    - show: kaban
+      at: [690, 742]
+      flip: true
     - fx: hit
       on: kit
       who: [kaban]
@@ -459,17 +470,21 @@ scenes:
       to: [2000, 770]
       flip: true
       ms: 1300
+      along: true
     - fx: whoosh
       on: kaban
+      along: true
     - fx: mood
       on: kit
       word: scared
-    - narrator: "Кабан — навтьоки! А кіт і сам злякався — та й шусть на дуба, де ведмідь сидів!"
+      along: true
     - move: kit
       to: [1210, 478]
       hop: true
       ms: 800
-      wait: true
+      along: true
+      delay: 1600
+    - narrator: "Кабан — навтьоки! А кіт і сам злякався — та й шусть на дуба, де ведмідь сидів!"
     - vedmid: "Ой, він і до мене лізе!"
     - move: vedmid
       to: [960, 770]
@@ -479,27 +494,36 @@ scenes:
     - fx: bang
       on: vovk
       word: "ГУП!"
+      along: true
     - fx: fallback
       on: vedmid
+      along: true
     - fx: squash
       on: vovk
+      along: true
     - fx: shake
       on: vedmid
+      along: true
     - narrator: "Ведмідь із переляку — гуп! — з дуба додолу, та прямо на вовка, що під колодою лежав. Ледь не розчавив сердешного!"
     - vovk: "Ой-ой-ой! Роздавили! Рятуйся, хто може!"
     - move: vovk
       to: [-400, 770]
       ms: 1500
+      along: true
     - fx: stand
       on: vedmid
+      along: true
     - move: vedmid
       to: [-500, 770]
       ms: 1900
+      along: true
+      delay: 300
     - move: zayets
       to: [-300, 770]
       hop: true
       ms: 1200
-      wait: true
+      along: true
+      delay: 500
     - narrator: "Розбіглися звірі хто куди — тільки п'яти засвітилися."
     - lysytsia: "Ото мій пан Коцький! Усіх розігнав!"
     - next: gathered
@@ -524,13 +548,13 @@ scenes:
     - ending: scary
 
   peek:
-    - narrator: "Пан Коцький скочив на лапи, нашорошив вушка й тихесенько, навшпиньки, підкрався до хмизу..."
+    - narrator: "Пан Коцький скочив на лапи, нашорошив вушка й тихесенько, навшпиньки, підкрався до стогу..."
     - move: kit
       to: [560, 770]
       ms: 1600
       wait: true
     - kit: "Хі-хі! Та це ж не миша — це хвостик!"
-    # the boar comes out of the brushwood, in front of it, to the cat in the middle
+    # the boar comes out from behind the haystack, to the cat in the middle
     - move: kaban
       to: [740, 770]
       ms: 900

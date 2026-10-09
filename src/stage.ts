@@ -195,7 +195,7 @@ interface Actor {
 }
 
 /** things on stage rather than characters */
-const PROPS = ['zasik', 'bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'tsehla', 'kelma', 'soloma', 'khmyz', 'kazan', 'opudalo', 'khatynka_babusi', 'lizhko_babusi', 'kovdra', 'khvist', 'kvity', 'kvity2', 'metelyky', 'kaminnia', 'koshyk_pyrizhky'];
+const PROPS = ['zasik', 'bush', 'bush2', 'rukavychka', 'rvana', 'khatka', 'khatynka', 'kapusta', 'dub', 'koloda', 'skatertyna', 'stih', 'ryba', 'med', 'malyna', 'koshyk', 'stil', 'snip', 'snip2', 'halushky', 'dytyna', 'pyrizhok', 'sanky', 'lamani', 'drova', 'viz', 'lunka', 'vudka', 'chovnyk', 'kolyska', 'kovadlo', 'lopata', 'yavir', 'gusy', 'gusy2', 'gusy3', 'pyrohy', 'kozhi', 'bulava', 'holub', 'horoshyna', 'kamin', 'zalizo', 'zemlia', 'motuzky', 'lokh', 'kuzhil', 'husli', 'torba', 'vyazanka', 'tarilka', 'hlechyk', 'pyrih', 'hnizdo', 'yama', 'skarb', 'skarb2', 'bochka', 'hryfon', 'ripka', 'hriadka', 'kubelko', 'zolote', 'yaiechko', 'shkarlupa', 'shokolad', 'yaieshnia', 'korob', 'penok', 'hryby', 'hryby2', 'hryby3', 'yahidky', 'kasha', 'khata_vedmedya', 'kareta', 'kuropatky', 'voda', 'lakhmittia', 'restoran', 'miska_velyka', 'miska_serednia', 'miska_mala', 'lozhka', 'stilets_velykyi', 'stilets_serednii', 'stilets_malyi', 'stilets_lamanyi', 'stil_vedmediv', 'lizhko_velyke', 'lizhko_serednie', 'lizhko_male', 'vikno', 'dveri', 'zernia', 'vazon', 'tulpan', 'shkarlupka', 'tarilka_vody', 'pelustka', 'latattia', 'steblo', 'romashka', 'lopukh', 'norka', 'kovdrochka', 'promin', 'kvitochka', 'kvitka_bila', 'rybky', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'tsehla', 'kelma', 'soloma', 'khmyz', 'kazan', 'opudalo', 'khatynka_babusi', 'lizhko_babusi', 'kovdra', 'khvist', 'kvity', 'kvity2', 'metelyky', 'kaminnia', 'koshyk_pyrizhky'];
 /** drawn in front of the characters (they hide behind) / behind everyone (they stand in front, climb it) */
 const FRONT = ['bush', 'bush2', 'koloda', 'stil', 'zemlia', 'motuzky', 'hriadka', 'kubelko', 'penok', 'voda', 'stil_vedmediv', 'promin', 'kovdrochka', 'kazan', 'opudalo', 'kovdra', 'khvist'];
 /**
@@ -360,6 +360,8 @@ const AMBIENT_EVERY: Record<Ambient, [number, number]> = {
   chimney: [0.6, 0.9],
 };
 const FOUR_LEGS = ['sirko', 'sobaka', 'zhuchka', 'koza', 'zmiy'];
+/** placed among the others by depth (y) when shown */
+const DEPTH = ['stih'];
 const BACK = ['restoran', 'khata_vedmedya', 'khatka', 'dub', 'skatertyna', 'lunka', 'viz', 'yavir', 'kolyska', 'lokh', 'yama', 'vikno', 'dveri', 'tarilka_vody', 'lopukh', 'norka', 'kvitka_bila', 'hata_solomiana', 'hata_khmyzova', 'hata_tsehlyana', 'hata_podushkova', 'khatynka_babusi', 'lizhko_babusi'];
 /**
  * What the wolf's blowing (fx blow) knocks apart, and the bits that fly off it: straw, twigs,
@@ -2087,6 +2089,12 @@ export class Stage {
     (FRONT.indexOf(id) >= 0 ? this.frontLayer : this.actorsLayer).appendChild(g);
     // the snow house, the oak, the tablecloth: behind everyone
     if (BACK.indexOf(id) >= 0) this.actorsLayer.insertBefore(g, this.actorsLayer.firstChild);
+    // the haystack stands among the others by depth: over whoever is farther, behind whoever is nearer
+    if (DEPTH.indexOf(id) >= 0) {
+      const nearer = new Set([...this.actors].filter(([oid, o]) => oid !== id && (o.move ? o.move.to[1] : o.y) > a.y && BACK.indexOf(oid) < 0).map(([, o]) => o.g as Element));
+      // it goes on top of the farther ones, and the nearer ones come back over it (in their own order)
+      for (const c of [...this.actorsLayer.children]) if (nearer.has(c)) this.actorsLayer.appendChild(c);
+    }
     this.actors.set(id, a);
     this.onShow?.(id, g);
     this.setEyes(id, eyesOpen);

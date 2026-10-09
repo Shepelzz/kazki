@@ -23,7 +23,7 @@ import { kareta, kit_chobotar, kit_chobotar_bosyi, korol, kosari, krolyk, kulka,
 import { dveri, lizhko_male, lizhko_serednie, lizhko_velyke, lozhka, masha, mishko, miska_mala, miska_mala_porozhnia, miska_serednia, miska_velyka, stil_vedmediv, stilets_lamanyi, stilets_malyi, stilets_serednii, stilets_velykyi, vedmedytsia, vikno } from './puppets-vedmedi';
 import { kubelko, kurcha, ryaba, shkarlupa, shokolad, yaieshnia, yaiechko, zolote } from './puppets-ryaba';
 import { charivnytsia, duimovochka, duimovochka_cover, duimovochka_koroleva, elf, kovdrochka, krit, kvitka_bila, kvitochka, lastivka, latattia, lopukh, metelyk_bilyi, norka, norka_zyma, pelustka, promin, romashka, rybky, shkarlupka, steblo, synok, tarilka_vody, tulpan, tulpan_vidkrytyi, vazon, zernia, zhinka, zhuk, zhuky } from './puppets-duimovochka';
-import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna } from './puppets-kotskyi';
+import { dub, kit, koloda, koshyk, malyna, med, ryba, skatertyna, stih } from './puppets-kotskyi';
 import { kapusta, khatynka, koza, rak, yizhachok } from './puppets-koza';
 import { hata_khmyzova, hata_podushkova, hata_solomiana, hata_tsehlyana, kazan, kazan_kryshka, kelma, khmyz, nafnaf, nifnif, nufnuf, opudalo, soloma, troie_porosiat, tsehla, vovk_kaska, vovk_pirya } from './puppets-porosiata';
 import { baba_chepets, chervona_shapochka, chervona_shapochka_bez, chervona_shapochka_bez_koshyka, chervona_shapochka_cover, chervona_shapochka_kvity, drovorub, kaminnia, khatynka_babusi, khvist, koshyk_pyrizhky, kovdra, kvity, kvity2, lizhko_babusi, mama, metelyky, myslyvets, vovk_babusia } from './puppets-shapochka';
@@ -423,6 +423,7 @@ export const PUPPETS: Record<string, () => string> = {
   dub,
   koloda,
   skatertyna,
+  stih,
   ryba,
   med,
   malyna,
@@ -682,6 +683,7 @@ export const ANCHORS: Record<string, { mouth: [number, number]; top: number; han
   koloda: { mouth: [0, -60], top: -112 },
   bush2: { mouth: [0, -80], top: -156 },
   skatertyna: { mouth: [0, -20], top: -40 },
+  stih: { mouth: [0, -120], top: -330 },
   ryba: { mouth: [0, -24], top: -50 },
   med: { mouth: [0, -40], top: -90 },
   malyna: { mouth: [0, -40], top: -90 },
