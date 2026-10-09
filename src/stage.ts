@@ -159,6 +159,12 @@ interface Actor {
   pose: '' | 'lie' | 'roll' | 'sit' | 'back';
   /** how far sat down, 0 → 1 (sitting folds the body at the hips: sitPose) */
   sitK: number;
+  /** head hung low (fx droop) */
+  drooped?: boolean;
+  /** a body without a head of its own leans forward instead, 0 → 1 */
+  droop?: number;
+  /** the face drawn over the eyes (fx mood) */
+  mood?: SVGGElement | null;
   /** running flat out, legs a blur (fx whirl) */
   whirl?: SVGGElement | null;
   /** the pieces of a sitting body, made the first time it sits */
@@ -312,6 +318,7 @@ const HIT = 0.55;
 const KNOCK = 0.7;
 /** animals on four legs (lying down = flat on the belly) */
 let sitIds = 0;
+type Mood = '' | 'squint' | 'curious' | 'scared';
 
 /**
  * People pulling reach out with the arm in front (fx pull): its shoulders in the drawing (the one
@@ -2102,6 +2109,8 @@ export class Stage {
 
   /** Resolves when the puppet gets there (at once if it is not on stage). */
   moveTo(id: string, to: Point, ms: number, opts: { hop?: boolean; roll?: boolean; flip?: boolean } = {}): Promise<void> {
+    const mover = this.actors.get(id);
+    if (mover) this.undroop(mover);
     const a = this.actors.get(id);
     if (!a) return Promise.resolve();
     a.move?.done();
@@ -2109,6 +2118,9 @@ export class Stage {
     a.pose = '';
     a.asleep = false;
     if (opts.flip !== undefined) a.flip = opts.flip;
+    // nobody walks backwards: unless the tale says which way to face, it faces where it goes
+    // (a puppet faces left in its drawing; flipped, right)
+    else if (!a.prop && Math.abs(to[0] - a.x) > 60) a.flip = to[0] > a.x;
     return new Promise((resolve) => {
       const m: Move = {
         from: [a.x, a.y],
@@ -2307,6 +2319,27 @@ export class Stage {
         step();
         return this.wait(3600);
       }
+      case 'droop': {
+        // hangs its head low, ashamed, and keeps it so (until it moves or stands up)
+        if (!a) return this.wait(300);
+        const h = a.parts.head;
+        const t0 = this.time;
+        const step = () => {
+          const p = Math.min(1, (this.time - t0) / 0.7);
+          if (h) h.setAttribute('transform', `rotate(${(-46 * p).toFixed(1)} ${h.getAttribute('data-cx')} ${h.getAttribute('data-cy')})`);
+          else a.droop = p;
+          if (p < 1) this.later(0, step);
+        };
+        a.drooped = true;
+        step();
+        return this.wait(800);
+      }
+      case 'mood': {
+        // a face: word squint (eyes narrowed to lines: suspicious), curious (eyes wide, brows up),
+        // scared (eyes huge, brows up in a fright), or none
+        if (a) this.setMood(a, (word || '') as Mood);
+        return this.wait(150);
+      }
       case 'tears': {
         // big blue tears from the eyes
         if (!a) return this.wait(300);
@@ -2492,6 +2525,7 @@ export class Stage {
         return this.wait(400);
       case 'stand':
         if (a) {
+          this.undroop(a);
           a.pose = '';
           a.bounce = 1;
         }
@@ -3148,6 +3182,61 @@ export class Stage {
     }
   }
 
+  private undroop(a: Actor) {
+    if (!a.drooped) return;
+    a.drooped = false;
+    a.droop = 0;
+    if (a.parts.head) a.parts.head.setAttribute('transform', '');
+  }
+
+  /** A face over the eyes, worked out from where the eyes are in the drawing (any puppet). */
+  private setMood(a: Actor, mood: Mood) {
+    if (a.mood) {
+      a.mood.remove();
+      a.mood = null;
+    }
+    const eyes = a.parts.eyes;
+    if (eyes) {
+      eyes.style.display = mood === 'squint' ? 'none' : '';
+      eyes.style.transformBox = 'fill-box';
+      eyes.style.transformOrigin = 'center';
+      eyes.style.transform = mood === 'scared' ? 'scale(1.4)' : mood === 'curious' ? 'scale(1.15)' : '';
+    }
+    if (a.parts.eyesClosed && mood) a.parts.eyesClosed.style.display = 'none';
+    if (!mood || !eyes) return;
+    // each eye: the biggest round shape on each side
+    const found: { x: number; y: number; r: number }[] = [];
+    for (const c of Array.from(eyes.querySelectorAll('circle, ellipse'))) {
+      const n = (k: string) => Number(c.getAttribute(k) || 0);
+      const x = n('cx');
+      const y = n('cy');
+      const r = c.tagName === 'circle' ? n('r') : Math.max(n('rx'), n('ry'));
+      const same = found.find((e) => Math.abs(e.x - x) < r + e.r);
+      if (!same) found.push({ x, y, r });
+      else if (r > same.r) Object.assign(same, { x, y, r });
+    }
+    let g = '';
+    for (const e of found) {
+      const w = Math.max(8, e.r * 1.1);
+      const inner = e.x < (found[0].x + (found[1] || found[0]).x) / 2 ? 1 : -1;
+      if (mood === 'squint') g += `<path d="M${e.x - w} ${e.y} H${e.x + w}" stroke="${INK}" stroke-width="${Math.max(4, e.r * 0.45).toFixed(1)}" stroke-linecap="round"/>`;
+      // brows: suspicious (low, flat), curious (one up), scared (up, slanted to the middle)
+      // just above the eye (bigger when scared), not up on the outline of the head
+      const by = e.y - e.r * (mood === 'squint' ? 1.5 : mood === 'scared' ? 1.75 : 1.7);
+      const tilt = mood === 'scared' ? -e.r * 0.35 * inner : mood === 'curious' ? (inner > 0 ? -e.r * 0.45 : 0) : e.r * 0.3 * inner;
+      g += `<path d="M${e.x - w} ${(by - tilt).toFixed(1)} L${e.x + w} ${(by + tilt).toFixed(1)}" stroke="${INK}" stroke-width="${Math.max(5, e.r * 0.5).toFixed(1)}" stroke-linecap="round"/>`;
+    }
+    const node = svg(`<g data-part="mood">${g}</g>`).firstChild as SVGGElement;
+    // on top of everything of the head (fur stripes, a hat)
+    eyes.parentNode!.appendChild(node);
+    a.mood = node;
+    if (mood === 'scared') {
+      a.act = 'shiver';
+      a.actT = 0;
+      a.actDur = ACTS.shiver.dur;
+    }
+  }
+
   // ---------- pulling: arms reaching out ----------
 
   private pullArms: { pullers: Actor[]; target: Actor | null; arms: { from: Actor; held: Actor; sh: Point; g: SVGGElement; out: SVGElement; fill: SVGElement; hand: SVGElement }[] } | null = null;
@@ -3306,12 +3395,14 @@ export class Stage {
             `<path d="M-14 18 q6 6 12 0 M2 18 q6 6 12 0" fill="none" stroke="#6d4c41" stroke-width="3"/></g>`,
         ).firstChild as SVGGElement;
         const eyes = o.querySelector('[data-owl-eyes]') as SVGGElement;
+        // it sits in a tree: while the road rolls it goes back with the trees (their layer's pace)
+        const scroll0 = this.scroll;
         this.particle(
           o,
           4,
           (p, k) => {
             const show = k < 0.15 ? k / 0.15 : k > 0.85 ? (1 - k) / 0.15 : 1;
-            o.setAttribute('transform', `translate(${x.toFixed(0)} ${(y + (1 - show) * 40).toFixed(0)})`);
+            o.setAttribute('transform', `translate(${(x - (this.scroll - scroll0) * 0.55).toFixed(0)} ${(y + (1 - show) * 40).toFixed(0)})`);
             o.setAttribute('opacity', show.toFixed(2));
             // a blink and a look round
             eyes.setAttribute('transform', Math.abs(p.t - 1.6) < 0.1 || Math.abs(p.t - 2.6) < 0.1 ? 'translate(0 -8) scale(1 0.15) translate(0 8)' : `translate(${(Math.sin(p.t * 1.5) * 3).toFixed(1)} 0)`);
@@ -3597,12 +3688,14 @@ export class Stage {
     // four-legged ones lie down on their belly: flattened to the ground, not turned over
     const flat = a.pose === 'lie' && FOUR_LEGS.indexOf(a.id) >= 0;
     const sit = a.pose === 'sit';
+    if (a.droop) lean += 14 * a.droop;
     if (sit) {
       // sitting: lower and a bit wider; asleep, the head nods slowly
       if (a.asleep) lean += 5 + Math.sin(a.phase * 1.4) * 4;
     } else if (a.pose && !flat) {
       // on its side, head towards where it faces, turning about a point near the feet
-      spinAt = a.pose === 'roll' ? -90 + Math.sin(a.phase * 4) * 22 : a.pose === 'back' ? 84 : -88;
+      // 'roll': on its back, belly up, rocking from side to side (the cat, full of presents)
+      spinAt = a.pose === 'roll' ? 84 + Math.sin(a.phase * 4) * 24 : a.pose === 'back' ? 84 : -88;
       pivotY = -40;
     }
     const pivot = a.pose && !sit ? pivotY : (ANCHORS[a.id] ? ANCHORS[a.id].top : -100) / 2;
